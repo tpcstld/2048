@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 public class MainView extends View {
 
     Paint paint = new Paint();
-    MainGame game = new MainGame();
+    MainGame game;
 
     boolean getScreenSize = true;
     int cellSize = 0;
@@ -47,6 +48,7 @@ public class MainView extends View {
         backgroundRectangle.setBounds(startingX, startingY, endingX, endingY);
         backgroundRectangle.draw(canvas);
 
+        int textYShift = (int) (cellSize - gridWidth);
         for (int xx = 0; xx < game.numSquaresX; xx++) {
             for (int yy = 0; yy < game.numSquaresY; yy++) {
                 int sX = startingX + gridWidth + (cellSize + gridWidth) * xx;
@@ -55,6 +57,9 @@ public class MainView extends View {
                 int eY = sY + cellSize;
                 cellRectangle.setBounds(sX, sY, eX, eY);
                 cellRectangle.draw(canvas);
+                if (game.grid.getCellContent(new Cell(xx, yy)) != null) {
+                    canvas.drawText("" + game.grid.field[xx][yy].getValue(), sX + cellSize / 2, sY + textYShift, paint);
+                }
             }
         }
         invalidate();
@@ -63,7 +68,8 @@ public class MainView extends View {
     public void getLayout(int width, int height) {
         cellSize = (int) Math.min(width / (game.numSquaresX + 1), height / (game.numSquaresY + 1));
         gridWidth = (int) cellSize / 10;
-        paint.setStrokeWidth(gridWidth);
+        paint.setTextAlign(Paint.Align.CENTER);
+        paint.setTextSize(cellSize);
         screenMiddleX = (int) width / 2;
         screenMiddleY = (int) height / 2;
         getScreenSize = false;
@@ -78,6 +84,7 @@ public class MainView extends View {
         } catch (Exception e) {
             System.out.println("Error getting rectangle?");
         }
+        game = new MainGame();
         game.newGame();
     }
 

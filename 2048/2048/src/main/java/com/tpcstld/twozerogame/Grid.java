@@ -1,5 +1,7 @@
 package com.tpcstld.twozerogame;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 /**
@@ -7,7 +9,7 @@ import java.util.ArrayList;
  */
 public class Grid {
 
-    Tile[][] field;
+    public static Tile[][] field;
 
     public Grid(int sizeX, int sizeY) {
         field = new Tile[sizeX][sizeY];
@@ -22,7 +24,7 @@ public class Grid {
        ArrayList<Cell> availableCells = getAvailableCells();
        if (availableCells.size() >= 1) {
            return availableCells.get((int) Math.floor(Math.random() * availableCells.size()));
-       };
+       }
        return null;
     }
 
@@ -30,8 +32,8 @@ public class Grid {
         ArrayList<Cell> availableCells = new ArrayList<Cell>();
         for (int xx = 0; xx < field.length; xx++) {
             for (int yy = 0; yy < field[0].length; yy++) {
-                if (isCellAvailable(field[xx][yy])) {
-                    availableCells.add(field[xx][yy]);
+                if (field[xx][yy] == null) {
+                    availableCells.add(new Cell(xx, yy));
                 }
             }
         }
@@ -42,23 +44,23 @@ public class Grid {
         return (getAvailableCells().size() >= 1);
     }
 
-    public boolean isCellAvailable(Tile cell) {
+    public boolean isCellAvailable(Cell cell) {
         return !isCellOccupied(cell);
     }
 
-    public boolean isCellOccupied(Tile cell) {
-        return (getCellContent(cell) > 0);
+    public boolean isCellOccupied(Cell cell) {
+        return (getCellContent(cell) != null);
     }
 
-    public int getCellContent(Tile cell) {
+    public Tile getCellContent(Cell cell) {
         if (cell != null && isCellWithinBounds(cell)) {
-            return cell.getValue();
+            return field[cell.getX()][cell.getY()];
         } else {
-            return -1;
+            return null;
         }
     }
 
-    public boolean isCellWithinBounds(Tile cell) {
+    public boolean isCellWithinBounds(Cell cell) {
         return 0 <= cell.getX() && cell.getX() < field.length
             && 0 <= cell.getY() && cell.getY() < field[0].length;
     }
