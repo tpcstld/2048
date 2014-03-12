@@ -10,7 +10,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(new MainGame(getBaseContext()));
+        setContentView(new MainView(getBaseContext()));
     }
 
 
