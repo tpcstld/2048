@@ -46,6 +46,23 @@ public class MainGame {
     }
 
     public void prepareTiles() {
-        for (int xx = 0; xx < )
+        for (Tile[] array : grid.field) {
+            for (Tile tile : array) {
+                if (grid.isCellOccupied(tile)) {
+                    tile.setMergedFrom(null);
+                    tile.savePosition();
+                }
+            }
+        }
+    }
+
+    public void moveTile(Tile tile, Cell cell) {
+        grid.field[tile.getX()][tile.getY()] = null;
+        grid.field[cell.getX()][cell.getY()] = tile;
+        tile.updatePosition(cell);
+    }
+
+    public void move (int direction) {
+        // 0: up, 1: right, 2: down, 3: left
     }
 }

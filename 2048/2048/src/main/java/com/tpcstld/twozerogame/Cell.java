@@ -3,11 +3,11 @@ package com.tpcstld.twozerogame;
 /**
  * Created by tpcstld on 3/12/14.
  */
-public class Point {
+public class Cell {
     private int x;
     private int y;
 
-    public Point(int x, int y) {
+    public Cell(int x, int y) {
         this.x = x;
         this.y = y;
     }

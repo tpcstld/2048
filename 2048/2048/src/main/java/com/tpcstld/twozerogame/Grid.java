@@ -1,7 +1,6 @@
 package com.tpcstld.twozerogame;
 
 import java.util.ArrayList;
-import java.util.concurrent.Callable;
 
 /**
  * Created by tpcstld on 3/12/14.
@@ -19,16 +18,16 @@ public class Grid {
         }
     }
 
-    public Point randomAvailableCell() {
-       ArrayList<Point> availableCells = getAvailableCells();
+    public Cell randomAvailableCell() {
+       ArrayList<Cell> availableCells = getAvailableCells();
        if (availableCells.size() >= 1) {
            return availableCells.get((int) Math.floor(Math.random() * availableCells.size()));
        };
        return null;
     }
 
-    public ArrayList<Point> getAvailableCells() {
-        ArrayList<Point> availableCells = new ArrayList<Point>();
+    public ArrayList<Cell> getAvailableCells() {
+        ArrayList<Cell> availableCells = new ArrayList<Cell>();
         for (int xx = 0; xx < field.length; xx++) {
             for (int yy = 0; yy < field[0].length; yy++) {
                 if (isCellAvailable(field[xx][yy])) {
