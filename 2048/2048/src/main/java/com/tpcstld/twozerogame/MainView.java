@@ -48,7 +48,7 @@ public class MainView extends View {
         backgroundRectangle.setBounds(startingX, startingY, endingX, endingY);
         backgroundRectangle.draw(canvas);
 
-        int textYShift = (int) (cellSize - gridWidth);
+        int textShiftY = (int) ((paint.descent() + paint.ascent()) / 2);
         for (int xx = 0; xx < game.numSquaresX; xx++) {
             for (int yy = 0; yy < game.numSquaresY; yy++) {
                 int sX = startingX + gridWidth + (cellSize + gridWidth) * xx;
@@ -58,7 +58,7 @@ public class MainView extends View {
                 cellRectangle.setBounds(sX, sY, eX, eY);
                 cellRectangle.draw(canvas);
                 if (game.grid.getCellContent(new Cell(xx, yy)) != null) {
-                    canvas.drawText("" + game.grid.field[xx][yy].getValue(), sX + cellSize / 2, sY + textYShift, paint);
+                    canvas.drawText("" + game.grid.field[xx][yy].getValue(), sX + cellSize / 2, sY + cellSize / 2 - textShiftY, paint);
                 }
             }
         }
@@ -70,6 +70,7 @@ public class MainView extends View {
         gridWidth = (int) cellSize / 10;
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setTextSize(cellSize);
+
         screenMiddleX = (int) width / 2;
         screenMiddleY = (int) height / 2;
         getScreenSize = false;
