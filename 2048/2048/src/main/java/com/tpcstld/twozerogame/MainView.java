@@ -73,9 +73,9 @@ public class MainView extends View {
             paint.setTextSize(textSize);
             String text = "";
             if (game.lose) {
-                text = " GAME OVER";
+                text = "GAME OVER";
             } else if (game.won) {
-                text = " WINNER!";
+                text = "WINNER!";
             }
             canvas.drawText("Score: ", endingX, startingY + textSize, paint);
             canvas.drawText("" + game.score, endingX, startingY + textSize + textSize, paint);
