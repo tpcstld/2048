@@ -58,14 +58,16 @@ public class MainView extends View {
         paint.setTextSize(textSize / 2);
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             int textShiftY = (int) ((paint.descent() + paint.ascent()) / 2);
-            float y = startingY - textSize / 2 - textShiftY;
+            float y = endingY + textSize / 2 - textShiftY;
             String text = "";
             if (game.lose) {
                 text = " GAME OVER";
             } else if (game.won) {
                 text = " WINNER!";
             }
-            canvas.drawText("Score: " + game.score + text, startingX, y, paint);
+            if (!text.equals(""))  {
+                canvas.drawText("Score: " + game.score + text, startingX, y, paint);
+            }
         } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             String text = "";
             if (game.lose) {
@@ -73,9 +75,11 @@ public class MainView extends View {
             } else if (game.won) {
                 text = "WINNER!";
             }
-            canvas.drawText("Score: ", endingX, startingY + textSize, paint);
-            canvas.drawText("" + game.score, endingX, startingY + textSize * 2, paint);
-            canvas.drawText(text, endingX, startingY + textSize * 3, paint);
+            if (!text.equals("")) {
+                canvas.drawText("Score: ", endingX, startingY + textSize, paint);
+                canvas.drawText("" + game.score, endingX, startingY + textSize * 2, paint);
+                canvas.drawText(text, endingX, startingY + textSize * 3, paint);
+            }
         }
 
         paint.setTextAlign(Paint.Align.CENTER);
