@@ -5,7 +5,10 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -42,13 +45,12 @@ public class MainView extends View {
 
         int startingX = screenMiddleX - (cellSize + gridWidth) * halfNumSquaresX - gridWidth / 2;
         int endingX = screenMiddleX + (cellSize + gridWidth) * halfNumSquaresX + gridWidth / 2;
-        int startingY = screenMiddleY - (cellSize + gridWidth) * halfNumSquaresX - gridWidth / 2;
-        int endingY = screenMiddleY + (cellSize + gridWidth) * halfNumSquaresX + gridWidth / 2;
+        int startingY = screenMiddleY - (cellSize + gridWidth) * halfNumSquaresY - gridWidth / 2;
+        int endingY = screenMiddleY + (cellSize + gridWidth) * halfNumSquaresY + gridWidth / 2;
 
         backgroundRectangle.setBounds(startingX, startingY, endingX, endingY);
         backgroundRectangle.draw(canvas);
 
-        int textShiftY = (int) ((paint.descent() + paint.ascent()) / 2);
         for (int xx = 0; xx < game.numSquaresX; xx++) {
             for (int yy = 0; yy < game.numSquaresY; yy++) {
                 int sX = startingX + gridWidth + (cellSize + gridWidth) * xx;
@@ -57,7 +59,12 @@ public class MainView extends View {
                 int eY = sY + cellSize;
                 cellRectangle.setBounds(sX, sY, eX, eY);
                 cellRectangle.draw(canvas);
+
                 if (game.grid.getCellContent(new Cell(xx, yy)) != null) {
+                    paint.setTextSize(cellSize);
+                    float textSize = cellSize * cellSize / Math.max(cellSize, paint.measureText(String.valueOf(game.grid.getCellContent(new Cell(xx, yy)).getValue())));
+                    paint.setTextSize(textSize);
+                    int textShiftY = (int) ((paint.descent() + paint.ascent()) / 2);
                     canvas.drawText("" + game.grid.field[xx][yy].getValue(), sX + cellSize / 2, sY + cellSize / 2 - textShiftY, paint);
                 }
             }
@@ -69,8 +76,6 @@ public class MainView extends View {
         cellSize = (int) Math.min(width / (game.numSquaresX + 1), height / (game.numSquaresY + 1));
         gridWidth = (int) cellSize / 10;
         paint.setTextAlign(Paint.Align.CENTER);
-        paint.setTextSize(cellSize);
-
         screenMiddleX = (int) width / 2;
         screenMiddleY = (int) height / 2;
         getScreenSize = false;
@@ -86,6 +91,7 @@ public class MainView extends View {
             System.out.println("Error getting rectangle?");
         }
         game = new MainGame();
+        setOnTouchListener(new InputListener(game));
         game.newGame();
     }
 

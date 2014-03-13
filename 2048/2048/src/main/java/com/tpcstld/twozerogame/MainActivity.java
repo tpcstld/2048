@@ -2,8 +2,10 @@ package com.tpcstld.twozerogame;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -12,7 +14,6 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(new MainView(getBaseContext()));
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
