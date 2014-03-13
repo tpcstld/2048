@@ -1,7 +1,5 @@
 package com.tpcstld.twozerogame;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 
 /**
@@ -9,7 +7,7 @@ import java.util.ArrayList;
  */
 public class Grid {
 
-    public static Tile[][] field;
+    public Tile[][] field;
 
     public Grid(int sizeX, int sizeY) {
         field = new Tile[sizeX][sizeY];

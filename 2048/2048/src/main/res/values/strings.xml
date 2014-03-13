@@ -4,5 +4,6 @@
     <string name="app_name">2048</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="new_game">New Game</string>
 
 </resources>

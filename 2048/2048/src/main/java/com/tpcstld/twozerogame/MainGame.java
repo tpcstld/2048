@@ -1,7 +1,5 @@
 package com.tpcstld.twozerogame;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,16 +9,16 @@ import java.util.List;
  */
 public class MainGame {
 
-    public static Grid grid;
+    public Grid grid;
 
-    static final int numSquaresX = 4;
-    static final int numSquaresY = 4;
-    static final int startTiles = 2;
+    final int numSquaresX = 4;
+    final int numSquaresY = 4;
+    final int startTiles = 2;
 
-    static int score = 0;
-    static int highscore = 0;
-    static boolean won = false;
-    static boolean lose = false;
+    int score = 0;
+    int highscore = 0;
+    boolean won = false;
+    boolean lose = false;
 
     public MainGame() {
     }

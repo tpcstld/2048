@@ -1,14 +1,11 @@
 package com.tpcstld.twozerogame;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
-import android.support.v4.view.GestureDetectorCompat;
-import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -27,12 +24,17 @@ public class MainView extends View {
     int gridWidth = 0;
     int screenMiddleX = 0;
     int screenMiddleY = 0;
-
+    int orientation = Configuration.ORIENTATION_UNDEFINED;
     Drawable backgroundRectangle;
     Drawable cellRectangle;
 
     @Override
     public void onDraw(Canvas canvas) {
+        int newOrientation = getOrientation();
+        if (newOrientation != orientation) {
+            getScreenSize = true;
+            orientation = newOrientation;
+        }
         if (getScreenSize) {
             int width = this.getMeasuredWidth();
             int height = this.getMeasuredHeight();
@@ -48,9 +50,38 @@ public class MainView extends View {
         int startingY = screenMiddleY - (cellSize + gridWidth) * halfNumSquaresY - gridWidth / 2;
         int endingY = screenMiddleY + (cellSize + gridWidth) * halfNumSquaresY + gridWidth / 2;
 
+        //Drawing the background
         backgroundRectangle.setBounds(startingX, startingY, endingX, endingY);
         backgroundRectangle.draw(canvas);
 
+        //Drawing the score text
+        paint.setTextAlign(Paint.Align.LEFT);
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            int textSize = (int) cellSize / 4;
+            paint.setTextSize(textSize);
+            int textShiftY = (int) ((paint.descent() + paint.ascent()) / 2);
+            int y = startingY - textSize / 2 - textShiftY;
+            String text = "";
+            if (game.lose) {
+                text = " GAME OVER";
+            } else if (game.won) {
+                text = " WINNER!";
+            }
+            canvas.drawText("Score: " + game.score + text, startingX, y, paint);
+        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            int textSize = (int) cellSize / 3;
+            paint.setTextSize(textSize);
+            String text = "";
+            if (game.lose) {
+                text = " GAME OVER";
+            } else if (game.won) {
+                text = " WINNER!";
+            }
+            canvas.drawText("Score: " + text, endingX, startingY + textSize, paint);
+            canvas.drawText("" + game.score, endingX, startingY + textSize + textSize, paint);
+        }
+
+        paint.setTextAlign(Paint.Align.CENTER);
         for (int xx = 0; xx < game.numSquaresX; xx++) {
             for (int yy = 0; yy < game.numSquaresY; yy++) {
                 int sX = startingX + gridWidth + (cellSize + gridWidth) * xx;
@@ -62,14 +93,23 @@ public class MainView extends View {
 
                 if (game.grid.getCellContent(new Cell(xx, yy)) != null) {
                     paint.setTextSize(cellSize);
-                    float textSize = cellSize * cellSize / Math.max(cellSize, paint.measureText(String.valueOf(game.grid.getCellContent(new Cell(xx, yy)).getValue())));
-                    paint.setTextSize(textSize);
+                    float tempSize = cellSize * cellSize / Math.max(cellSize, paint.measureText(String.valueOf(game.grid.getCellContent(new Cell(xx, yy)).getValue())));
+                    paint.setTextSize(tempSize);
                     int textShiftY = (int) ((paint.descent() + paint.ascent()) / 2);
                     canvas.drawText("" + game.grid.field[xx][yy].getValue(), sX + cellSize / 2, sY + cellSize / 2 - textShiftY, paint);
                 }
             }
         }
+
         invalidate();
+    }
+
+    public int getOrientation() {
+        if (this.getMeasuredWidth() > this.getMeasuredHeight()) {
+            return Configuration.ORIENTATION_LANDSCAPE;
+        } else {
+            return Configuration.ORIENTATION_PORTRAIT;
+        }
     }
 
     public void getLayout(int width, int height) {
