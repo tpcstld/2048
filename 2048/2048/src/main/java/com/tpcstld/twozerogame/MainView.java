@@ -8,8 +8,6 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
-import java.util.ArrayList;
-
 /**
  * Created by tpcstld on 3/12/14.
  */
@@ -21,6 +19,7 @@ public class MainView extends View {
 
     boolean getScreenSize = true;
     int cellSize = 0;
+    float textSize = 0;
     int gridWidth = 0;
     int screenMiddleX = 0;
     int screenMiddleY = 0;
@@ -56,11 +55,10 @@ public class MainView extends View {
 
         //Drawing the score text
         paint.setTextAlign(Paint.Align.LEFT);
+        paint.setTextSize(textSize / 2);
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            int textSize = (int) cellSize / 4;
-            paint.setTextSize(textSize);
             int textShiftY = (int) ((paint.descent() + paint.ascent()) / 2);
-            int y = startingY - textSize / 2 - textShiftY;
+            float y = startingY - textSize / 2 - textShiftY;
             String text = "";
             if (game.lose) {
                 text = " GAME OVER";
@@ -69,8 +67,6 @@ public class MainView extends View {
             }
             canvas.drawText("Score: " + game.score + text, startingX, y, paint);
         } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            int textSize = (int) cellSize / 3;
-            paint.setTextSize(textSize);
             String text = "";
             if (game.lose) {
                 text = "GAME OVER";
@@ -78,7 +74,7 @@ public class MainView extends View {
                 text = "WINNER!";
             }
             canvas.drawText("Score: ", endingX, startingY + textSize, paint);
-            canvas.drawText("" + game.score, endingX, startingY + textSize + textSize, paint);
+            canvas.drawText("" + game.score, endingX, startingY + textSize * 2, paint);
             canvas.drawText(text, endingX, startingY + textSize * 3, paint);
         }
 
@@ -93,9 +89,7 @@ public class MainView extends View {
                 cellRectangle.draw(canvas);
 
                 if (game.grid.getCellContent(new Cell(xx, yy)) != null) {
-                    paint.setTextSize(cellSize);
-                    float tempSize = cellSize * cellSize / Math.max(cellSize, paint.measureText(String.valueOf(game.grid.getCellContent(new Cell(xx, yy)).getValue())));
-                    paint.setTextSize(tempSize);
+                    paint.setTextSize(textSize);
                     int textShiftY = (int) ((paint.descent() + paint.ascent()) / 2);
                     canvas.drawText("" + game.grid.field[xx][yy].getValue(), sX + cellSize / 2, sY + cellSize / 2 - textShiftY, paint);
                 }
@@ -117,6 +111,8 @@ public class MainView extends View {
         cellSize = (int) Math.min(width / (game.numSquaresX + 1), height / (game.numSquaresY + 1));
         gridWidth = (int) cellSize / 7;
         paint.setTextAlign(Paint.Align.CENTER);
+        paint.setTextSize(cellSize);
+        textSize = cellSize * cellSize / Math.max(cellSize, paint.measureText("0000"));
         screenMiddleX = (int) width / 2;
         screenMiddleY = (int) height / 2;
         getScreenSize = false;
