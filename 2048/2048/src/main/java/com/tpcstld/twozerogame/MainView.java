@@ -77,8 +77,9 @@ public class MainView extends View {
             } else if (game.won) {
                 text = " WINNER!";
             }
-            canvas.drawText("Score: " + text, endingX, startingY + textSize, paint);
+            canvas.drawText("Score: ", endingX, startingY + textSize, paint);
             canvas.drawText("" + game.score, endingX, startingY + textSize + textSize, paint);
+            canvas.drawText(text, endingX, startingY + textSize * 3, paint);
         }
 
         paint.setTextAlign(Paint.Align.CENTER);
@@ -114,7 +115,7 @@ public class MainView extends View {
 
     public void getLayout(int width, int height) {
         cellSize = (int) Math.min(width / (game.numSquaresX + 1), height / (game.numSquaresY + 1));
-        gridWidth = (int) cellSize / 10;
+        gridWidth = (int) cellSize / 7;
         paint.setTextAlign(Paint.Align.CENTER);
         screenMiddleX = (int) width / 2;
         screenMiddleY = (int) height / 2;
