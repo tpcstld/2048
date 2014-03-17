@@ -10,7 +10,7 @@ import java.util.List;
 public class MainGame {
 
     public Grid grid;
-
+    public AnimationGrid aGrid;
     final int numSquaresX = 4;
     final int numSquaresY = 4;
     final int startTiles = 2;
@@ -25,6 +25,7 @@ public class MainGame {
 
     public void newGame() {
         grid = new Grid(numSquaresX, numSquaresY);
+        aGrid = new AnimationGrid(numSquaresX, numSquaresY);
         score = 0;
         won = false;
         lose = false;
@@ -44,6 +45,7 @@ public class MainGame {
             int value = Math.random() < 0.9 ? 2 : 4;
             Tile tile = new Tile(grid.randomAvailableCell(), value);
             grid.insertTile(tile);
+            aGrid.startAnimation(tile.getX(), tile.getY(), -1, 20);
         }
     }
 
