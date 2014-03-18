@@ -155,8 +155,8 @@ public class MainGame {
         if (!movesAvailable()) {
             lose = true;
             if (score > highScore) {
-                recordHighScore();
                 highScore = score;
+                recordHighScore();
             }
         }
 

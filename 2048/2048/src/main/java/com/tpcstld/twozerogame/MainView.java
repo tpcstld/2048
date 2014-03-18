@@ -31,7 +31,6 @@ public class MainView extends View {
     int TEXT_BLACK;
     int TEXT_WHITE;
 
-    final long SPF = 1000000000 / 30;
     long lastFPSTime = System.nanoTime();
     long currentTime = System.nanoTime();
     @Override
@@ -74,7 +73,7 @@ public class MainView extends View {
             }
             if (!text.equals(""))  {
                 canvas.drawText("Score: " + game.score + text, startingX, y, paint);
-                canvas.drawText("High Score: " + game.highScore + text, startingX, y + textSize, paint);
+                canvas.drawText("High Score: " + game.highScore, startingX, y + textSize, paint);
             }
         } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             String text = "";
@@ -178,6 +177,7 @@ public class MainView extends View {
         }
         canvas.drawText("" + value, sX + cellSize / 2, sY + cellSize / 2 - textShiftY, paint);
     }
+
     public void tick() {
         currentTime = System.nanoTime();
         game.aGrid.tickAll(currentTime - lastFPSTime);
@@ -186,6 +186,7 @@ public class MainView extends View {
             game.addTile();
         }
     }
+
     public static int log2(int n){
         if(n <= 0) throw new IllegalArgumentException();
         return 31 - Integer.numberOfLeadingZeros(n);
