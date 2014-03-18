@@ -26,8 +26,9 @@ public class MainGame {
 
     Context mContext;
 
-    static final int SPAWN_ANIMATION_TIME = 200000000;
-    static final int MOVE_ANIMATION_TIME = 100000000;
+
+    static final int MOVE_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME * 2;
+    static final int SPAWN_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME * 2;
     static final String HIGH_SCORE = "high score";
 
     public boolean spawnTile = false;
@@ -91,6 +92,7 @@ public class MainGame {
     }
 
     public void move (int direction) {
+        aGrid = new AnimationGrid(numSquaresX, numSquaresY);
         // 0: up, 1: right, 2: down, 3: left
         if (lose || won) {
             return;

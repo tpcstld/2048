@@ -10,6 +10,8 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
 
+import java.util.ArrayList;
+
 /**
  * Created by tpcstld on 3/12/14.
  */
@@ -33,6 +35,8 @@ public class MainView extends View {
 
     long lastFPSTime = System.nanoTime();
     long currentTime = System.nanoTime();
+
+    static final int BASE_ANIMATION_TIME = 100000000;
     @Override
     public void onDraw(Canvas canvas) {
         int newOrientation = getOrientation();
@@ -113,44 +117,63 @@ public class MainView extends View {
 
                 Tile currentTile = game.grid.getCellContent(new Cell(xx, yy));
                 if (currentTile != null) {
-                    AnimationCell aCell = game.aGrid.getAnimationCell(xx, yy);
-
+                    ArrayList<AnimationCell> aArray = game.aGrid.getAnimationCell(xx, yy);
                     int value = currentTile.getValue();
                     int index = log2(value);
+                    for (AnimationCell aCell : aArray) {
 
-                    if (aCell != null) {
-                        if (aCell.getDirection() == -1 && aCell.getPercentageDone() >= 0.5) {
-                            float textScaleSize = (float) ((aCell.getPercentageDone() - 0.5) * 2);
+                        if (aCell.getDirection() == -1 && aCell.getPercentageDone() >= 0.5) { //Spawning animation
+                            double percentDone = (aCell.getPercentageDone() - 0.5) * 2;
+                            float textScaleSize = (float) (percentDone);
                             paint.setTextSize(textSize * textScaleSize);
 
-                            float cellScaleSize = (float) (cellSize / 2 * (1 - (aCell.getPercentageDone() - 0.5) * 2));
+                            float cellScaleSize = (float) (cellSize / 2 * (1 - textScaleSize));
                             drawRectangle(canvas, cellRectangle[index], (int) (sX + cellScaleSize), (int) (sY + cellScaleSize), (int) (eX - cellScaleSize), (int) (eY - cellScaleSize));
                             drawCellText(canvas, value, sX, sY);
-                        } else if (aCell.getDirection() == 0) {
+                        } else if (aCell.getDirection() == -1) {
+                            //Draw Nothing
+                        } else if (aCell.getPercentageDone() >= 0.5 && (aCell.getDirection() == 0 || aArray.size() >= 2)) {
+                            double percentDone = (aCell.getPercentageDone() - 0.5) * 2;
+                            float textScaleSize = (float) (1.125 - Math.abs(percentDone - 0.5) / 4);
+                            paint.setTextSize(textSize * textScaleSize);
+
+                            float cellScaleSize = (float) (cellSize / 2 * (1 - textScaleSize));
+                            drawRectangle(canvas, cellRectangle[index], (int) (sX + cellScaleSize), (int) (sY + cellScaleSize), (int) (eX - cellScaleSize), (int) (eY - cellScaleSize));
+                            drawCellText(canvas, value, sX, sY);
+                        } else if (aCell.getDirection() == 0 || aArray.size() == 2) {  //Merging animation
                             paint.setTextSize(textSize);
-                            drawRectangle(canvas, cellRectangle[index-1], sX, sY, eX, eY);
-                            drawCellText(canvas, value / 2, sX, sY);
+                            if (aArray.size() <= 1) {
+                                drawRectangle(canvas, cellRectangle[index-1], sX, sY, eX, eY);
+                                drawCellText(canvas, value / 2, sX, sY);
+                            }
                             int previousX = aCell.extra;
                             int previousY = aCell.extra2;
                             int currentX = currentTile.getX();
                             int currentY = currentTile.getY();
-                            int dX = (int) ((currentX - previousX) * (cellSize + gridWidth) * (aCell.getPercentageDone() - 1) * 1.0);
-                            int dY = (int) ((currentY - previousY) * (cellSize + gridWidth) * (aCell.getPercentageDone() - 1) * 1.0);
+                            int dX = (int) ((currentX - previousX) * (cellSize + gridWidth) * (aCell.getPercentageDone()*2 - 1) * 1.0);
+                            int dY = (int) ((currentY - previousY) * (cellSize + gridWidth) * (aCell.getPercentageDone()*2 - 1) * 1.0);
                             drawRectangle(canvas, cellRectangle[index-1], sX + dX, sY + dY, eX + dX, eY + dY);
 
                             drawCellText(canvas, value / 2, sX + dX, sY + dY);
-                        } else if (aCell.getDirection() == 1) {
+                        } else if (aCell.getDirection() == 1 && aCell.getPercentageDone() <= 0.5) { //Moving, no merge animation
+
                             paint.setTextSize(textSize);
                             int previousX = aCell.extra;
                             int previousY = aCell.extra2;
                             int currentX = currentTile.getX();
                             int currentY = currentTile.getY();
-                            int dX = (int) ((currentX - previousX) * (cellSize + gridWidth) * (aCell.getPercentageDone() - 1) * 1.0);
-                            int dY = (int) ((currentY - previousY) * (cellSize + gridWidth) * (aCell.getPercentageDone() - 1) * 1.0);
+                            int dX = (int) ((currentX - previousX) * (cellSize + gridWidth) * (aCell.getPercentageDone()*2 - 1) * 1.0);
+                            int dY = (int) ((currentY - previousY) * (cellSize + gridWidth) * (aCell.getPercentageDone()*2 - 1) * 1.0);
                             drawRectangle(canvas, cellRectangle[index], sX + dX, sY + dY, eX + dX, eY + dY);
                             drawCellText(canvas, value, sX + dX, sY + dY);
+                        } else {
+                            paint.setTextSize(textSize);
+
+                            drawRectangle(canvas, cellRectangle[index], sX, sY, eX, eY);
+                            drawCellText(canvas, value , sX, sY);
                         }
-                    } else {
+                    }
+                    if (aArray.size() == 0) {
                         paint.setTextSize(textSize);
 
                         drawRectangle(canvas, cellRectangle[index], sX, sY, eX, eY);
