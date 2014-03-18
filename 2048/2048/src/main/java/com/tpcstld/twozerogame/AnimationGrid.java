@@ -5,6 +5,7 @@ package com.tpcstld.twozerogame;
  */
 public class AnimationGrid {
     public AnimationCell[][] field;
+    int activeAnimations = 0;
 
     public AnimationGrid(int x, int y) {
         field = new AnimationCell[x][y];
@@ -15,8 +16,9 @@ public class AnimationGrid {
         }
     }
 
-    public void startAnimation(int x, int y, int direction, int frame) {
-        field[x][y] = new AnimationCell(x, y, direction, frame);
+    public void startAnimation(int x, int y, int direction, int frame, int e1, int e2) {
+        field[x][y] = new AnimationCell(x, y, direction, frame, e1, e2);
+        activeAnimations = activeAnimations + 1;
     }
 
     public void tickAll(long timeElapsed) {
@@ -26,18 +28,15 @@ public class AnimationGrid {
                     field[xx][yy].tick(timeElapsed);
                     if (field[xx][yy].animationDone()) {
                         cancelAnimation(xx, yy);
+                        activeAnimations = activeAnimations - 1;
                     }
                 }
             }
         }
     }
 
-    public void clearAnimation() {
-        for (int xx = 0; xx < field.length; xx++) {
-            for (int yy = 0; yy < field[0].length; yy++) {
-                cancelAnimation(xx, yy);
-            }
-        }
+    public boolean isAnimationActive() {
+        return activeAnimations != 0;
     }
 
     public AnimationCell getAnimationCell(int x, int y) {

@@ -1,5 +1,9 @@
 package com.tpcstld.twozerogame;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,12 +19,21 @@ public class MainGame {
     final int numSquaresY = 4;
     final int startTiles = 2;
 
-    int score = 0;
-    int highscore = 0;
+    long score = 0;
+    long highScore = 0;
     boolean won = false;
     boolean lose = false;
 
-    public MainGame() {
+    Context mContext;
+
+    static final int SPAWN_ANIMATION_TIME = 200000000;
+    static final int MOVE_ANIMATION_TIME = 100000000;
+    static final String HIGH_SCORE = "high score";
+
+    public boolean spawnTile = false;
+
+    public MainGame(Context context) {
+        mContext = context;
     }
 
     public void newGame() {
@@ -30,8 +43,7 @@ public class MainGame {
         won = false;
         lose = false;
         addStartTiles();
-
-        record();
+        highScore = getHighScore();
     }
 
     public void addStartTiles() {
@@ -45,12 +57,20 @@ public class MainGame {
             int value = Math.random() < 0.9 ? 2 : 4;
             Tile tile = new Tile(grid.randomAvailableCell(), value);
             grid.insertTile(tile);
-            aGrid.startAnimation(tile.getX(), tile.getY(), -1, 100000000); //Direction: -1 = EXPANDING, 10 frames
+            aGrid.startAnimation(tile.getX(), tile.getY(), -1, SPAWN_ANIMATION_TIME, 0, 0); //Direction: -1 = EXPANDING
         }
     }
 
-    public void record() {
+    public void recordHighScore() {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mContext);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putLong(HIGH_SCORE, highScore);
+        editor.commit();
+    }
 
+    public long getHighScore() {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mContext);
+        return settings.getLong(HIGH_SCORE, 0);
     }
 
     public void prepareTiles() {
@@ -102,6 +122,8 @@ public class MainGame {
                         // Converge the two tiles' positions
                         tile.updatePosition(positions[1]);
 
+                        aGrid.startAnimation(merged.getX(), merged.getY(), 0, MOVE_ANIMATION_TIME, xx, yy); //Direction: 0 = MOVING MERGED
+
                         // Update the score
                         score = score + merged.getValue();
 
@@ -111,6 +133,7 @@ public class MainGame {
                         }
                     } else {
                         moveTile(tile, positions[0]);
+                        aGrid.startAnimation(positions[0].getX(), positions[0].getY(), 1, MOVE_ANIMATION_TIME, xx, yy); //Direction: 1 = MOVING NO MERGE
                     }
 
                     if (!positionsEqual(cell, tile)) {
@@ -121,14 +144,23 @@ public class MainGame {
         }
 
         if (moved) {
-            addRandomTile();
-
-            if (!movesAvailable()) {
-                lose = true;
-            }
-
-            this.record();
+            addTile();
+            //spawnTile = true;
         }
+    }
+
+    public void addTile() {
+        addRandomTile();
+
+        if (!movesAvailable()) {
+            lose = true;
+            if (score > highScore) {
+                recordHighScore();
+                highScore = score;
+            }
+        }
+
+        spawnTile = false;
     }
 
     public Cell getVector(int direction) {

@@ -28,6 +28,7 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
             view.game.score = savedInstanceState.getInt("score");
+            view.game.highScore = savedInstanceState.getInt("high score");
             view.game.won = savedInstanceState.getBoolean("won");
             view.game.lose = savedInstanceState.getBoolean("lose");
         }
@@ -69,7 +70,8 @@ public class MainActivity extends ActionBarActivity {
         for (int xx = 0; xx < saveState.length; xx++) {
             savedInstanceState.putIntArray("" + xx, saveState[xx]);
         }
-        savedInstanceState.putInt("score", view.game.score);
+        savedInstanceState.putLong("score", view.game.score);
+        savedInstanceState.putLong("high score", view.game.highScore);
         savedInstanceState.putBoolean("won", view.game.won);
         savedInstanceState.putBoolean("lose", view.game.lose);
     }
