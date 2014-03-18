@@ -6,38 +6,32 @@ package com.tpcstld.twozerogame;
 public class AnimationCell extends Cell {
     private int maxFrame = 5;
     private int direction;
-    private int currentFrame;
+    private long timeElapsed;
+    private long totalTime;
 
-    public AnimationCell (int x, int y, int direction, int frame) {
+    public AnimationCell (int x, int y, int direction, long length) {
         super(x, y);
         this.direction = direction;
-        currentFrame = frame;
-        maxFrame = frame;
+        totalTime = length;
     }
 
     public int getDirection() {
         return direction;
     }
 
-    public int getCurrentFrame() {
-        return currentFrame;
-    }
+    public long getTimeElapsed() { return timeElapsed; }
 
     public int getMaxFrame() { return maxFrame; }
 
-    public int getFramesElapsed() {
-        return (getMaxFrame() - getCurrentFrame() + 1);
+    public void tick(long timeElapsed) {
+        this.timeElapsed = this.timeElapsed + timeElapsed;
     }
 
-    public void setCurrentFrame(int currentFrame) {
-        this.currentFrame = currentFrame;
+    public boolean animationDone() {
+        return totalTime < timeElapsed;
     }
 
-    public void tick() {
-        currentFrame = currentFrame - 1;
-    }
-
-    public boolean atMaxFrame() {
-        return currentFrame == 0;
+    public double getPercentageDone() {
+        return 1.0 * timeElapsed / totalTime;
     }
 }

@@ -30,9 +30,14 @@ public class MainView extends View {
     int TEXT_BLACK;
     int TEXT_WHITE;
 
-    final double EXPAND_ANIMATION_FACTOR = 0.0625;
+    static final double[] EXPAND_ANIMATION_FACTOR = {
+            0.250,
+            0.500,
+            0.750,
+            1.000,
+    };
 
-    final long SPF = 1000000000 / 10;
+    final long SPF = 1000000000 / 30;
     long lastFPSTime = System.nanoTime();
     long currentTime = System.nanoTime();
     @Override
@@ -104,8 +109,8 @@ public class MainView extends View {
                     AnimationCell aCell = game.aGrid.getAnimationCell(xx, yy);
                     if (aCell != null) {
                         if (aCell.getDirection() == -1) {
-                            textScaleSize = (float) (aCell.getFramesElapsed() * EXPAND_ANIMATION_FACTOR);
-                            cellScaleSize = (float) (cellSize / 2 * EXPAND_ANIMATION_FACTOR * ( aCell.getMaxFrame() * 0.8 - aCell.getFramesElapsed()));
+                            textScaleSize = (float) (aCell.getPercentageDone());
+                            cellScaleSize = (float) (cellSize / 2 * (1 - aCell.getPercentageDone()));
                         }
                     }
                     paint.setTextSize(textSize * textScaleSize);
@@ -128,19 +133,14 @@ public class MainView extends View {
                 }
             }
         }
-        checkTick();
+        tick();
         invalidate();
     }
 
-    public void checkTick() {
-        currentTime = System.nanoTime();
-        if (currentTime - lastFPSTime > SPF) {
-            lastFPSTime = currentTime;
-            tick();
-        }
-    }
     public void tick() {
-        game.aGrid.tickAll();
+        currentTime = System.nanoTime();
+        game.aGrid.tickAll(currentTime - lastFPSTime);
+        lastFPSTime = currentTime;
     }
     public static int log2(int n){
         if(n <= 0) throw new IllegalArgumentException();

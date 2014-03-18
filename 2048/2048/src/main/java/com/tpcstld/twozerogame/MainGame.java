@@ -45,7 +45,7 @@ public class MainGame {
             int value = Math.random() < 0.9 ? 2 : 4;
             Tile tile = new Tile(grid.randomAvailableCell(), value);
             grid.insertTile(tile);
-            aGrid.startAnimation(tile.getX(), tile.getY(), -1, 20);
+            aGrid.startAnimation(tile.getX(), tile.getY(), -1, 100000000); //Direction: -1 = EXPANDING, 10 frames
         }
     }
 

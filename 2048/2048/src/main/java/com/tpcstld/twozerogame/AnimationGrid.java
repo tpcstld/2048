@@ -19,15 +19,23 @@ public class AnimationGrid {
         field[x][y] = new AnimationCell(x, y, direction, frame);
     }
 
-    public void tickAll() {
+    public void tickAll(long timeElapsed) {
         for (int xx = 0; xx < field.length; xx++) {
             for (int yy = 0; yy < field[0].length; yy++) {
                 if (field[xx][yy] != null) {
-                    field[xx][yy].tick();
-                    if (field[xx][yy].atMaxFrame()) {
+                    field[xx][yy].tick(timeElapsed);
+                    if (field[xx][yy].animationDone()) {
                         cancelAnimation(xx, yy);
                     }
                 }
+            }
+        }
+    }
+
+    public void clearAnimation() {
+        for (int xx = 0; xx < field.length; xx++) {
+            for (int yy = 0; yy < field[0].length; yy++) {
+                cancelAnimation(xx, yy);
             }
         }
     }
