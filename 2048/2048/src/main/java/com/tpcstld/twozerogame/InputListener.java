@@ -51,9 +51,9 @@ public class InputListener implements View.OnTouchListener {
                     float dy = y - previousY;
                     xOnPath = (xOnPath && checkOnPath(x, startingX));
                     yOnPath = (yOnPath && checkOnPath(y, startingY));
-                    if (pathMoved() > SWIPE_MIN_DISTANCE * SWIPE_MIN_DISTANCE && !ignoreInputs) {
+                    if (pathMoved() > SWIPE_MIN_DISTANCE * SWIPE_MIN_DISTANCE && !ignoreInputs  && startingY > 50) {
                         boolean moved = false;
-                        if (dy >= SWIPE_THRESHOLD_VELOCITY && yOnPath && startingY > 50) {
+                        if (dy >= SWIPE_THRESHOLD_VELOCITY && yOnPath) {
                             moved = true;
                             game.move(2);
                         } else if (dy <= -SWIPE_THRESHOLD_VELOCITY && yOnPath) {
