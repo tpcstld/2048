@@ -7,15 +7,15 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.View;
-import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 
 public class MainView extends View {
 
     Paint paint = new Paint();
-    MainGame game;
+    public MainGame game;
 
     boolean getScreenSize = true;
     int cellSize = 0;
@@ -44,11 +44,17 @@ public class MainView extends View {
     int eYAll;
     int titleWidthHighScore;
     int titleWidthScore;
+
+    static int sYNewGame;
+    static int sXNewGame;
+
+    static int iconSize;
     long lastFPSTime = System.nanoTime();
     long currentTime = System.nanoTime();
 
     float titleTextSize;
     float bodyTextSize;
+    float headerTextSize;
 
     static final int BASE_ANIMATION_TIME = 100000000;
     static int PADDING_SIZE = 50;
@@ -69,7 +75,7 @@ public class MainView extends View {
         backgroundRectangle.setBounds(startingX, startingY, endingX, endingY);
         backgroundRectangle.draw(canvas);
 
-        //Drawing the score text: Part 2
+        //Drawing the score text: Ver 2
 
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             paint.setTextSize(bodyTextSize);
@@ -109,9 +115,26 @@ public class MainView extends View {
             paint.setTextSize(bodyTextSize);
             paint.setColor(TEXT_WHITE);
             canvas.drawText("" + game.score, sXScore + textMiddleScore, bodyStartYAll, paint);
+
+            //Drawing the menu
+
+            backgroundRectangle.setBounds(sXNewGame, sYNewGame, sXNewGame + iconSize, sYNewGame + iconSize);
+            backgroundRectangle.draw(canvas);
+            paint.setTextSize(bodyTextSize);
+            paint.setColor(TEXT_WHITE);
+            int textShiftY = (int) ((paint.descent() + paint.ascent()) / 2);
+            canvas.drawText("N", sXNewGame + iconSize / 2, sYNewGame + iconSize / 2 - textShiftY, paint);
+
+            paint.setTextSize(headerTextSize);
+            paint.setColor(TEXT_BLACK);
+            paint.setTextAlign(Paint.Align.LEFT);
+            textShiftY = (int) ((paint.descent() + paint.ascent()));
+            canvas.drawText("2048", startingX, sYAll - textShiftY, paint);
+
         }
 
         paint.setTextSize(textSize);
+        paint.setTextAlign(Paint.Align.CENTER);
 
         for (int xx = 0; xx < game.numSquaresX; xx++) {
             for (int yy = 0; yy < game.numSquaresY; yy++) {
@@ -131,7 +154,7 @@ public class MainView extends View {
                 int sY = startingY + gridWidth + (cellSize + gridWidth) * yy;
                 int eY = sY + cellSize;
 
-                Tile currentTile = game.grid.getCellContent(new Cell(xx, yy));
+                Tile currentTile = game.grid.getCellContent(xx,yy);
                 if (currentTile != null) {
                     ArrayList<AnimationCell> aArray = game.aGrid.getAnimationCell(xx, yy);
                     int value = currentTile.getValue();
@@ -197,7 +220,9 @@ public class MainView extends View {
             }
         }
         tick();
-        invalidate();
+        if (game.aGrid.isAnimationActive()) {
+            invalidate(startingX, startingY, endingX, endingY);
+        }
     }
 
     public void drawRectangle(Canvas canvas, Drawable draw, int startingX, int startingY, int endingX, int endingY) {
@@ -219,9 +244,10 @@ public class MainView extends View {
         currentTime = System.nanoTime();
         game.aGrid.tickAll(currentTime - lastFPSTime);
         lastFPSTime = currentTime;
-        if (game.spawnTile && !game.aGrid.isAnimationActive()) {
-            game.addTile();
-        }
+    }
+
+    public void resyncTime() {
+        lastFPSTime = System.nanoTime();
     }
 
     public static int log2(int n){
@@ -242,12 +268,14 @@ public class MainView extends View {
         gridWidth = cellSize / 7;
         screenMiddleX = width / 2;
         screenMiddleY = height / 2;
+        iconSize = cellSize / 2;
 
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setTextSize(cellSize);
         textSize = cellSize * cellSize / Math.max(cellSize, paint.measureText("0000"));
         titleTextSize = textSize / 3;
         bodyTextSize = (int) (textSize / 1.5);
+        headerTextSize = textSize * 2;
         PADDING_SIZE = (int) (textSize / 3);
 
         //Grid Dimensions
@@ -277,6 +305,11 @@ public class MainView extends View {
         textShiftYAll = (int) ((paint.descent() + paint.ascent()) / 2);
         eYAll = (int) (bodyStartYAll + textShiftYAll + bodyTextSize / 2 + PADDING_SIZE);
 
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            sYNewGame = (startingY + eYAll) / 2 - iconSize / 2;
+            sXNewGame = (endingX - iconSize);
+        }
+
         getScreenSize = false;
     }
 
@@ -284,7 +317,7 @@ public class MainView extends View {
         super(context);
         Resources resources = context.getResources();
         //Loading resources
-        game = new MainGame(context);
+        game = new MainGame(context, this);
         try {
             backgroundRectangle =  resources.getDrawable(R.drawable.background_rectangle);
             cellRectangle[0] =  resources.getDrawable(R.drawable.cell_rectangle);
@@ -308,7 +341,7 @@ public class MainView extends View {
         } catch (Exception e) {
             System.out.println("Error getting rectangle?");
         }
-        setOnTouchListener(new InputListener(game));
+        setOnTouchListener(new InputListener(this));
         game.newGame();
     }
 

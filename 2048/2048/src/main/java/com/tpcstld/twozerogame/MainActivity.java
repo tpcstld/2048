@@ -2,6 +2,7 @@ package com.tpcstld.twozerogame;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -32,8 +33,8 @@ public class MainActivity extends ActionBarActivity {
                     }
                 }
             }
-            view.game.score = savedInstanceState.getInt("score");
-            view.game.highScore = savedInstanceState.getInt("high score");
+            view.game.score = savedInstanceState.getLong("score");
+            view.game.highScore = savedInstanceState.getLong("high score");
             view.game.won = savedInstanceState.getBoolean("won");
             view.game.lose = savedInstanceState.getBoolean("lose");
         }

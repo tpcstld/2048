@@ -2,9 +2,6 @@ package com.tpcstld.twozerogame;
 
 import java.util.ArrayList;
 
-/**
- * Created by tpcstld on 3/12/14.
- */
 public class Grid {
 
     public Tile[][] field;
@@ -58,9 +55,22 @@ public class Grid {
         }
     }
 
+    public Tile getCellContent(int x, int y) {
+        if (isCellWithinBounds(x, y)) {
+            return field[x][y];
+        } else {
+            return null;
+        }
+    }
+
     public boolean isCellWithinBounds(Cell cell) {
         return 0 <= cell.getX() && cell.getX() < field.length
             && 0 <= cell.getY() && cell.getY() < field[0].length;
+    }
+
+    public boolean isCellWithinBounds(int x, int y) {
+        return 0 <= x && x < field.length
+                && 0 <= y && y < field[0].length;
     }
 
     public void insertTile(Tile tile) {

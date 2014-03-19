@@ -1,5 +1,7 @@
 package com.tpcstld.twozerogame;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 /**
@@ -8,7 +10,7 @@ import java.util.ArrayList;
 public class AnimationGrid {
     public ArrayList<AnimationCell>[][] field;
     int activeAnimations = 0;
-
+    boolean oneMoreFrame = false;
     public AnimationGrid(int x, int y) {
         field = new ArrayList[x][y];
 
@@ -43,7 +45,15 @@ public class AnimationGrid {
     }
 
     public boolean isAnimationActive() {
-        return activeAnimations != 0;
+        if (activeAnimations != 0) {
+            oneMoreFrame = true;
+            return true;
+        } else if (activeAnimations == 0 && oneMoreFrame) {
+            oneMoreFrame = false;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public ArrayList<AnimationCell> getAnimationCell(int x, int y) {

@@ -26,6 +26,8 @@ public class MainGame {
 
     Context mContext;
 
+    MainView mView;
+
 
     static final int MOVE_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME * 2;
     static final int SPAWN_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME * 2;
@@ -33,24 +35,31 @@ public class MainGame {
 
     public boolean spawnTile = false;
 
-    public MainGame(Context context) {
+    public MainGame(Context context, MainView view) {
         mContext = context;
+        mView = view;
     }
 
     public void newGame() {
         grid = new Grid(numSquaresX, numSquaresY);
         aGrid = new AnimationGrid(numSquaresX, numSquaresY);
+        highScore = getHighScore();
+        if (score >= highScore) {
+            highScore = score;
+            recordHighScore();
+        }
         score = 0;
         won = false;
         lose = false;
         addStartTiles();
-        highScore = getHighScore();
     }
 
     public void addStartTiles() {
         for (int xx = 0; xx < startTiles; xx++) {
             this.addRandomTile();
         }
+        mView.resyncTime();
+        mView.postInvalidate();
     }
 
     public void addRandomTile() {
@@ -71,7 +80,7 @@ public class MainGame {
 
     public long getHighScore() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mContext);
-        return settings.getLong(HIGH_SCORE, 0);
+        return settings.getLong(HIGH_SCORE, -1);
     }
 
     public void prepareTiles() {
@@ -128,6 +137,7 @@ public class MainGame {
 
                         // Update the score
                         score = score + merged.getValue();
+                        highScore = Math.max(score, highScore);
 
                         // The mighty 2048 tile
                         if (merged.getValue() == 2048) {
@@ -147,8 +157,9 @@ public class MainGame {
 
         if (moved) {
             addTile();
-            //spawnTile = true;
         }
+        mView.resyncTime();
+        mView.postInvalidate();
     }
 
     public void addTile() {
@@ -156,7 +167,7 @@ public class MainGame {
 
         if (!movesAvailable()) {
             lose = true;
-            if (score > highScore) {
+            if (score >= highScore) {
                 highScore = score;
                 recordHighScore();
             }

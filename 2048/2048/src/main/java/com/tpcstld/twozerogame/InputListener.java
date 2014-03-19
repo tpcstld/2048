@@ -22,49 +22,49 @@ public class InputListener implements View.OnTouchListener {
     private boolean yOnPath;
     private boolean ignoreInputs;
 
-    MainGame game;
+    MainView mView;
 
-    public InputListener(MainGame game) {
+    public InputListener(MainView view) {
         super();
-        this.game = game;
+        this.mView = view;
     }
 
     public boolean onTouch(View view, MotionEvent event) {
-        if (!game.won && !game.lose) {
-            switch (event.getAction()) {
+        switch (event.getAction()) {
 
-                case MotionEvent.ACTION_DOWN:
-                    x = event.getX();
-                    y = event.getY();
-                    startingX = x;
-                    startingY = y;
-                    previousX = x;
-                    previousY = y;
-                    xOnPath = true;
-                    yOnPath = true;
-                    ignoreInputs = false;
-                    return true;
-                case MotionEvent.ACTION_MOVE:
-                    x = event.getX();
-                    y = event.getY();
-                    float dx = x - previousX;
-                    float dy = y - previousY;
-                    xOnPath = (xOnPath && checkOnPath(x, startingX));
-                    yOnPath = (yOnPath && checkOnPath(y, startingY));
+            case MotionEvent.ACTION_DOWN:
+                x = event.getX();
+                y = event.getY();
+                startingX = x;
+                startingY = y;
+                previousX = x;
+                previousY = y;
+                xOnPath = true;
+                yOnPath = true;
+                ignoreInputs = false;
+                return true;
+            case MotionEvent.ACTION_MOVE:
+                x = event.getX();
+                y = event.getY();
+                float dx = x - previousX;
+                float dy = y - previousY;
+                xOnPath = (xOnPath && checkOnPath(x, startingX));
+                yOnPath = (yOnPath && checkOnPath(y, startingY));
+                if (!mView.game.won && !mView.game.lose) {
                     if (pathMoved() > SWIPE_MIN_DISTANCE * SWIPE_MIN_DISTANCE && !ignoreInputs  && startingY > 50) {
                         boolean moved = false;
                         if (dy >= SWIPE_THRESHOLD_VELOCITY && yOnPath) {
                             moved = true;
-                            game.move(2);
+                            mView.game.move(2);
                         } else if (dy <= -SWIPE_THRESHOLD_VELOCITY && yOnPath) {
                             moved = true;
-                            game.move(0);
+                            mView.game.move(0);
                         } else if (dx >= SWIPE_THRESHOLD_VELOCITY && xOnPath) {
                             moved = true;
-                            game.move(1);
+                            mView.game.move(1);
                         } else if (dx <= -SWIPE_THRESHOLD_VELOCITY && xOnPath) {
                             moved = true;
-                            game.move(3);
+                            mView.game.move(3);
                         }
                         if (moved) {
                             ignoreInputs = true;
@@ -72,10 +72,18 @@ public class InputListener implements View.OnTouchListener {
                             startingY = y;
                         }
                     }
-                    previousX = x;
-                    previousY = y;
-                    return true;
-            }
+                }
+                previousX = x;
+                previousY = y;
+                return true;
+            case MotionEvent.ACTION_UP:
+                x = event.getX();
+                y = event.getY();
+                if (pathMoved() <= MainView.iconSize
+                        && inRange(MainView.sXNewGame, x, MainView.sXNewGame + MainView.iconSize)
+                        && inRange(MainView.sYNewGame, y, MainView.sYNewGame + MainView.iconSize)) {
+                    mView.game.newGame();
+                }
         }
         return true;
     }
@@ -86,6 +94,10 @@ public class InputListener implements View.OnTouchListener {
 
     public float pathMoved() {
         return (float) ((x - startingX) * (x - startingX) + (y - startingY) * (y - startingY));
+    }
+
+    public boolean inRange(float left, float check, float right) {
+        return (left <= check && check <= right);
     }
 
 }
