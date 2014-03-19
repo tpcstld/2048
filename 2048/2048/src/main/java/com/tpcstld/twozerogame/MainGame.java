@@ -33,8 +33,6 @@ public class MainGame {
     static final int SPAWN_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME * 2;
     static final String HIGH_SCORE = "high score";
 
-    public boolean spawnTile = false;
-
     public MainGame(Context context, MainView view) {
         mContext = context;
         mView = view;
@@ -52,14 +50,14 @@ public class MainGame {
         won = false;
         lose = false;
         addStartTiles();
+        mView.resyncTime();
+        mView.postInvalidate();
     }
 
     public void addStartTiles() {
         for (int xx = 0; xx < startTiles; xx++) {
             this.addRandomTile();
         }
-        mView.resyncTime();
-        mView.postInvalidate();
     }
 
     public void addRandomTile() {
@@ -156,24 +154,19 @@ public class MainGame {
         }
 
         if (moved) {
-            addTile();
+            addRandomTile();
+
+            if (!movesAvailable()) {
+                lose = true;
+                if (score >= highScore) {
+                    highScore = score;
+                    recordHighScore();
+                }
+            }
+
         }
         mView.resyncTime();
         mView.postInvalidate();
-    }
-
-    public void addTile() {
-        addRandomTile();
-
-        if (!movesAvailable()) {
-            lose = true;
-            if (score >= highScore) {
-                highScore = score;
-                recordHighScore();
-            }
-        }
-
-        spawnTile = false;
     }
 
     public Cell getVector(int direction) {

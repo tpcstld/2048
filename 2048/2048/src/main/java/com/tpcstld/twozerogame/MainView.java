@@ -26,9 +26,11 @@ public class MainView extends View {
     int orientation = Configuration.ORIENTATION_UNDEFINED;
     Drawable backgroundRectangle;
     Drawable[] cellRectangle = new Drawable[12];
+    Drawable settingsIcon;
     int TEXT_BLACK;
     int TEXT_WHITE;
     int TEXT_BROWN;
+
 
     int halfNumSquaresX;
     int halfNumSquaresY;
@@ -55,9 +57,12 @@ public class MainView extends View {
     float titleTextSize;
     float bodyTextSize;
     float headerTextSize;
+    float instructionsTextSize;
 
     static final int BASE_ANIMATION_TIME = 100000000;
-    static int PADDING_SIZE = 50;
+    static int textPaddingSize = 0;
+    static int iconPaddingSize = 0;
+
     @Override
     public void onDraw(Canvas canvas) {
         int newOrientation = getOrientation();
@@ -83,8 +88,8 @@ public class MainView extends View {
             int bodyWidthHighScore = (int) (paint.measureText("" + game.highScore));
             int bodyWidthScore = (int) (paint.measureText("" + game.score));
 
-            int textWidthHighScore = Math.max(titleWidthHighScore, bodyWidthHighScore) + PADDING_SIZE * 2;
-            int textWidthScore = Math.max(titleWidthScore, bodyWidthScore) + PADDING_SIZE * 2;
+            int textWidthHighScore = Math.max(titleWidthHighScore, bodyWidthHighScore) + textPaddingSize * 2;
+            int textWidthScore = Math.max(titleWidthScore, bodyWidthScore) + textPaddingSize * 2;
 
             int textMiddleHighScore = textWidthHighScore / 2;
             int textMiddleScore = textWidthScore / 2;
@@ -92,7 +97,7 @@ public class MainView extends View {
             int eXHighScore = endingX;
             int sXHighScore = eXHighScore - textWidthHighScore;
 
-            int eXScore = sXHighScore - PADDING_SIZE;
+            int eXScore = sXHighScore - textPaddingSize;
             int sXScore = eXScore - textWidthScore;
 
             //Outputting high-scores box
@@ -120,15 +125,14 @@ public class MainView extends View {
 
             backgroundRectangle.setBounds(sXNewGame, sYNewGame, sXNewGame + iconSize, sYNewGame + iconSize);
             backgroundRectangle.draw(canvas);
-            paint.setTextSize(bodyTextSize);
-            paint.setColor(TEXT_WHITE);
-            int textShiftY = (int) ((paint.descent() + paint.ascent()) / 2);
-            canvas.drawText("N", sXNewGame + iconSize / 2, sYNewGame + iconSize / 2 - textShiftY, paint);
+            settingsIcon.setBounds(sXNewGame + iconPaddingSize, sYNewGame + iconPaddingSize,
+                    sXNewGame + iconSize - iconPaddingSize, sYNewGame + iconSize - iconPaddingSize);
+            settingsIcon.draw(canvas);
 
             paint.setTextSize(headerTextSize);
             paint.setColor(TEXT_BLACK);
             paint.setTextAlign(Paint.Align.LEFT);
-            textShiftY = (int) ((paint.descent() + paint.ascent()));
+            int textShiftY = (int) ((paint.descent() + paint.ascent()));
             canvas.drawText("2048", startingX, sYAll - textShiftY, paint);
 
         }
@@ -160,7 +164,7 @@ public class MainView extends View {
                     int value = currentTile.getValue();
                     int index = log2(value);
                     for (AnimationCell aCell : aArray) {
-
+                        Log.d("debug", "animation active: " + aCell.getDirection() + "," + aCell.getPercentageDone());
                         if (aCell.getDirection() == -1 && aCell.getPercentageDone() >= 0.5) { //Spawning animation
                             double percentDone = (aCell.getPercentageDone() - 0.5) * 2;
                             float textScaleSize = (float) (percentDone);
@@ -219,9 +223,9 @@ public class MainView extends View {
                 }
             }
         }
-        tick();
         if (game.aGrid.isAnimationActive()) {
             invalidate(startingX, startingY, endingX, endingY);
+            tick();
         }
     }
 
@@ -276,7 +280,8 @@ public class MainView extends View {
         titleTextSize = textSize / 3;
         bodyTextSize = (int) (textSize / 1.5);
         headerTextSize = textSize * 2;
-        PADDING_SIZE = (int) (textSize / 3);
+        textPaddingSize = (int) (textSize / 3);
+        iconPaddingSize = (int) (textSize / 5);
 
         //Grid Dimensions
         halfNumSquaresX = game.numSquaresX / 2;
@@ -296,20 +301,20 @@ public class MainView extends View {
         int textShiftYAll = (int) ((paint.descent() + paint.ascent()) / 2);
         //static variables
         sYAll = (int) (startingY - cellSize * 1.5);
-        titleStartYAll = (int) (sYAll + PADDING_SIZE + titleTextSize / 2 - textShiftYAll);
-        bodyStartYAll = (int) (titleStartYAll + PADDING_SIZE + titleTextSize / 2 + bodyTextSize / 2);
+        titleStartYAll = (int) (sYAll + textPaddingSize + titleTextSize / 2 - textShiftYAll);
+        bodyStartYAll = (int) (titleStartYAll + textPaddingSize + titleTextSize / 2 + bodyTextSize / 2);
 
         titleWidthHighScore = (int) (paint.measureText("HIGH SCORE"));
         paint.setTextSize(bodyTextSize);
         titleWidthScore = (int) (paint.measureText("SCORE"));
         textShiftYAll = (int) ((paint.descent() + paint.ascent()) / 2);
-        eYAll = (int) (bodyStartYAll + textShiftYAll + bodyTextSize / 2 + PADDING_SIZE);
+        eYAll = (int) (bodyStartYAll + textShiftYAll + bodyTextSize / 2 + textPaddingSize);
 
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             sYNewGame = (startingY + eYAll) / 2 - iconSize / 2;
             sXNewGame = (endingX - iconSize);
         }
-
+        resyncTime();
         getScreenSize = false;
     }
 
@@ -332,12 +337,12 @@ public class MainView extends View {
             cellRectangle[9] =  resources.getDrawable(R.drawable.cell_rectangle_512);
             cellRectangle[10] = resources.getDrawable(R.drawable.cell_rectangle_1024);
             cellRectangle[11] = resources.getDrawable(R.drawable.cell_rectangle_2048);
+            settingsIcon = resources.getDrawable(R.drawable.ic_action_refresh);
             TEXT_WHITE = resources.getColor(R.color.text_white);
             TEXT_BLACK = resources.getColor(R.color.text_black);
             TEXT_BROWN = resources.getColor(R.color.text_brown);
             Typeface font = Typeface.createFromAsset(resources.getAssets(), "ClearSans-Bold.ttf");
             paint.setTypeface(font);
-
         } catch (Exception e) {
             System.out.println("Error getting rectangle?");
         }
