@@ -1,16 +1,13 @@
 package com.tpcstld.twozerogame;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 
-/**
- * Created by tpcstld on 3/16/14.
- */
+
 public class AnimationGrid {
     public ArrayList<AnimationCell>[][] field;
     int activeAnimations = 0;
     boolean oneMoreFrame = false;
+    public ArrayList<AnimationCell> globalAnimation = new ArrayList<AnimationCell>();
     public AnimationGrid(int x, int y) {
         field = new ArrayList[x][y];
 
@@ -21,13 +18,26 @@ public class AnimationGrid {
         }
     }
 
-    public void startAnimation(int x, int y, int direction, int frame, int e1, int e2) {
-        field[x][y].add(new AnimationCell(x, y, direction, frame, e1, e2));
+    public void startAnimation(int x, int y, int direction, long length, int e1, int e2) {
+        field[x][y].add(new AnimationCell(x, y, direction, length, e1, e2));
+        activeAnimations = activeAnimations + 1;
+    }
+
+    public void startGlobalAnimation(int direction, long length, int e1, int e2) {
+        globalAnimation.add(new AnimationCell(-1, -1, direction, length, e1, e2));
         activeAnimations = activeAnimations + 1;
     }
 
     public void tickAll(long timeElapsed) {
         ArrayList<AnimationCell> cancelledAnimations = new ArrayList<AnimationCell>();
+        for (AnimationCell animation : globalAnimation) {
+            animation.tick(timeElapsed);
+            if (animation.animationDone()) {
+                cancelledAnimations.add(animation);
+                activeAnimations = activeAnimations - 1;
+            }
+        }
+
         for (int xx = 0; xx < field.length; xx++) {
             for (int yy = 0; yy < field[0].length; yy++) {
                 for (AnimationCell animation : field[xx][yy]) {
@@ -39,6 +49,7 @@ public class AnimationGrid {
                 }
             }
         }
+
         for (AnimationCell animation : cancelledAnimations) {
             cancelAnimation(animation);
         }
@@ -48,7 +59,7 @@ public class AnimationGrid {
         if (activeAnimations != 0) {
             oneMoreFrame = true;
             return true;
-        } else if (activeAnimations == 0 && oneMoreFrame) {
+        } else if (oneMoreFrame) {
             oneMoreFrame = false;
             return true;
         } else {
@@ -61,7 +72,11 @@ public class AnimationGrid {
     }
 
     public void cancelAnimation(AnimationCell animation) {
-        field[animation.getX()][animation.getY()].remove(animation);
+        if (animation.getX() == -1 && animation.getY() == -1) {
+            globalAnimation.remove(animation);
+        } else {
+            field[animation.getX()][animation.getY()].remove(animation);
+        }
     }
 
 }

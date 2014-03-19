@@ -47,7 +47,7 @@ public class MainView extends View {
     int titleWidthHighScore;
     int titleWidthScore;
 
-    static int sYNewGame;
+    static int sYIcons;
     static int sXNewGame;
 
     static int iconSize;
@@ -123,17 +123,26 @@ public class MainView extends View {
 
             //Drawing the menu
 
-            backgroundRectangle.setBounds(sXNewGame, sYNewGame, sXNewGame + iconSize, sYNewGame + iconSize);
+            backgroundRectangle.setBounds(sXNewGame, sYIcons, sXNewGame + iconSize, sYIcons + iconSize);
             backgroundRectangle.draw(canvas);
-            settingsIcon.setBounds(sXNewGame + iconPaddingSize, sYNewGame + iconPaddingSize,
-                    sXNewGame + iconSize - iconPaddingSize, sYNewGame + iconSize - iconPaddingSize);
+            settingsIcon.setBounds(sXNewGame + iconPaddingSize, sYIcons + iconPaddingSize,
+                    sXNewGame + iconSize - iconPaddingSize, sYIcons + iconSize - iconPaddingSize);
             settingsIcon.draw(canvas);
 
+            //Drawing the header
             paint.setTextSize(headerTextSize);
             paint.setColor(TEXT_BLACK);
             paint.setTextAlign(Paint.Align.LEFT);
             int textShiftY = (int) ((paint.descent() + paint.ascent()));
-            canvas.drawText("2048", startingX, sYAll - textShiftY, paint);
+            int headerStartY = sYAll - textShiftY;
+            canvas.drawText("2048", startingX, headerStartY, paint);
+
+            //Drawing the instructions
+            paint.setTextSize(bodyTextSize);
+
+            textShiftY = (int) ((paint.descent() + paint.ascent()));
+            canvas.drawText("Swipe to move. 2+2 = 4. Reach 2048.",
+                    startingX, endingY - textShiftY + textPaddingSize, paint);
 
         }
 
@@ -164,7 +173,6 @@ public class MainView extends View {
                     int value = currentTile.getValue();
                     int index = log2(value);
                     for (AnimationCell aCell : aArray) {
-                        Log.d("debug", "animation active: " + aCell.getDirection() + "," + aCell.getPercentageDone());
                         if (aCell.getDirection() == -1 && aCell.getPercentageDone() >= 0.5) { //Spawning animation
                             double percentDone = (aCell.getPercentageDone() - 0.5) * 2;
                             float textScaleSize = (float) (percentDone);
@@ -305,13 +313,13 @@ public class MainView extends View {
         bodyStartYAll = (int) (titleStartYAll + textPaddingSize + titleTextSize / 2 + bodyTextSize / 2);
 
         titleWidthHighScore = (int) (paint.measureText("HIGH SCORE"));
-        paint.setTextSize(bodyTextSize);
         titleWidthScore = (int) (paint.measureText("SCORE"));
+        paint.setTextSize(bodyTextSize);
         textShiftYAll = (int) ((paint.descent() + paint.ascent()) / 2);
         eYAll = (int) (bodyStartYAll + textShiftYAll + bodyTextSize / 2 + textPaddingSize);
 
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            sYNewGame = (startingY + eYAll) / 2 - iconSize / 2;
+            sYIcons = (startingY + eYAll) / 2 - iconSize / 2;
             sXNewGame = (endingX - iconSize);
         }
         resyncTime();
@@ -344,7 +352,7 @@ public class MainView extends View {
             Typeface font = Typeface.createFromAsset(resources.getAssets(), "ClearSans-Bold.ttf");
             paint.setTypeface(font);
         } catch (Exception e) {
-            System.out.println("Error getting rectangle?");
+            System.out.println("Error getting assets?");
         }
         setOnTouchListener(new InputListener(this));
         game.newGame();
