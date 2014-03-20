@@ -49,10 +49,12 @@ public class InputListener implements View.OnTouchListener {
                 float dx = x - previousX;
                 if (Math.abs(lastdx + dx) < Math.abs(lastdx) + Math.abs(dx) && Math.abs(dx) > RESET_STARTING) {
                     startingX = x;
+                    lastdx = dx;
                 }
                 float dy = y - previousY;
                 if (Math.abs(lastdy + dy) < Math.abs(lastdy) + Math.abs(dy) && Math.abs(dy) > RESET_STARTING) {
                     startingY = y;
+                    lastdy = dy;
                 }
                 if (!mView.game.won && !mView.game.lose) {
                     if (pathMoved() > SWIPE_MIN_DISTANCE * SWIPE_MIN_DISTANCE /*&& !ignoreInputs*/  && startingY > 50) {
@@ -77,15 +79,11 @@ public class InputListener implements View.OnTouchListener {
                         if (moved) {
                             startingX = x;
                             startingY = y;
-                            /*xOnPath = true;
-                            yOnPath = true;*/
                         }
                     }
                 }
                 previousX = x;
                 previousY = y;
-                lastdx = dx;
-                lastdy = dy;
                 return true;
             case MotionEvent.ACTION_UP:
                 x = event.getX();
