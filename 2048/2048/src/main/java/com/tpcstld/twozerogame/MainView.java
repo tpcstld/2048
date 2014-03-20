@@ -22,6 +22,8 @@ public class MainView extends View {
     int gridWidth = 0;
     int screenMiddleX = 0;
     int screenMiddleY = 0;
+    int boardMiddleX = 0;
+    int boardMiddleY = 0;
     int orientation = Configuration.ORIENTATION_UNDEFINED;
     Drawable backgroundRectangle;
     Drawable[] cellRectangle = new Drawable[12];
@@ -57,10 +59,14 @@ public class MainView extends View {
     float bodyTextSize;
     float headerTextSize;
     float instructionsTextSize;
+    float gameOverTextSize;
 
     static final int BASE_ANIMATION_TIME = 100000000;
     static int textPaddingSize = 0;
     static int iconPaddingSize = 0;
+
+    static final float MERGING_ACCELERATION = (float) -0.5;
+    static final float INITIAL_VELOCITY = (1 - MERGING_ACCELERATION) / 4;
 
     @Override
     public void onDraw(Canvas canvas) {
@@ -76,7 +82,7 @@ public class MainView extends View {
         }
 
         //Reset the transparency of the screen
-        paint.setAlpha(100);
+        paint.setAlpha(255);
 
         //Drawing the score text: Ver 2
 
@@ -130,26 +136,19 @@ public class MainView extends View {
         paint.setTextSize(headerTextSize);
         paint.setColor(TEXT_BLACK);
         paint.setTextAlign(Paint.Align.LEFT);
-        int textShiftY = (int) ((paint.descent() + paint.ascent()));
+        int textShiftY = centerText() * 2;
         int headerStartY = sYAll - textShiftY;
         canvas.drawText("2048", startingX, headerStartY, paint);
 
         //Drawing the instructions
-        paint.setTextSize(bodyTextSize);
+        paint.setTextSize(instructionsTextSize);
 
-        textShiftY = (int) ((paint.descent() + paint.ascent()));
+        textShiftY = centerText() * 2;
         canvas.drawText("Swipe to move. 2+2 = 4. Reach 2048.",
                 startingX, endingY - textShiftY + textPaddingSize, paint);
 
 
         //DRAWING MAIN GAME SCREEN
-
-        //Animation: Dynamically change the alpha
-        /*for (AnimationCell animation : game.aGrid.globalAnimation) {
-            if (animation.getAnimationType() == 0) {
-                paint.setAlpha((int) (100 - animation.getPercentageDone() / 0.02));
-            }
-        }*/
 
         paint.setTextSize(textSize);
         paint.setTextAlign(Paint.Align.CENTER);
@@ -186,59 +185,59 @@ public class MainView extends View {
 
                     //Check for any active animations
                     ArrayList<AnimationCell> aArray = game.aGrid.getAnimationCell(xx, yy);
-                    for (AnimationCell aCell : aArray) {
-                        if (aCell.getAnimationType() == -1 && aCell.getPercentageDone() >= 0.5) { //Spawning animation
-                            double percentDone = (aCell.getPercentageDone() - 0.5) * 2;
+                    boolean animated = false;
+                    for (int i = aArray.size() - 1; i >= 0; i--) {
+                        AnimationCell aCell = aArray.get(i);
+                        //If this animation is not active, skip it
+                        if (aCell.getAnimationType() == MainGame.SPAWN_ANIMATION) {
+                            animated = true;
+                        }
+                        if (!aCell.isActive()) {
+                            continue;
+                        }
+
+                        if (aCell.getAnimationType() == MainGame.SPAWN_ANIMATION) { // Spawning animation
+                            double percentDone = aCell.getPercentageDone();
                             float textScaleSize = (float) (percentDone);
                             paint.setTextSize(textSize * textScaleSize);
 
                             float cellScaleSize = cellSize / 2 * (1 - textScaleSize);
                             drawRectangle(canvas, cellRectangle[index], (int) (sX + cellScaleSize), (int) (sY + cellScaleSize), (int) (eX - cellScaleSize), (int) (eY - cellScaleSize));
                             drawCellText(canvas, value, sX, sY);
-                        } else if (aCell.getPercentageDone() >= 0.5 && (aCell.getAnimationType() == 0 || aArray.size() >= 2)) { // Merging->spawning
-                            double percentDone = (aCell.getPercentageDone() - 0.5) * 2;
-                            float textScaleSize = (float) (1.125 - Math.abs(percentDone - 0.5) / 4);
+                        } else if (aCell.getAnimationType() == MainGame.MERGE_ANIMATION) { // Merging Animation
+                            double percentDone = aCell.getPercentageDone();
+                            float textScaleSize = (float) (1 + INITIAL_VELOCITY * percentDone
+                                    + MERGING_ACCELERATION * percentDone * percentDone / 2);
                             paint.setTextSize(textSize * textScaleSize);
 
                             float cellScaleSize = cellSize / 2 * (1 - textScaleSize);
                             drawRectangle(canvas, cellRectangle[index], (int) (sX + cellScaleSize), (int) (sY + cellScaleSize), (int) (eX - cellScaleSize), (int) (eY - cellScaleSize));
                             drawCellText(canvas, value, sX, sY);
-                        } else if (aCell.getAnimationType() == 0 || aArray.size() == 2) {  //Merging->moving animation
-                            paint.setTextSize(textSize);
-                            if (aArray.size() <= 1) {
-                                drawRectangle(canvas, cellRectangle[index-1], sX, sY, eX, eY);
-                                drawCellText(canvas, value / 2, sX, sY);
+                        } else if (aCell.getAnimationType() == MainGame.MOVE_ANIMATION) {  // Moving animation
+                            double percentDone = aCell.getPercentageDone();
+                            int tempIndex = index;
+                            if (aArray.size() >= 2) {
+                                tempIndex = tempIndex - 1;
                             }
-                            int previousX = aCell.extra;
-                            int previousY = aCell.extra2;
+                            paint.setTextSize(textSize);
+                            int previousX = aCell.extras[0];
+                            int previousY = aCell.extras[1];
                             int currentX = currentTile.getX();
                             int currentY = currentTile.getY();
-                            int dX = (int) ((currentX - previousX) * (cellSize + gridWidth) * (aCell.getPercentageDone()*2 - 1) * 1.0);
-                            int dY = (int) ((currentY - previousY) * (cellSize + gridWidth) * (aCell.getPercentageDone()*2 - 1) * 1.0);
-                            drawRectangle(canvas, cellRectangle[index-1], sX + dX, sY + dY, eX + dX, eY + dY);
-
-                            drawCellText(canvas, value / 2, sX + dX, sY + dY);
-                        } else if (aCell.getAnimationType() == 1 && aCell.getPercentageDone() <= 0.5) { //Moving, no merge animation
-
-                            paint.setTextSize(textSize);
-                            int previousX = aCell.extra;
-                            int previousY = aCell.extra2;
-                            int currentX = currentTile.getX();
-                            int currentY = currentTile.getY();
-                            int dX = (int) ((currentX - previousX) * (cellSize + gridWidth) * (aCell.getPercentageDone()*2 - 1) * 1.0);
-                            int dY = (int) ((currentY - previousY) * (cellSize + gridWidth) * (aCell.getPercentageDone()*2 - 1) * 1.0);
-                            drawRectangle(canvas, cellRectangle[index], sX + dX, sY + dY, eX + dX, eY + dY);
-                            drawCellText(canvas, value, sX + dX, sY + dY);
-                        } else if (aCell.getAnimationType() != -1) {
-                            paint.setTextSize(textSize);
-
-                            drawRectangle(canvas, cellRectangle[index], sX, sY, eX, eY);
-                            drawCellText(canvas, value , sX, sY);
+                            int dX = (int) ((currentX - previousX) * (cellSize + gridWidth) * (percentDone - 1) * 1.0);
+                            int dY = (int) ((currentY - previousY) * (cellSize + gridWidth) * (percentDone - 1) * 1.0);
+                            drawRectangle(canvas, cellRectangle[tempIndex], sX + dX, sY + dY, eX + dX, eY + dY);
+                            if (index != tempIndex) {
+                                drawCellText(canvas, value / 2, sX + dX, sY + dY);
+                            } else {
+                                drawCellText(canvas, value, sX + dX, sY + dY);
+                            }
                         }
+                        animated = true;
                     }
 
                     //No active animations? Just draw the cell
-                    if (aArray.size() == 0) {
+                    if (!animated) {
                         paint.setTextSize(textSize);
 
                         drawRectangle(canvas, cellRectangle[index], sX, sY, eX, eY);
@@ -246,6 +245,36 @@ public class MainView extends View {
                     }
                 }
             }
+        }
+        double alphaChange = 1;
+        //Animation: Dynamically change the alpha
+        for (AnimationCell animation : game.aGrid.globalAnimation) {
+            if (animation.getAnimationType() == MainGame.FADE_GLOBAL_ANIMATION) {
+                alphaChange = animation.getPercentageDone();
+            }
+
+        }
+        // Displaying game over
+        if (game.won) {
+            cellRectangle[9].setBounds(startingX, startingY, endingX, endingY);
+            cellRectangle[9].setAlpha((int) (127 * alphaChange));
+            cellRectangle[9].draw(canvas);
+            cellRectangle[9].setAlpha(255);
+            paint.setColor(TEXT_WHITE);
+            paint.setAlpha((int) (255 * alphaChange));
+            paint.setTextSize(gameOverTextSize);
+            paint.setTextAlign(Paint.Align.CENTER);
+            canvas.drawText("You Win!", boardMiddleX, boardMiddleY - centerText(), paint);
+        } else if (game.lose) {
+            cellRectangle[0].setBounds(startingX, startingY, endingX, endingY);
+            cellRectangle[0].setAlpha((int) (127 * alphaChange));
+            cellRectangle[0].draw(canvas);
+            cellRectangle[0].setAlpha(255);
+            paint.setColor(TEXT_BLACK);
+            paint.setAlpha((int) (255 * alphaChange));
+            paint.setTextSize(gameOverTextSize);
+            paint.setTextAlign(Paint.Align.CENTER);
+            canvas.drawText("Game Over!", boardMiddleX, boardMiddleY - centerText(), paint);
         }
 
         //Refresh the screen if there is still an animation running
@@ -261,7 +290,7 @@ public class MainView extends View {
     }
 
     public void drawCellText(Canvas canvas, int value, int sX, int sY) {
-        int textShiftY = (int) ((paint.descent() + paint.ascent()) / 2);
+        int textShiftY = centerText();
         if (value >= 8) {
             paint.setColor(TEXT_WHITE);
         } else {
@@ -298,6 +327,8 @@ public class MainView extends View {
         gridWidth = cellSize / 7;
         screenMiddleX = width / 2;
         screenMiddleY = height / 2;
+        boardMiddleX = screenMiddleX;
+        boardMiddleY = screenMiddleY  + cellSize / 2;
         iconSize = cellSize / 2;
 
         paint.setTextAlign(Paint.Align.CENTER);
@@ -305,7 +336,9 @@ public class MainView extends View {
         textSize = cellSize * cellSize / Math.max(cellSize, paint.measureText("0000"));
         titleTextSize = textSize / 3;
         bodyTextSize = (int) (textSize / 1.5);
+        instructionsTextSize = (int) (textSize / 1.5);
         headerTextSize = textSize * 2;
+        gameOverTextSize = textSize * 2;
         textPaddingSize = (int) (textSize / 3);
         iconPaddingSize = (int) (textSize / 5);
 
@@ -313,18 +346,14 @@ public class MainView extends View {
         halfNumSquaresX = game.numSquaresX / 2;
         halfNumSquaresY = game.numSquaresY / 2;
 
-        startingX = screenMiddleX - (cellSize + gridWidth) * halfNumSquaresX - gridWidth / 2;
-        endingX = screenMiddleX + (cellSize + gridWidth) * halfNumSquaresX + gridWidth / 2;
-        startingY = screenMiddleY - (cellSize + gridWidth) * halfNumSquaresY - gridWidth / 2;
-        endingY = screenMiddleY + (cellSize + gridWidth) * halfNumSquaresY + gridWidth / 2;
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            startingY = startingY + cellSize / 2;
-            endingY = endingY + cellSize / 2;
-        }
+        startingX = boardMiddleX - (cellSize + gridWidth) * halfNumSquaresX - gridWidth / 2;
+        endingX = boardMiddleX + (cellSize + gridWidth) * halfNumSquaresX + gridWidth / 2;
+        startingY = boardMiddleY - (cellSize + gridWidth) * halfNumSquaresY - gridWidth / 2;
+        endingY = boardMiddleY + (cellSize + gridWidth) * halfNumSquaresY + gridWidth / 2;
 
         paint.setTextSize(titleTextSize);
 
-        int textShiftYAll = (int) ((paint.descent() + paint.ascent()) / 2);
+        int textShiftYAll = centerText();
         //static variables
         sYAll = (int) (startingY - cellSize * 1.5);
         titleStartYAll = (int) (sYAll + textPaddingSize + titleTextSize / 2 - textShiftYAll);
@@ -333,7 +362,7 @@ public class MainView extends View {
         titleWidthHighScore = (int) (paint.measureText("HIGH SCORE"));
         titleWidthScore = (int) (paint.measureText("SCORE"));
         paint.setTextSize(bodyTextSize);
-        textShiftYAll = (int) ((paint.descent() + paint.ascent()) / 2);
+        textShiftYAll = centerText();
         eYAll = (int) (bodyStartYAll + textShiftYAll + bodyTextSize / 2 + textPaddingSize);
 
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -342,6 +371,10 @@ public class MainView extends View {
         }
         resyncTime();
         getScreenSize = false;
+    }
+
+    public int centerText() {
+        return (int) ((paint.descent() + paint.ascent()) / 2);
     }
 
     public MainView(Context context) {

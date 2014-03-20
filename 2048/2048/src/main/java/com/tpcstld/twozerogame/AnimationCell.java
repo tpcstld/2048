@@ -6,17 +6,16 @@ package com.tpcstld.twozerogame;
 public class AnimationCell extends Cell {
     private int animationType;
     private long timeElapsed;
-    private long totalTime;
+    private long animationTime;
     private long delayTime;
-    public int extra;
-    public int extra2;
+    public int[] extras;
 
-    public AnimationCell (int x, int y, int animationType, long length, int extra, int extra2) {
+    public AnimationCell (int x, int y, int animationType, long length, long delay, int[] extras) {
         super(x, y);
         this.animationType = animationType;
-        totalTime = length;
-        this.extra = extra;
-        this.extra2 = extra2;
+        animationTime = length;
+        delayTime = delay;
+        this.extras = extras;
     }
 
     public int getAnimationType() {
@@ -30,10 +29,14 @@ public class AnimationCell extends Cell {
     }
 
     public boolean animationDone() {
-        return totalTime < timeElapsed;
+        return animationTime + delayTime < timeElapsed;
     }
 
     public double getPercentageDone() {
-        return 1.0 * timeElapsed / totalTime;
+        return Math.max(0, 1.0 * (timeElapsed - delayTime) / animationTime);
+    }
+
+    public boolean isActive() {
+        return (timeElapsed >= delayTime);
     }
 }

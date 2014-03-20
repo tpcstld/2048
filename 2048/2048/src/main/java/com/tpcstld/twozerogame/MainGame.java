@@ -3,6 +3,7 @@ package com.tpcstld.twozerogame;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,10 +29,16 @@ public class MainGame {
 
     MainView mView;
 
+    static final int SPAWN_ANIMATION = -1;
+    static final int MOVE_ANIMATION = 0;
+    static final int MERGE_ANIMATION = 1;
 
-    static final int MOVE_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME * 2;
-    static final int SPAWN_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME * 2;
-    static final int NOTIFICATION_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME * 3;
+    static final int FADE_GLOBAL_ANIMATION = 0;
+
+    static final long MOVE_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME;
+    static final long SPAWN_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME;
+    static final long NOTIFICATION_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME * 5;
+    static final long NOTIFICATION_DELAY_TIME = MOVE_ANIMATION_TIME + SPAWN_ANIMATION_TIME;
     static final String HIGH_SCORE = "high score";
 
     public MainGame(Context context, MainView view) {
@@ -66,7 +73,8 @@ public class MainGame {
             int value = Math.random() < 0.9 ? 2 : 4;
             Tile tile = new Tile(grid.randomAvailableCell(), value);
             grid.insertTile(tile);
-            aGrid.startAnimation(tile.getX(), tile.getY(), -1, SPAWN_ANIMATION_TIME, 0, 0); //Direction: -1 = EXPANDING
+            aGrid.startAnimation(tile.getX(), tile.getY(), SPAWN_ANIMATION,
+                    SPAWN_ANIMATION_TIME, MOVE_ANIMATION_TIME, null); //Direction: -1 = EXPANDING
         }
     }
 
@@ -132,7 +140,11 @@ public class MainGame {
                         // Converge the two tiles' positions
                         tile.updatePosition(positions[1]);
 
-                        aGrid.startAnimation(merged.getX(), merged.getY(), 0, MOVE_ANIMATION_TIME, xx, yy); //Direction: 0 = MOVING MERGED
+                        int[] extras = {xx, yy};
+                        aGrid.startAnimation(merged.getX(), merged.getY(), MOVE_ANIMATION,
+                                MOVE_ANIMATION_TIME, 0, extras); //Direction: 0 = MOVING MERGED
+                        aGrid.startAnimation(merged.getX(), merged.getY(), MERGE_ANIMATION,
+                                SPAWN_ANIMATION_TIME, MOVE_ANIMATION_TIME, null);
 
                         // Update the score
                         score = score + merged.getValue();
@@ -141,10 +153,12 @@ public class MainGame {
                         // The mighty 2048 tile
                         if (merged.getValue() == 2048) {
                             won = true;
+                            endGame(won);
                         }
                     } else {
                         moveTile(tile, positions[0]);
-                        aGrid.startAnimation(positions[0].getX(), positions[0].getY(), 1, MOVE_ANIMATION_TIME, xx, yy); //Direction: 1 = MOVING NO MERGE
+                        int[] extras = {xx, yy, 0};
+                        aGrid.startAnimation(positions[0].getX(), positions[0].getY(), MOVE_ANIMATION, MOVE_ANIMATION_TIME, 0, extras); //Direction: 1 = MOVING NO MERGE
                     }
 
                     if (!positionsEqual(cell, tile)) {
@@ -158,17 +172,21 @@ public class MainGame {
             addRandomTile();
 
             if (!movesAvailable()) {
-                lose = true;
-                aGrid.startGlobalAnimation(0, NOTIFICATION_ANIMATION_TIME, 0, 0);
-                if (score >= highScore) {
-                    highScore = score;
-                    recordHighScore();
-                }
+                endGame(lose);
             }
 
         }
         mView.resyncTime();
         mView.postInvalidate();
+    }
+
+    public void endGame(boolean condition) {
+        condition = true;
+        aGrid.startAnimation(-1, -1, FADE_GLOBAL_ANIMATION, NOTIFICATION_ANIMATION_TIME, NOTIFICATION_DELAY_TIME, null);
+        if (score >= highScore) {
+            highScore = score;
+            recordHighScore();
+        }
     }
 
     public Cell getVector(int direction) {
