@@ -412,6 +412,7 @@ public class MainView extends View {
             TEXT_WHITE = resources.getColor(R.color.text_white);
             TEXT_BLACK = resources.getColor(R.color.text_black);
             TEXT_BROWN = resources.getColor(R.color.text_brown);
+            this.setBackgroundColor(resources.getColor(R.color.background));
             Typeface font = Typeface.createFromAsset(resources.getAssets(), "ClearSans-Bold.ttf");
             paint.setTypeface(font);
         } catch (Exception e) {
