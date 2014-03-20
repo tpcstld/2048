@@ -7,7 +7,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -76,79 +75,90 @@ public class MainView extends View {
             getLayout(width, height);
         }
 
-        //Drawing the background
-        backgroundRectangle.setBounds(startingX, startingY, endingX, endingY);
-        backgroundRectangle.draw(canvas);
+        //Reset the transparency of the screen
+        paint.setAlpha(100);
 
         //Drawing the score text: Ver 2
 
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            paint.setTextSize(bodyTextSize);
+        paint.setTextSize(bodyTextSize);
 
-            int bodyWidthHighScore = (int) (paint.measureText("" + game.highScore));
-            int bodyWidthScore = (int) (paint.measureText("" + game.score));
+        int bodyWidthHighScore = (int) (paint.measureText("" + game.highScore));
+        int bodyWidthScore = (int) (paint.measureText("" + game.score));
 
-            int textWidthHighScore = Math.max(titleWidthHighScore, bodyWidthHighScore) + textPaddingSize * 2;
-            int textWidthScore = Math.max(titleWidthScore, bodyWidthScore) + textPaddingSize * 2;
+        int textWidthHighScore = Math.max(titleWidthHighScore, bodyWidthHighScore) + textPaddingSize * 2;
+        int textWidthScore = Math.max(titleWidthScore, bodyWidthScore) + textPaddingSize * 2;
 
-            int textMiddleHighScore = textWidthHighScore / 2;
-            int textMiddleScore = textWidthScore / 2;
+        int textMiddleHighScore = textWidthHighScore / 2;
+        int textMiddleScore = textWidthScore / 2;
 
-            int eXHighScore = endingX;
-            int sXHighScore = eXHighScore - textWidthHighScore;
+        int eXHighScore = endingX;
+        int sXHighScore = eXHighScore - textWidthHighScore;
 
-            int eXScore = sXHighScore - textPaddingSize;
-            int sXScore = eXScore - textWidthScore;
+        int eXScore = sXHighScore - textPaddingSize;
+        int sXScore = eXScore - textWidthScore;
 
-            //Outputting high-scores box
-            backgroundRectangle.setBounds(sXHighScore, sYAll, eXHighScore, eYAll);
-            backgroundRectangle.draw(canvas);
-            paint.setTextSize(titleTextSize);
-            paint.setColor(TEXT_BROWN);
-            canvas.drawText("HIGH SCORE", sXHighScore + textMiddleHighScore, titleStartYAll, paint);
-            paint.setTextSize(bodyTextSize);
-            paint.setColor(TEXT_WHITE);
-            canvas.drawText("" + game.highScore, sXHighScore + textMiddleHighScore, bodyStartYAll, paint);
+        //Outputting high-scores box
+        backgroundRectangle.setBounds(sXHighScore, sYAll, eXHighScore, eYAll);
+        backgroundRectangle.draw(canvas);
+        paint.setTextSize(titleTextSize);
+        paint.setColor(TEXT_BROWN);
+        canvas.drawText("HIGH SCORE", sXHighScore + textMiddleHighScore, titleStartYAll, paint);
+        paint.setTextSize(bodyTextSize);
+        paint.setColor(TEXT_WHITE);
+        canvas.drawText("" + game.highScore, sXHighScore + textMiddleHighScore, bodyStartYAll, paint);
 
 
-            //Outputting scores box
-            backgroundRectangle.setBounds(sXScore, sYAll, eXScore, eYAll);
-            backgroundRectangle.draw(canvas);
-            paint.setTextSize(titleTextSize);
-            paint.setColor(TEXT_BROWN);
-            canvas.drawText("SCORE", sXScore + textMiddleScore, titleStartYAll, paint);
-            paint.setTextSize(bodyTextSize);
-            paint.setColor(TEXT_WHITE);
-            canvas.drawText("" + game.score, sXScore + textMiddleScore, bodyStartYAll, paint);
+        //Outputting scores box
+        backgroundRectangle.setBounds(sXScore, sYAll, eXScore, eYAll);
+        backgroundRectangle.draw(canvas);
+        paint.setTextSize(titleTextSize);
+        paint.setColor(TEXT_BROWN);
+        canvas.drawText("SCORE", sXScore + textMiddleScore, titleStartYAll, paint);
+        paint.setTextSize(bodyTextSize);
+        paint.setColor(TEXT_WHITE);
+        canvas.drawText("" + game.score, sXScore + textMiddleScore, bodyStartYAll, paint);
 
-            //Drawing the menu
+        //Drawing the menu
 
-            backgroundRectangle.setBounds(sXNewGame, sYIcons, sXNewGame + iconSize, sYIcons + iconSize);
-            backgroundRectangle.draw(canvas);
-            settingsIcon.setBounds(sXNewGame + iconPaddingSize, sYIcons + iconPaddingSize,
-                    sXNewGame + iconSize - iconPaddingSize, sYIcons + iconSize - iconPaddingSize);
-            settingsIcon.draw(canvas);
+        backgroundRectangle.setBounds(sXNewGame, sYIcons, sXNewGame + iconSize, sYIcons + iconSize);
+        backgroundRectangle.draw(canvas);
+        settingsIcon.setBounds(sXNewGame + iconPaddingSize, sYIcons + iconPaddingSize,
+                sXNewGame + iconSize - iconPaddingSize, sYIcons + iconSize - iconPaddingSize);
+        settingsIcon.draw(canvas);
 
-            //Drawing the header
-            paint.setTextSize(headerTextSize);
-            paint.setColor(TEXT_BLACK);
-            paint.setTextAlign(Paint.Align.LEFT);
-            int textShiftY = (int) ((paint.descent() + paint.ascent()));
-            int headerStartY = sYAll - textShiftY;
-            canvas.drawText("2048", startingX, headerStartY, paint);
+        //Drawing the header
+        paint.setTextSize(headerTextSize);
+        paint.setColor(TEXT_BLACK);
+        paint.setTextAlign(Paint.Align.LEFT);
+        int textShiftY = (int) ((paint.descent() + paint.ascent()));
+        int headerStartY = sYAll - textShiftY;
+        canvas.drawText("2048", startingX, headerStartY, paint);
 
-            //Drawing the instructions
-            paint.setTextSize(bodyTextSize);
+        //Drawing the instructions
+        paint.setTextSize(bodyTextSize);
 
-            textShiftY = (int) ((paint.descent() + paint.ascent()));
-            canvas.drawText("Swipe to move. 2+2 = 4. Reach 2048.",
-                    startingX, endingY - textShiftY + textPaddingSize, paint);
+        textShiftY = (int) ((paint.descent() + paint.ascent()));
+        canvas.drawText("Swipe to move. 2+2 = 4. Reach 2048.",
+                startingX, endingY - textShiftY + textPaddingSize, paint);
 
-        }
+
+        //DRAWING MAIN GAME SCREEN
+
+        //Animation: Dynamically change the alpha
+        /*for (AnimationCell animation : game.aGrid.globalAnimation) {
+            if (animation.getAnimationType() == 0) {
+                paint.setAlpha((int) (100 - animation.getPercentageDone() / 0.02));
+            }
+        }*/
 
         paint.setTextSize(textSize);
         paint.setTextAlign(Paint.Align.CENTER);
 
+        //Drawing the background
+        backgroundRectangle.setBounds(startingX, startingY, endingX, endingY);
+        backgroundRectangle.draw(canvas);
+
+        // Outputting the game grid
         for (int xx = 0; xx < game.numSquaresX; xx++) {
             for (int yy = 0; yy < game.numSquaresY; yy++) {
                 int sX = startingX + gridWidth + (cellSize + gridWidth) * xx;
@@ -160,6 +170,7 @@ public class MainView extends View {
             }
         }
 
+        // Outputting the individual cells
         for (int xx = 0; xx < game.numSquaresX; xx++) {
             for (int yy = 0; yy < game.numSquaresY; yy++) {
                 int sX = startingX + gridWidth + (cellSize + gridWidth) * xx;
@@ -169,11 +180,14 @@ public class MainView extends View {
 
                 Tile currentTile = game.grid.getCellContent(xx,yy);
                 if (currentTile != null) {
-                    ArrayList<AnimationCell> aArray = game.aGrid.getAnimationCell(xx, yy);
+                    //Get and represent the value of the tile
                     int value = currentTile.getValue();
                     int index = log2(value);
+
+                    //Check for any active animations
+                    ArrayList<AnimationCell> aArray = game.aGrid.getAnimationCell(xx, yy);
                     for (AnimationCell aCell : aArray) {
-                        if (aCell.getDirection() == -1 && aCell.getPercentageDone() >= 0.5) { //Spawning animation
+                        if (aCell.getAnimationType() == -1 && aCell.getPercentageDone() >= 0.5) { //Spawning animation
                             double percentDone = (aCell.getPercentageDone() - 0.5) * 2;
                             float textScaleSize = (float) (percentDone);
                             paint.setTextSize(textSize * textScaleSize);
@@ -181,7 +195,7 @@ public class MainView extends View {
                             float cellScaleSize = cellSize / 2 * (1 - textScaleSize);
                             drawRectangle(canvas, cellRectangle[index], (int) (sX + cellScaleSize), (int) (sY + cellScaleSize), (int) (eX - cellScaleSize), (int) (eY - cellScaleSize));
                             drawCellText(canvas, value, sX, sY);
-                        } else if (aCell.getPercentageDone() >= 0.5 && (aCell.getDirection() == 0 || aArray.size() >= 2)) {
+                        } else if (aCell.getPercentageDone() >= 0.5 && (aCell.getAnimationType() == 0 || aArray.size() >= 2)) { // Merging->spawning
                             double percentDone = (aCell.getPercentageDone() - 0.5) * 2;
                             float textScaleSize = (float) (1.125 - Math.abs(percentDone - 0.5) / 4);
                             paint.setTextSize(textSize * textScaleSize);
@@ -189,7 +203,7 @@ public class MainView extends View {
                             float cellScaleSize = cellSize / 2 * (1 - textScaleSize);
                             drawRectangle(canvas, cellRectangle[index], (int) (sX + cellScaleSize), (int) (sY + cellScaleSize), (int) (eX - cellScaleSize), (int) (eY - cellScaleSize));
                             drawCellText(canvas, value, sX, sY);
-                        } else if (aCell.getDirection() == 0 || aArray.size() == 2) {  //Merging animation
+                        } else if (aCell.getAnimationType() == 0 || aArray.size() == 2) {  //Merging->moving animation
                             paint.setTextSize(textSize);
                             if (aArray.size() <= 1) {
                                 drawRectangle(canvas, cellRectangle[index-1], sX, sY, eX, eY);
@@ -204,7 +218,7 @@ public class MainView extends View {
                             drawRectangle(canvas, cellRectangle[index-1], sX + dX, sY + dY, eX + dX, eY + dY);
 
                             drawCellText(canvas, value / 2, sX + dX, sY + dY);
-                        } else if (aCell.getDirection() == 1 && aCell.getPercentageDone() <= 0.5) { //Moving, no merge animation
+                        } else if (aCell.getAnimationType() == 1 && aCell.getPercentageDone() <= 0.5) { //Moving, no merge animation
 
                             paint.setTextSize(textSize);
                             int previousX = aCell.extra;
@@ -215,13 +229,15 @@ public class MainView extends View {
                             int dY = (int) ((currentY - previousY) * (cellSize + gridWidth) * (aCell.getPercentageDone()*2 - 1) * 1.0);
                             drawRectangle(canvas, cellRectangle[index], sX + dX, sY + dY, eX + dX, eY + dY);
                             drawCellText(canvas, value, sX + dX, sY + dY);
-                        } else if (aCell.getDirection() != -1) {
+                        } else if (aCell.getAnimationType() != -1) {
                             paint.setTextSize(textSize);
 
                             drawRectangle(canvas, cellRectangle[index], sX, sY, eX, eY);
                             drawCellText(canvas, value , sX, sY);
                         }
                     }
+
+                    //No active animations? Just draw the cell
                     if (aArray.size() == 0) {
                         paint.setTextSize(textSize);
 
@@ -231,6 +247,8 @@ public class MainView extends View {
                 }
             }
         }
+
+        //Refresh the screen if there is still an animation running
         if (game.aGrid.isAnimationActive()) {
             invalidate(startingX, startingY, endingX, endingY);
             tick();

@@ -31,6 +31,7 @@ public class MainGame {
 
     static final int MOVE_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME * 2;
     static final int SPAWN_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME * 2;
+    static final int NOTIFICATION_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME * 3;
     static final String HIGH_SCORE = "high score";
 
     public MainGame(Context context, MainView view) {
@@ -158,6 +159,7 @@ public class MainGame {
 
             if (!movesAvailable()) {
                 lose = true;
+                aGrid.startGlobalAnimation(0, NOTIFICATION_ANIMATION_TIME, 0, 0);
                 if (score >= highScore) {
                     highScore = score;
                     recordHighScore();

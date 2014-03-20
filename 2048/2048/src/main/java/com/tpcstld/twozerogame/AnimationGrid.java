@@ -8,6 +8,7 @@ public class AnimationGrid {
     int activeAnimations = 0;
     boolean oneMoreFrame = false;
     public ArrayList<AnimationCell> globalAnimation = new ArrayList<AnimationCell>();
+    ArrayList<AnimationCell> animationsInQueue = new ArrayList<AnimationCell>();
     public AnimationGrid(int x, int y) {
         field = new ArrayList[x][y];
 
@@ -18,13 +19,13 @@ public class AnimationGrid {
         }
     }
 
-    public void startAnimation(int x, int y, int direction, long length, int e1, int e2) {
-        field[x][y].add(new AnimationCell(x, y, direction, length, e1, e2));
+    public void startAnimation(int x, int y, int animationType, long length, int e1, int e2) {
+        field[x][y].add(new AnimationCell(x, y, animationType, length, e1, e2));
         activeAnimations = activeAnimations + 1;
     }
 
-    public void startGlobalAnimation(int direction, long length, int e1, int e2) {
-        globalAnimation.add(new AnimationCell(-1, -1, direction, length, e1, e2));
+    public void startGlobalAnimation(int animationType, long length, int e1, int e2) {
+        globalAnimation.add(new AnimationCell(-1, -1, animationType, length, e1, e2));
         activeAnimations = activeAnimations + 1;
     }
 
