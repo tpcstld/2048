@@ -6,8 +6,9 @@ import android.view.View;
 public class InputListener implements View.OnTouchListener {
 
     private static final int SWIPE_MIN_DISTANCE = 50;
-    private static final int SWIPE_MAX_OFF_PATH = 250;
+    private static final int SWIPE_MAX_OFF_PATH = 100;
     private static final int SWIPE_THRESHOLD_VELOCITY = 30;
+    private static final int MOVE_THRESHOLD = 175;
 
     private float x;
     private float y;
@@ -45,21 +46,21 @@ public class InputListener implements View.OnTouchListener {
                 y = event.getY();
                 float dx = x - previousX;
                 float dy = y - previousY;
-                xOnPath = (xOnPath && checkOnPath(x, startingX));
-                yOnPath = (yOnPath && checkOnPath(y, startingY));
+                xOnPath = (xOnPath && checkOnPath(y, startingY));
+                yOnPath = (yOnPath && checkOnPath(x, startingX));
                 if (!mView.game.won && !mView.game.lose) {
                     if (pathMoved() > SWIPE_MIN_DISTANCE * SWIPE_MIN_DISTANCE && !ignoreInputs  && startingY > 50) {
                         boolean moved = false;
-                        if (dy >= SWIPE_THRESHOLD_VELOCITY && yOnPath) {
+                        if ((dy >= SWIPE_THRESHOLD_VELOCITY || y - startingY >= MOVE_THRESHOLD) && yOnPath) {
                             moved = true;
                             mView.game.move(2);
-                        } else if (dy <= -SWIPE_THRESHOLD_VELOCITY && yOnPath) {
+                        } else if ((dy <= -SWIPE_THRESHOLD_VELOCITY || y - startingY <= -MOVE_THRESHOLD )&& yOnPath) {
                             moved = true;
                             mView.game.move(0);
-                        } else if (dx >= SWIPE_THRESHOLD_VELOCITY && xOnPath) {
+                        } else if ((dx >= SWIPE_THRESHOLD_VELOCITY || x - startingX >= MOVE_THRESHOLD)&& xOnPath) {
                             moved = true;
                             mView.game.move(1);
-                        } else if (dx <= -SWIPE_THRESHOLD_VELOCITY && xOnPath) {
+                        } else if ((dx <= -SWIPE_THRESHOLD_VELOCITY || x - startingX <= -MOVE_THRESHOLD) && xOnPath) {
                             moved = true;
                             mView.game.move(3);
                         }
