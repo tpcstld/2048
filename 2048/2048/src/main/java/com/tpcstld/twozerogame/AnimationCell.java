@@ -1,8 +1,5 @@
 package com.tpcstld.twozerogame;
 
-/**
- * Created by tpcstld on 3/16/14.
- */
 public class AnimationCell extends Cell {
     private int animationType;
     private long timeElapsed;

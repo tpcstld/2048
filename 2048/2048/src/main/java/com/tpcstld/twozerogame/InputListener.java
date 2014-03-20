@@ -3,9 +3,6 @@ package com.tpcstld.twozerogame;
 import android.view.MotionEvent;
 import android.view.View;
 
-/**
- * Created by tpcstld on 3/12/14.
- */
 public class InputListener implements View.OnTouchListener {
 
     private static final int SWIPE_MIN_DISTANCE = 50;

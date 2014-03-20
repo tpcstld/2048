@@ -3,15 +3,11 @@ package com.tpcstld.twozerogame;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by tpcstld on 3/12/14.
- */
 public class MainGame {
 
     public Grid grid;
@@ -58,6 +54,7 @@ public class MainGame {
         won = false;
         lose = false;
         addStartTiles();
+        mView.refreshLastTime = true;
         mView.resyncTime();
         mView.postInvalidate();
     }
@@ -153,7 +150,7 @@ public class MainGame {
                         // The mighty 2048 tile
                         if (merged.getValue() == 2048) {
                             won = true;
-                            endGame(won);
+                            endGame();
                         }
                     } else {
                         moveTile(tile, positions[0]);
@@ -172,7 +169,8 @@ public class MainGame {
             addRandomTile();
 
             if (!movesAvailable()) {
-                endGame(lose);
+                lose = true;
+                endGame();
             }
 
         }
@@ -180,8 +178,7 @@ public class MainGame {
         mView.postInvalidate();
     }
 
-    public void endGame(boolean condition) {
-        condition = true;
+    public void endGame() {
         aGrid.startAnimation(-1, -1, FADE_GLOBAL_ANIMATION, NOTIFICATION_ANIMATION_TIME, NOTIFICATION_DELAY_TIME, null);
         if (score >= highScore) {
             highScore = score;

@@ -28,6 +28,8 @@ public class MainView extends View {
     Drawable backgroundRectangle;
     Drawable[] cellRectangle = new Drawable[12];
     Drawable settingsIcon;
+    Drawable lightUpRectangle;
+    Drawable fadeRectangle;
     int TEXT_BLACK;
     int TEXT_WHITE;
     int TEXT_BROWN;
@@ -60,6 +62,8 @@ public class MainView extends View {
     float headerTextSize;
     float instructionsTextSize;
     float gameOverTextSize;
+
+    boolean refreshLastTime = true;
 
     static final int BASE_ANIMATION_TIME = 100000000;
     static int textPaddingSize = 0;
@@ -124,10 +128,13 @@ public class MainView extends View {
         paint.setColor(TEXT_WHITE);
         canvas.drawText("" + game.score, sXScore + textMiddleScore, bodyStartYAll, paint);
 
-        //Drawing the menu
-
-        backgroundRectangle.setBounds(sXNewGame, sYIcons, sXNewGame + iconSize, sYIcons + iconSize);
-        backgroundRectangle.draw(canvas);
+        if ((game.won || game.lose) && !game.aGrid.isAnimationActive()) {
+            lightUpRectangle.setBounds(sXNewGame, sYIcons, sXNewGame + iconSize, sYIcons + iconSize);
+            lightUpRectangle.draw(canvas);
+        } else {
+            backgroundRectangle.setBounds(sXNewGame, sYIcons, sXNewGame + iconSize, sYIcons + iconSize);
+            backgroundRectangle.draw(canvas);
+        }
         settingsIcon.setBounds(sXNewGame + iconPaddingSize, sYIcons + iconPaddingSize,
                 sXNewGame + iconSize - iconPaddingSize, sYIcons + iconSize - iconPaddingSize);
         settingsIcon.draw(canvas);
@@ -256,20 +263,20 @@ public class MainView extends View {
         }
         // Displaying game over
         if (game.won) {
-            cellRectangle[9].setBounds(startingX, startingY, endingX, endingY);
-            cellRectangle[9].setAlpha((int) (127 * alphaChange));
-            cellRectangle[9].draw(canvas);
-            cellRectangle[9].setAlpha(255);
+            lightUpRectangle.setBounds(startingX, startingY, endingX, endingY);
+            lightUpRectangle.setAlpha((int) (127 * alphaChange));
+            lightUpRectangle.draw(canvas);
+            lightUpRectangle.setAlpha(255);
             paint.setColor(TEXT_WHITE);
             paint.setAlpha((int) (255 * alphaChange));
             paint.setTextSize(gameOverTextSize);
             paint.setTextAlign(Paint.Align.CENTER);
             canvas.drawText("You Win!", boardMiddleX, boardMiddleY - centerText(), paint);
         } else if (game.lose) {
-            cellRectangle[0].setBounds(startingX, startingY, endingX, endingY);
-            cellRectangle[0].setAlpha((int) (127 * alphaChange));
-            cellRectangle[0].draw(canvas);
-            cellRectangle[0].setAlpha(255);
+            fadeRectangle.setBounds(startingX, startingY, endingX, endingY);
+            fadeRectangle.setAlpha((int) (127 * alphaChange));
+            fadeRectangle.draw(canvas);
+            fadeRectangle.setAlpha(255);
             paint.setColor(TEXT_BLACK);
             paint.setAlpha((int) (255 * alphaChange));
             paint.setTextSize(gameOverTextSize);
@@ -281,6 +288,9 @@ public class MainView extends View {
         if (game.aGrid.isAnimationActive()) {
             invalidate(startingX, startingY, endingX, endingY);
             tick();
+        } else if ((game.won || game.lose) && refreshLastTime) {
+            invalidate();
+            refreshLastTime = false;
         }
     }
 
@@ -397,6 +407,8 @@ public class MainView extends View {
             cellRectangle[10] = resources.getDrawable(R.drawable.cell_rectangle_1024);
             cellRectangle[11] = resources.getDrawable(R.drawable.cell_rectangle_2048);
             settingsIcon = resources.getDrawable(R.drawable.ic_action_refresh);
+            lightUpRectangle = resources.getDrawable(R.drawable.light_up_rectangle);
+            fadeRectangle = resources.getDrawable(R.drawable.fade_rectangle);
             TEXT_WHITE = resources.getColor(R.color.text_white);
             TEXT_BLACK = resources.getColor(R.color.text_black);
             TEXT_BROWN = resources.getColor(R.color.text_brown);
