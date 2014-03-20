@@ -129,15 +129,12 @@ public class MainView extends View {
         canvas.drawText("" + game.score, sXScore + textMiddleScore, bodyStartYAll, paint);
 
         if ((game.won || game.lose) && !game.aGrid.isAnimationActive()) {
-            lightUpRectangle.setBounds(sXNewGame, sYIcons, sXNewGame + iconSize, sYIcons + iconSize);
-            lightUpRectangle.draw(canvas);
+            drawDrawable(canvas, lightUpRectangle, sXNewGame, sYIcons, sXNewGame + iconSize, sYIcons + iconSize);
         } else {
-            backgroundRectangle.setBounds(sXNewGame, sYIcons, sXNewGame + iconSize, sYIcons + iconSize);
-            backgroundRectangle.draw(canvas);
+            drawDrawable(canvas, backgroundRectangle, sXNewGame, sYIcons, sXNewGame + iconSize, sYIcons + iconSize);
         }
-        settingsIcon.setBounds(sXNewGame + iconPaddingSize, sYIcons + iconPaddingSize,
+        drawDrawable(canvas, settingsIcon, sXNewGame + iconPaddingSize, sYIcons + iconPaddingSize,
                 sXNewGame + iconSize - iconPaddingSize, sYIcons + iconSize - iconPaddingSize);
-        settingsIcon.draw(canvas);
 
         //Drawing the header
         paint.setTextSize(headerTextSize);
@@ -161,8 +158,7 @@ public class MainView extends View {
         paint.setTextAlign(Paint.Align.CENTER);
 
         //Drawing the background
-        backgroundRectangle.setBounds(startingX, startingY, endingX, endingY);
-        backgroundRectangle.draw(canvas);
+        drawDrawable(canvas, backgroundRectangle, startingX, startingY, endingX, endingY);
 
         // Outputting the game grid
         for (int xx = 0; xx < game.numSquaresX; xx++) {
@@ -172,7 +168,7 @@ public class MainView extends View {
                 int sY = startingY + gridWidth + (cellSize + gridWidth) * yy;
                 int eY = sY + cellSize;
 
-                drawRectangle(canvas, cellRectangle[0], sX, sY, eX, eY);
+                drawDrawable(canvas, cellRectangle[0], sX, sY, eX, eY);
             }
         }
 
@@ -209,7 +205,7 @@ public class MainView extends View {
                             paint.setTextSize(textSize * textScaleSize);
 
                             float cellScaleSize = cellSize / 2 * (1 - textScaleSize);
-                            drawRectangle(canvas, cellRectangle[index], (int) (sX + cellScaleSize), (int) (sY + cellScaleSize), (int) (eX - cellScaleSize), (int) (eY - cellScaleSize));
+                            drawDrawable(canvas, cellRectangle[index], (int) (sX + cellScaleSize), (int) (sY + cellScaleSize), (int) (eX - cellScaleSize), (int) (eY - cellScaleSize));
                             drawCellText(canvas, value, sX, sY);
                         } else if (aCell.getAnimationType() == MainGame.MERGE_ANIMATION) { // Merging Animation
                             double percentDone = aCell.getPercentageDone();
@@ -218,7 +214,7 @@ public class MainView extends View {
                             paint.setTextSize(textSize * textScaleSize);
 
                             float cellScaleSize = cellSize / 2 * (1 - textScaleSize);
-                            drawRectangle(canvas, cellRectangle[index], (int) (sX + cellScaleSize), (int) (sY + cellScaleSize), (int) (eX - cellScaleSize), (int) (eY - cellScaleSize));
+                            drawDrawable(canvas, cellRectangle[index], (int) (sX + cellScaleSize), (int) (sY + cellScaleSize), (int) (eX - cellScaleSize), (int) (eY - cellScaleSize));
                             drawCellText(canvas, value, sX, sY);
                         } else if (aCell.getAnimationType() == MainGame.MOVE_ANIMATION) {  // Moving animation
                             double percentDone = aCell.getPercentageDone();
@@ -233,7 +229,7 @@ public class MainView extends View {
                             int currentY = currentTile.getY();
                             int dX = (int) ((currentX - previousX) * (cellSize + gridWidth) * (percentDone - 1) * 1.0);
                             int dY = (int) ((currentY - previousY) * (cellSize + gridWidth) * (percentDone - 1) * 1.0);
-                            drawRectangle(canvas, cellRectangle[tempIndex], sX + dX, sY + dY, eX + dX, eY + dY);
+                            drawDrawable(canvas, cellRectangle[tempIndex], sX + dX, sY + dY, eX + dX, eY + dY);
                             if (index != tempIndex) {
                                 drawCellText(canvas, value / 2, sX + dX, sY + dY);
                             } else {
@@ -247,7 +243,7 @@ public class MainView extends View {
                     if (!animated) {
                         paint.setTextSize(textSize);
 
-                        drawRectangle(canvas, cellRectangle[index], sX, sY, eX, eY);
+                        drawDrawable(canvas, cellRectangle[index], sX, sY, eX, eY);
                         drawCellText(canvas, value , sX, sY);
                     }
                 }
@@ -263,9 +259,8 @@ public class MainView extends View {
         }
         // Displaying game over
         if (game.won) {
-            lightUpRectangle.setBounds(startingX, startingY, endingX, endingY);
             lightUpRectangle.setAlpha((int) (127 * alphaChange));
-            lightUpRectangle.draw(canvas);
+            drawDrawable(canvas, lightUpRectangle ,startingX, startingY, endingX, endingY);
             lightUpRectangle.setAlpha(255);
             paint.setColor(TEXT_WHITE);
             paint.setAlpha((int) (255 * alphaChange));
@@ -273,9 +268,8 @@ public class MainView extends View {
             paint.setTextAlign(Paint.Align.CENTER);
             canvas.drawText("You Win!", boardMiddleX, boardMiddleY - centerText(), paint);
         } else if (game.lose) {
-            fadeRectangle.setBounds(startingX, startingY, endingX, endingY);
             fadeRectangle.setAlpha((int) (127 * alphaChange));
-            fadeRectangle.draw(canvas);
+            drawDrawable(canvas, fadeRectangle, startingX, startingY, endingX, endingY);
             fadeRectangle.setAlpha(255);
             paint.setColor(TEXT_BLACK);
             paint.setAlpha((int) (255 * alphaChange));
@@ -288,13 +282,14 @@ public class MainView extends View {
         if (game.aGrid.isAnimationActive()) {
             invalidate(startingX, startingY, endingX, endingY);
             tick();
+        //Refresh one last time on game end.
         } else if ((game.won || game.lose) && refreshLastTime) {
             invalidate();
             refreshLastTime = false;
         }
     }
 
-    public void drawRectangle(Canvas canvas, Drawable draw, int startingX, int startingY, int endingX, int endingY) {
+    public void drawDrawable(Canvas canvas, Drawable draw, int startingX, int startingY, int endingX, int endingY) {
         draw.setBounds(startingX, startingY, endingX, endingY);
         draw.draw(canvas);
     }
