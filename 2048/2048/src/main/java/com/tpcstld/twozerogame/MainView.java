@@ -323,7 +323,7 @@ public class MainView extends View {
     }
 
     public void getLayout(int width, int height) {
-        cellSize = Math.min(width / (game.numSquaresX + 1), height / (game.numSquaresY + 1));
+        cellSize = Math.min(width / (game.numSquaresX + 1), height / (game.numSquaresY + 3));
         gridWidth = cellSize / 7;
         screenMiddleX = width / 2;
         screenMiddleY = height / 2;
