@@ -6,10 +6,10 @@ import android.view.View;
 
 public class InputListener implements View.OnTouchListener {
 
-    private static final int SWIPE_MIN_DISTANCE = 50;
+    private static final int SWIPE_MIN_DISTANCE = 25;
     private static final int SWIPE_MAX_OFF_PATH = 85;
-    private static final int SWIPE_THRESHOLD_VELOCITY = 30;
-    private static final int MOVE_THRESHOLD = 170;
+    private static final int SWIPE_THRESHOLD_VELOCITY = 25;
+    private static final int MOVE_THRESHOLD = 300;
     private static final int RESET_STARTING = 10;
 
     private float x;
@@ -46,7 +46,7 @@ public class InputListener implements View.OnTouchListener {
             case MotionEvent.ACTION_MOVE:
                 x = event.getX();
                 y = event.getY();
-                if (!mView.game.won && !mView.game.lose) {
+                if (!mView.game.won && !mView.game.lose && startingY > 50) {
                     float dx = x - previousX;
                     if (Math.abs(lastdx + dx) < Math.abs(lastdx) + Math.abs(dx) && Math.abs(dx) > RESET_STARTING
                             &&  Math.abs(x - startingX) > SWIPE_MIN_DISTANCE) {
@@ -54,7 +54,6 @@ public class InputListener implements View.OnTouchListener {
                         startingY = y;
                         lastdx = dx;
                         previousDirection = veryLastDirection;
-                        Log.d("Debug","ResetX");
                     }
                     if (lastdx == 0) {
                         lastdx = dx;
@@ -66,37 +65,32 @@ public class InputListener implements View.OnTouchListener {
                         startingY = y;
                         lastdy = dy;
                         previousDirection = veryLastDirection;
-                        Log.d("Debug","ResetY");
                     }
                     if (lastdy == 0) {
                         lastdy = dy;
                     }
-                    if (pathMoved() > SWIPE_MIN_DISTANCE * SWIPE_MIN_DISTANCE && startingY > 50) {
+                    if (pathMoved() > SWIPE_MIN_DISTANCE * SWIPE_MIN_DISTANCE) {
                         boolean moved = false;
                         if ((dy >= SWIPE_THRESHOLD_VELOCITY || y - startingY >= MOVE_THRESHOLD) && previousDirection % 2 != 0) {
                             moved = true;
                             previousDirection = previousDirection * 2;
                             veryLastDirection = 2;
                             mView.game.move(2);
-                            Log.d("debug", "Moved. Down");
                         } else if ((dy <= -SWIPE_THRESHOLD_VELOCITY || y - startingY <= -MOVE_THRESHOLD ) && previousDirection % 3 != 0) {
                             moved = true;
                             previousDirection = previousDirection * 3;
                             veryLastDirection = 3;
                             mView.game.move(0);
-                            Log.d("debug", "Moved. Up");
                         } else if ((dx >= SWIPE_THRESHOLD_VELOCITY || x - startingX >= MOVE_THRESHOLD) && previousDirection % 5 != 0) {
                             moved = true;
                             previousDirection = previousDirection * 5;
                             veryLastDirection = 5;
                             mView.game.move(1);
-                            Log.d("debug", "Moved. Right");
                         } else if ((dx <= -SWIPE_THRESHOLD_VELOCITY || x - startingX <= -MOVE_THRESHOLD) && previousDirection % 7 != 0) {
                             moved = true;
                             previousDirection = previousDirection * 7;
                             veryLastDirection = 7;
                             mView.game.move(3);
-                            Log.d("debug", "Moved. Left");
                         }
                         if (moved) {
                             startingX = x;
@@ -110,6 +104,36 @@ public class InputListener implements View.OnTouchListener {
             case MotionEvent.ACTION_UP:
                 x = event.getX();
                 y = event.getY();
+                if (!mView.game.won && !mView.game.lose  && startingY > 50) {
+                    float dx = x - previousX;
+                    float dy = y - previousY;
+                    if (pathMoved() > SWIPE_MIN_DISTANCE * SWIPE_MIN_DISTANCE) {
+                        boolean moved = false;
+                        if ((dy >= SWIPE_THRESHOLD_VELOCITY || y - startingY >= MOVE_THRESHOLD) && previousDirection % 2 != 0) {
+                            moved = true;
+                            previousDirection = previousDirection * 2;
+                            veryLastDirection = 2;
+                            mView.game.move(2);
+                        } else if ((dy <= -SWIPE_THRESHOLD_VELOCITY || y - startingY <= -MOVE_THRESHOLD ) && previousDirection % 3 != 0) {
+                            moved = true;
+                            previousDirection = previousDirection * 3;
+                            veryLastDirection = 3;
+                            mView.game.move(0);
+                        } else if ((dx >= SWIPE_THRESHOLD_VELOCITY || x - startingX >= MOVE_THRESHOLD) && previousDirection % 5 != 0) {
+                            moved = true;
+                            previousDirection = previousDirection * 5;
+                            veryLastDirection = 5;
+                            mView.game.move(1);
+                        } else if ((dx <= -SWIPE_THRESHOLD_VELOCITY || x - startingX <= -MOVE_THRESHOLD) && previousDirection % 7 != 0) {
+                            moved = true;
+                            previousDirection = previousDirection * 7;
+                            veryLastDirection = 7;
+                            mView.game.move(3);
+                        }
+                    }
+                }
+                previousX = x;
+                previousY = y;
                 previousDirection = 1;
                 veryLastDirection = 1;
                 if (pathMoved() <= MainView.iconSize

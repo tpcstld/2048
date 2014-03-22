@@ -120,6 +120,7 @@ public class MainView extends View {
     public void drawScoreText(Canvas canvas) {
         //Drawing the score text: Ver 2
         paint.setTextSize(bodyTextSize);
+        paint.setTextAlign(Paint.Align.CENTER);
 
         int bodyWidthHighScore = (int) (paint.measureText("" + game.highScore));
         int bodyWidthScore = (int) (paint.measureText("" + game.score));
