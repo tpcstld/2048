@@ -75,7 +75,6 @@ public class MainView extends View {
     @Override
     public void onDraw(Canvas canvas) {
         //Reset the transparency of the screen
-        paint.setAlpha(255);
 
         canvas.drawBitmap(background, 0, 0, paint);
 
@@ -307,6 +306,7 @@ public class MainView extends View {
             paint.setTextSize(gameOverTextSize);
             paint.setTextAlign(Paint.Align.CENTER);
             canvas.drawText("You Win!", boardMiddleX, boardMiddleY - centerText(), paint);
+            paint.setAlpha(255);
         } else if (game.lose) {
             fadeRectangle.setAlpha((int) (127 * alphaChange));
             drawDrawable(canvas, fadeRectangle, startingX, startingY, endingX, endingY);
@@ -316,6 +316,7 @@ public class MainView extends View {
             paint.setTextSize(gameOverTextSize);
             paint.setTextAlign(Paint.Align.CENTER);
             canvas.drawText("Game Over!", boardMiddleX, boardMiddleY - centerText(), paint);
+            paint.setAlpha(255);
         }
     }
 
