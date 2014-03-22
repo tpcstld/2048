@@ -77,26 +77,13 @@ public class MainView extends View {
 
         drawScoreText(canvas);
 
-        if ((game.won || game.lose) && !game.aGrid.isAnimationActive()) {
-            drawDrawable(canvas, lightUpRectangle, sXNewGame, sYIcons, sXNewGame + iconSize, sYIcons + iconSize);
-        } else {
-            drawDrawable(canvas, backgroundRectangle, sXNewGame, sYIcons, sXNewGame + iconSize, sYIcons + iconSize);
-        }
-        drawDrawable(canvas, settingsIcon, sXNewGame + iconPaddingSize, sYIcons + iconPaddingSize,
-                sXNewGame + iconSize - iconPaddingSize, sYIcons + iconSize - iconPaddingSize);
+        drawNewGameButton(canvas);
 
-        //Drawing the header
-        paint.setTextSize(headerTextSize);
-        paint.setColor(TEXT_BLACK);
-        paint.setTextAlign(Paint.Align.LEFT);
-        int textShiftY = centerText() * 2;
-        int headerStartY = sYAll - textShiftY;
-        canvas.drawText("2048", startingX, headerStartY, paint);
-
+        drawHeader(canvas);
         //Drawing the instructions
         paint.setTextSize(instructionsTextSize);
 
-        textShiftY = centerText() * 2;
+        int textShiftY = centerText() * 2;
         canvas.drawText("Swipe to move. 2+2 = 4. Reach 2048.",
                 startingX, endingY - textShiftY + textPaddingSize, paint);
 
@@ -299,6 +286,27 @@ public class MainView extends View {
         paint.setColor(TEXT_WHITE);
         canvas.drawText("" + game.score, sXScore + textMiddleScore, bodyStartYAll, paint);
     }
+
+    public void drawNewGameButton(Canvas canvas) {
+        if ((game.won || game.lose) && !game.aGrid.isAnimationActive()) {
+            drawDrawable(canvas, lightUpRectangle, sXNewGame, sYIcons, sXNewGame + iconSize, sYIcons + iconSize);
+        } else {
+            drawDrawable(canvas, backgroundRectangle, sXNewGame, sYIcons, sXNewGame + iconSize, sYIcons + iconSize);
+        }
+        drawDrawable(canvas, settingsIcon, sXNewGame + iconPaddingSize, sYIcons + iconPaddingSize,
+                sXNewGame + iconSize - iconPaddingSize, sYIcons + iconSize - iconPaddingSize);
+    }
+
+    public void drawHeader(Canvas canvas) {
+        //Drawing the header
+        paint.setTextSize(headerTextSize);
+        paint.setColor(TEXT_BLACK);
+        paint.setTextAlign(Paint.Align.LEFT);
+        int textShiftY = centerText() * 2;
+        int headerStartY = sYAll - textShiftY;
+        canvas.drawText("2048", startingX, headerStartY, paint);
+    }
+
     public void tick() {
         currentTime = System.nanoTime();
         game.aGrid.tickAll(currentTime - lastFPSTime);
