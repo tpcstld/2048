@@ -80,6 +80,8 @@ public class MainView extends View {
 
         drawScoreText(canvas);
 
+        drawNewGameButton(canvas);
+
         drawCells(canvas);
 
         drawEndGameState(canvas);
@@ -182,7 +184,7 @@ public class MainView extends View {
     public void drawInstructions(Canvas canvas) {
         //Drawing the instructions
         paint.setTextSize(instructionsTextSize);
-
+        paint.setTextAlign(Paint.Align.LEFT);
         int textShiftY = centerText() * 2;
         canvas.drawText("Swipe to move. 2+2 = 4. Reach 2048.",
                 startingX, endingY - textShiftY + textPaddingSize, paint);
@@ -325,7 +327,6 @@ public class MainView extends View {
         background = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(background);
         drawHeader(canvas);
-        drawNewGameButton(canvas);
         drawBackground(canvas);
         drawBackgroundGrid(canvas);
         drawInstructions(canvas);
