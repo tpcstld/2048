@@ -2,6 +2,7 @@ package com.tpcstld.twozerogame;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -28,6 +29,7 @@ public class MainView extends View {
     Drawable settingsIcon;
     Drawable lightUpRectangle;
     Drawable fadeRectangle;
+    Bitmap background = null;
     int TEXT_BLACK;
     int TEXT_WHITE;
     int TEXT_BROWN;
@@ -75,140 +77,13 @@ public class MainView extends View {
         //Reset the transparency of the screen
         paint.setAlpha(255);
 
+        canvas.drawBitmap(background, 0, 0, paint);
+
         drawScoreText(canvas);
 
-        drawNewGameButton(canvas);
+        drawCells(canvas);
 
-        drawHeader(canvas);
-
-        drawInstructions(canvas);
-
-
-        //DRAWING MAIN GAME SCREEN
-
-        paint.setTextSize(textSize);
-        paint.setTextAlign(Paint.Align.CENTER);
-
-        //Drawing the background
-        drawDrawable(canvas, backgroundRectangle, startingX, startingY, endingX, endingY);
-
-        // Outputting the game grid
-        for (int xx = 0; xx < game.numSquaresX; xx++) {
-            for (int yy = 0; yy < game.numSquaresY; yy++) {
-                int sX = startingX + gridWidth + (cellSize + gridWidth) * xx;
-                int eX = sX + cellSize;
-                int sY = startingY + gridWidth + (cellSize + gridWidth) * yy;
-                int eY = sY + cellSize;
-
-                drawDrawable(canvas, cellRectangle[0], sX, sY, eX, eY);
-            }
-        }
-
-        // Outputting the individual cells
-        for (int xx = 0; xx < game.numSquaresX; xx++) {
-            for (int yy = 0; yy < game.numSquaresY; yy++) {
-                int sX = startingX + gridWidth + (cellSize + gridWidth) * xx;
-                int eX = sX + cellSize;
-                int sY = startingY + gridWidth + (cellSize + gridWidth) * yy;
-                int eY = sY + cellSize;
-
-                Tile currentTile = game.grid.getCellContent(xx,yy);
-                if (currentTile != null) {
-                    //Get and represent the value of the tile
-                    int value = currentTile.getValue();
-                    int index = log2(value);
-
-                    //Check for any active animations
-                    ArrayList<AnimationCell> aArray = game.aGrid.getAnimationCell(xx, yy);
-                    boolean animated = false;
-                    for (int i = aArray.size() - 1; i >= 0; i--) {
-                        AnimationCell aCell = aArray.get(i);
-                        //If this animation is not active, skip it
-                        if (aCell.getAnimationType() == MainGame.SPAWN_ANIMATION) {
-                            animated = true;
-                        }
-                        if (!aCell.isActive()) {
-                            continue;
-                        }
-
-                        if (aCell.getAnimationType() == MainGame.SPAWN_ANIMATION) { // Spawning animation
-                            double percentDone = aCell.getPercentageDone();
-                            float textScaleSize = (float) (percentDone);
-                            paint.setTextSize(textSize * textScaleSize);
-
-                            float cellScaleSize = cellSize / 2 * (1 - textScaleSize);
-                            drawDrawable(canvas, cellRectangle[index], (int) (sX + cellScaleSize), (int) (sY + cellScaleSize), (int) (eX - cellScaleSize), (int) (eY - cellScaleSize));
-                            drawCellText(canvas, value, sX, sY);
-                        } else if (aCell.getAnimationType() == MainGame.MERGE_ANIMATION) { // Merging Animation
-                            double percentDone = aCell.getPercentageDone();
-                            float textScaleSize = (float) (1 + INITIAL_VELOCITY * percentDone
-                                    + MERGING_ACCELERATION * percentDone * percentDone / 2);
-                            paint.setTextSize(textSize * textScaleSize);
-
-                            float cellScaleSize = cellSize / 2 * (1 - textScaleSize);
-                            drawDrawable(canvas, cellRectangle[index], (int) (sX + cellScaleSize), (int) (sY + cellScaleSize), (int) (eX - cellScaleSize), (int) (eY - cellScaleSize));
-                            drawCellText(canvas, value, sX, sY);
-                        } else if (aCell.getAnimationType() == MainGame.MOVE_ANIMATION) {  // Moving animation
-                            double percentDone = aCell.getPercentageDone();
-                            int tempIndex = index;
-                            if (aArray.size() >= 2) {
-                                tempIndex = tempIndex - 1;
-                            }
-                            paint.setTextSize(textSize);
-                            int previousX = aCell.extras[0];
-                            int previousY = aCell.extras[1];
-                            int currentX = currentTile.getX();
-                            int currentY = currentTile.getY();
-                            int dX = (int) ((currentX - previousX) * (cellSize + gridWidth) * (percentDone - 1) * 1.0);
-                            int dY = (int) ((currentY - previousY) * (cellSize + gridWidth) * (percentDone - 1) * 1.0);
-                            drawDrawable(canvas, cellRectangle[tempIndex], sX + dX, sY + dY, eX + dX, eY + dY);
-                            if (index != tempIndex) {
-                                drawCellText(canvas, value / 2, sX + dX, sY + dY);
-                            } else {
-                                drawCellText(canvas, value, sX + dX, sY + dY);
-                            }
-                        }
-                        animated = true;
-                    }
-
-                    //No active animations? Just draw the cell
-                    if (!animated) {
-                        paint.setTextSize(textSize);
-
-                        drawDrawable(canvas, cellRectangle[index], sX, sY, eX, eY);
-                        drawCellText(canvas, value , sX, sY);
-                    }
-                }
-            }
-        }
-        double alphaChange = 1;
-        //Animation: Dynamically change the alpha
-        for (AnimationCell animation : game.aGrid.globalAnimation) {
-            if (animation.getAnimationType() == MainGame.FADE_GLOBAL_ANIMATION) {
-                alphaChange = animation.getPercentageDone();
-            }
-
-        }
-        // Displaying game over
-        if (game.won) {
-            lightUpRectangle.setAlpha((int) (127 * alphaChange));
-            drawDrawable(canvas, lightUpRectangle ,startingX, startingY, endingX, endingY);
-            lightUpRectangle.setAlpha(255);
-            paint.setColor(TEXT_WHITE);
-            paint.setAlpha((int) (255 * alphaChange));
-            paint.setTextSize(gameOverTextSize);
-            paint.setTextAlign(Paint.Align.CENTER);
-            canvas.drawText("You Win!", boardMiddleX, boardMiddleY - centerText(), paint);
-        } else if (game.lose) {
-            fadeRectangle.setAlpha((int) (127 * alphaChange));
-            drawDrawable(canvas, fadeRectangle, startingX, startingY, endingX, endingY);
-            fadeRectangle.setAlpha(255);
-            paint.setColor(TEXT_BLACK);
-            paint.setAlpha((int) (255 * alphaChange));
-            paint.setTextSize(gameOverTextSize);
-            paint.setTextAlign(Paint.Align.CENTER);
-            canvas.drawText("Game Over!", boardMiddleX, boardMiddleY - centerText(), paint);
-        }
+        drawEndGameState(canvas);
 
         //Refresh the screen if there is still an animation running
         if (game.aGrid.isAnimationActive()) {
@@ -225,6 +100,7 @@ public class MainView extends View {
     protected void onSizeChanged(int width, int height, int oldw, int oldh) {
         super.onSizeChanged(width, height, oldw, oldh);
         getLayout(width, height);
+        createBackgroundBitmap(width, height);
     }
 
     public void drawDrawable(Canvas canvas, Drawable draw, int startingX, int startingY, int endingX, int endingY) {
@@ -311,6 +187,149 @@ public class MainView extends View {
         canvas.drawText("Swipe to move. 2+2 = 4. Reach 2048.",
                 startingX, endingY - textShiftY + textPaddingSize, paint);
     }
+
+    public void drawBackground(Canvas canvas) {
+        drawDrawable(canvas, backgroundRectangle, startingX, startingY, endingX, endingY);
+    }
+
+    public void drawBackgroundGrid(Canvas canvas) {
+        // Outputting the game grid
+        for (int xx = 0; xx < game.numSquaresX; xx++) {
+            for (int yy = 0; yy < game.numSquaresY; yy++) {
+                int sX = startingX + gridWidth + (cellSize + gridWidth) * xx;
+                int eX = sX + cellSize;
+                int sY = startingY + gridWidth + (cellSize + gridWidth) * yy;
+                int eY = sY + cellSize;
+
+                drawDrawable(canvas, cellRectangle[0], sX, sY, eX, eY);
+            }
+        }
+    }
+
+    public void drawCells(Canvas canvas) {
+        paint.setTextSize(textSize);
+        paint.setTextAlign(Paint.Align.CENTER);
+        // Outputting the individual cells
+        for (int xx = 0; xx < game.numSquaresX; xx++) {
+            for (int yy = 0; yy < game.numSquaresY; yy++) {
+                int sX = startingX + gridWidth + (cellSize + gridWidth) * xx;
+                int eX = sX + cellSize;
+                int sY = startingY + gridWidth + (cellSize + gridWidth) * yy;
+                int eY = sY + cellSize;
+
+                Tile currentTile = game.grid.getCellContent(xx,yy);
+                if (currentTile != null) {
+                    //Get and represent the value of the tile
+                    int value = currentTile.getValue();
+                    int index = log2(value);
+
+                    //Check for any active animations
+                    ArrayList<AnimationCell> aArray = game.aGrid.getAnimationCell(xx, yy);
+                    boolean animated = false;
+                    for (int i = aArray.size() - 1; i >= 0; i--) {
+                        AnimationCell aCell = aArray.get(i);
+                        //If this animation is not active, skip it
+                        if (aCell.getAnimationType() == MainGame.SPAWN_ANIMATION) {
+                            animated = true;
+                        }
+                        if (!aCell.isActive()) {
+                            continue;
+                        }
+
+                        if (aCell.getAnimationType() == MainGame.SPAWN_ANIMATION) { // Spawning animation
+                            double percentDone = aCell.getPercentageDone();
+                            float textScaleSize = (float) (percentDone);
+                            paint.setTextSize(textSize * textScaleSize);
+
+                            float cellScaleSize = cellSize / 2 * (1 - textScaleSize);
+                            drawDrawable(canvas, cellRectangle[index], (int) (sX + cellScaleSize), (int) (sY + cellScaleSize), (int) (eX - cellScaleSize), (int) (eY - cellScaleSize));
+                            drawCellText(canvas, value, sX, sY);
+                        } else if (aCell.getAnimationType() == MainGame.MERGE_ANIMATION) { // Merging Animation
+                            double percentDone = aCell.getPercentageDone();
+                            float textScaleSize = (float) (1 + INITIAL_VELOCITY * percentDone
+                                    + MERGING_ACCELERATION * percentDone * percentDone / 2);
+                            paint.setTextSize(textSize * textScaleSize);
+
+                            float cellScaleSize = cellSize / 2 * (1 - textScaleSize);
+                            drawDrawable(canvas, cellRectangle[index], (int) (sX + cellScaleSize), (int) (sY + cellScaleSize), (int) (eX - cellScaleSize), (int) (eY - cellScaleSize));
+                            drawCellText(canvas, value, sX, sY);
+                        } else if (aCell.getAnimationType() == MainGame.MOVE_ANIMATION) {  // Moving animation
+                            double percentDone = aCell.getPercentageDone();
+                            int tempIndex = index;
+                            if (aArray.size() >= 2) {
+                                tempIndex = tempIndex - 1;
+                            }
+                            paint.setTextSize(textSize);
+                            int previousX = aCell.extras[0];
+                            int previousY = aCell.extras[1];
+                            int currentX = currentTile.getX();
+                            int currentY = currentTile.getY();
+                            int dX = (int) ((currentX - previousX) * (cellSize + gridWidth) * (percentDone - 1) * 1.0);
+                            int dY = (int) ((currentY - previousY) * (cellSize + gridWidth) * (percentDone - 1) * 1.0);
+                            drawDrawable(canvas, cellRectangle[tempIndex], sX + dX, sY + dY, eX + dX, eY + dY);
+                            if (index != tempIndex) {
+                                drawCellText(canvas, value / 2, sX + dX, sY + dY);
+                            } else {
+                                drawCellText(canvas, value, sX + dX, sY + dY);
+                            }
+                        }
+                        animated = true;
+                    }
+
+                    //No active animations? Just draw the cell
+                    if (!animated) {
+                        paint.setTextSize(textSize);
+
+                        drawDrawable(canvas, cellRectangle[index], sX, sY, eX, eY);
+                        drawCellText(canvas, value , sX, sY);
+                    }
+                }
+            }
+        }
+    }
+
+    public void drawEndGameState(Canvas canvas) {
+        double alphaChange = 1;
+        //Animation: Dynamically change the alpha
+        for (AnimationCell animation : game.aGrid.globalAnimation) {
+            if (animation.getAnimationType() == MainGame.FADE_GLOBAL_ANIMATION) {
+                alphaChange = animation.getPercentageDone();
+            }
+
+        }
+        // Displaying game over
+        if (game.won) {
+            lightUpRectangle.setAlpha((int) (127 * alphaChange));
+            drawDrawable(canvas, lightUpRectangle ,startingX, startingY, endingX, endingY);
+            lightUpRectangle.setAlpha(255);
+            paint.setColor(TEXT_WHITE);
+            paint.setAlpha((int) (255 * alphaChange));
+            paint.setTextSize(gameOverTextSize);
+            paint.setTextAlign(Paint.Align.CENTER);
+            canvas.drawText("You Win!", boardMiddleX, boardMiddleY - centerText(), paint);
+        } else if (game.lose) {
+            fadeRectangle.setAlpha((int) (127 * alphaChange));
+            drawDrawable(canvas, fadeRectangle, startingX, startingY, endingX, endingY);
+            fadeRectangle.setAlpha(255);
+            paint.setColor(TEXT_BLACK);
+            paint.setAlpha((int) (255 * alphaChange));
+            paint.setTextSize(gameOverTextSize);
+            paint.setTextAlign(Paint.Align.CENTER);
+            canvas.drawText("Game Over!", boardMiddleX, boardMiddleY - centerText(), paint);
+        }
+    }
+
+    public void createBackgroundBitmap(int width, int height) {
+        background = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(background);
+        drawHeader(canvas);
+        drawNewGameButton(canvas);
+        drawBackground(canvas);
+        drawBackgroundGrid(canvas);
+        drawInstructions(canvas);
+
+    }
+
 
     public void tick() {
         currentTime = System.nanoTime();
