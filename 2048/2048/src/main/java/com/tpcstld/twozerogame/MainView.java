@@ -80,12 +80,8 @@ public class MainView extends View {
         drawNewGameButton(canvas);
 
         drawHeader(canvas);
-        //Drawing the instructions
-        paint.setTextSize(instructionsTextSize);
 
-        int textShiftY = centerText() * 2;
-        canvas.drawText("Swipe to move. 2+2 = 4. Reach 2048.",
-                startingX, endingY - textShiftY + textPaddingSize, paint);
+        drawInstructions(canvas);
 
 
         //DRAWING MAIN GAME SCREEN
@@ -305,6 +301,15 @@ public class MainView extends View {
         int textShiftY = centerText() * 2;
         int headerStartY = sYAll - textShiftY;
         canvas.drawText("2048", startingX, headerStartY, paint);
+    }
+
+    public void drawInstructions(Canvas canvas) {
+        //Drawing the instructions
+        paint.setTextSize(instructionsTextSize);
+
+        int textShiftY = centerText() * 2;
+        canvas.drawText("Swipe to move. 2+2 = 4. Reach 2048.",
+                startingX, endingY - textShiftY + textPaddingSize, paint);
     }
 
     public void tick() {
