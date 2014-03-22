@@ -1,6 +1,5 @@
 package com.tpcstld.twozerogame;
 
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
