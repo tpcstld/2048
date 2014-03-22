@@ -1,7 +1,6 @@
 package com.tpcstld.twozerogame;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -24,7 +23,6 @@ public class MainView extends View {
     int screenMiddleY = 0;
     int boardMiddleX = 0;
     int boardMiddleY = 0;
-    int orientation = Configuration.ORIENTATION_UNDEFINED;
     Drawable backgroundRectangle;
     Drawable[] cellRectangle = new Drawable[12];
     Drawable settingsIcon;
@@ -74,59 +72,10 @@ public class MainView extends View {
 
     @Override
     public void onDraw(Canvas canvas) {
-        int newOrientation = getOrientation();
-        if (newOrientation != orientation) {
-            getScreenSize = true;
-            orientation = newOrientation;
-        }
-        if (getScreenSize) {
-            int width = this.getMeasuredWidth();
-            int height = this.getMeasuredHeight();
-            getLayout(width, height);
-        }
-
         //Reset the transparency of the screen
         paint.setAlpha(255);
 
-        //Drawing the score text: Ver 2
-
-        paint.setTextSize(bodyTextSize);
-
-        int bodyWidthHighScore = (int) (paint.measureText("" + game.highScore));
-        int bodyWidthScore = (int) (paint.measureText("" + game.score));
-
-        int textWidthHighScore = Math.max(titleWidthHighScore, bodyWidthHighScore) + textPaddingSize * 2;
-        int textWidthScore = Math.max(titleWidthScore, bodyWidthScore) + textPaddingSize * 2;
-
-        int textMiddleHighScore = textWidthHighScore / 2;
-        int textMiddleScore = textWidthScore / 2;
-
-        int eXHighScore = endingX;
-        int sXHighScore = eXHighScore - textWidthHighScore;
-
-        int eXScore = sXHighScore - textPaddingSize;
-        int sXScore = eXScore - textWidthScore;
-
-        //Outputting high-scores box
-        backgroundRectangle.setBounds(sXHighScore, sYAll, eXHighScore, eYAll);
-        backgroundRectangle.draw(canvas);
-        paint.setTextSize(titleTextSize);
-        paint.setColor(TEXT_BROWN);
-        canvas.drawText("HIGH SCORE", sXHighScore + textMiddleHighScore, titleStartYAll, paint);
-        paint.setTextSize(bodyTextSize);
-        paint.setColor(TEXT_WHITE);
-        canvas.drawText("" + game.highScore, sXHighScore + textMiddleHighScore, bodyStartYAll, paint);
-
-
-        //Outputting scores box
-        backgroundRectangle.setBounds(sXScore, sYAll, eXScore, eYAll);
-        backgroundRectangle.draw(canvas);
-        paint.setTextSize(titleTextSize);
-        paint.setColor(TEXT_BROWN);
-        canvas.drawText("SCORE", sXScore + textMiddleScore, titleStartYAll, paint);
-        paint.setTextSize(bodyTextSize);
-        paint.setColor(TEXT_WHITE);
-        canvas.drawText("" + game.score, sXScore + textMiddleScore, bodyStartYAll, paint);
+        drawScoreText(canvas);
 
         if ((game.won || game.lose) && !game.aGrid.isAnimationActive()) {
             drawDrawable(canvas, lightUpRectangle, sXNewGame, sYIcons, sXNewGame + iconSize, sYIcons + iconSize);
@@ -289,6 +238,12 @@ public class MainView extends View {
         }
     }
 
+    @Override
+    protected void onSizeChanged(int width, int height, int oldw, int oldh) {
+        super.onSizeChanged(width, height, oldw, oldh);
+        getLayout(width, height);
+    }
+
     public void drawDrawable(Canvas canvas, Drawable draw, int startingX, int startingY, int endingX, int endingY) {
         draw.setBounds(startingX, startingY, endingX, endingY);
         draw.draw(canvas);
@@ -304,6 +259,46 @@ public class MainView extends View {
         canvas.drawText("" + value, sX + cellSize / 2, sY + cellSize / 2 - textShiftY, paint);
     }
 
+    public void drawScoreText(Canvas canvas) {
+        //Drawing the score text: Ver 2
+        paint.setTextSize(bodyTextSize);
+
+        int bodyWidthHighScore = (int) (paint.measureText("" + game.highScore));
+        int bodyWidthScore = (int) (paint.measureText("" + game.score));
+
+        int textWidthHighScore = Math.max(titleWidthHighScore, bodyWidthHighScore) + textPaddingSize * 2;
+        int textWidthScore = Math.max(titleWidthScore, bodyWidthScore) + textPaddingSize * 2;
+
+        int textMiddleHighScore = textWidthHighScore / 2;
+        int textMiddleScore = textWidthScore / 2;
+
+        int eXHighScore = endingX;
+        int sXHighScore = eXHighScore - textWidthHighScore;
+
+        int eXScore = sXHighScore - textPaddingSize;
+        int sXScore = eXScore - textWidthScore;
+
+        //Outputting high-scores box
+        backgroundRectangle.setBounds(sXHighScore, sYAll, eXHighScore, eYAll);
+        backgroundRectangle.draw(canvas);
+        paint.setTextSize(titleTextSize);
+        paint.setColor(TEXT_BROWN);
+        canvas.drawText("HIGH SCORE", sXHighScore + textMiddleHighScore, titleStartYAll, paint);
+        paint.setTextSize(bodyTextSize);
+        paint.setColor(TEXT_WHITE);
+        canvas.drawText("" + game.highScore, sXHighScore + textMiddleHighScore, bodyStartYAll, paint);
+
+
+        //Outputting scores box
+        backgroundRectangle.setBounds(sXScore, sYAll, eXScore, eYAll);
+        backgroundRectangle.draw(canvas);
+        paint.setTextSize(titleTextSize);
+        paint.setColor(TEXT_BROWN);
+        canvas.drawText("SCORE", sXScore + textMiddleScore, titleStartYAll, paint);
+        paint.setTextSize(bodyTextSize);
+        paint.setColor(TEXT_WHITE);
+        canvas.drawText("" + game.score, sXScore + textMiddleScore, bodyStartYAll, paint);
+    }
     public void tick() {
         currentTime = System.nanoTime();
         game.aGrid.tickAll(currentTime - lastFPSTime);
@@ -317,14 +312,6 @@ public class MainView extends View {
     public static int log2(int n){
         if(n <= 0) throw new IllegalArgumentException();
         return 31 - Integer.numberOfLeadingZeros(n);
-    }
-
-    public int getOrientation() {
-        if (this.getMeasuredWidth() > this.getMeasuredHeight()) {
-            return Configuration.ORIENTATION_LANDSCAPE;
-        } else {
-            return Configuration.ORIENTATION_PORTRAIT;
-        }
     }
 
     public void getLayout(int width, int height) {
@@ -370,10 +357,8 @@ public class MainView extends View {
         textShiftYAll = centerText();
         eYAll = (int) (bodyStartYAll + textShiftYAll + bodyTextSize / 2 + textPaddingSize);
 
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            sYIcons = (startingY + eYAll) / 2 - iconSize / 2;
-            sXNewGame = (endingX - iconSize);
-        }
+        sYIcons = (startingY + eYAll) / 2 - iconSize / 2;
+        sXNewGame = (endingX - iconSize);
         resyncTime();
         getScreenSize = false;
     }
