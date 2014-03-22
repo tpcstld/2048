@@ -9,7 +9,7 @@ public class InputListener implements View.OnTouchListener {
     private static final int SWIPE_MIN_DISTANCE = 0;
     private static final int SWIPE_MAX_OFF_PATH = 85;
     private static final int SWIPE_THRESHOLD_VELOCITY = 25;
-    private static final int MOVE_THRESHOLD = 300;
+    private static final int MOVE_THRESHOLD = 250;
     private static final int RESET_STARTING = 10;
 
     private float x;
