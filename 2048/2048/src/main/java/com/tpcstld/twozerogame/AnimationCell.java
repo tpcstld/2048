@@ -19,8 +19,6 @@ public class AnimationCell extends Cell {
         return animationType;
     }
 
-    public long getTimeElapsed() { return timeElapsed; }
-
     public void tick(long timeElapsed) {
         this.timeElapsed = this.timeElapsed + timeElapsed;
     }
