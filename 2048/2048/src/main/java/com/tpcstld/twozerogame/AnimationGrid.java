@@ -38,9 +38,9 @@ public class AnimationGrid {
             }
         }
 
-        for (int xx = 0; xx < field.length; xx++) {
-            for (int yy = 0; yy < field[0].length; yy++) {
-                for (AnimationCell animation : field[xx][yy]) {
+        for (ArrayList<AnimationCell>[] array : field) {
+            for (ArrayList<AnimationCell> list : array) {
+                for (AnimationCell animation : list) {
                     animation.tick(timeElapsed);
                     if (animation.animationDone()) {
                         cancelledAnimations.add(animation);
