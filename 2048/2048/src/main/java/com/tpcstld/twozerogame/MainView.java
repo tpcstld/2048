@@ -80,7 +80,9 @@ public class MainView extends View {
 
         drawScoreText(canvas);
 
-        drawNewGameButton(canvas);
+        if ((game.won || game.lose) && !game.aGrid.isAnimationActive()) {
+            drawNewGameButton(canvas);
+        }
 
         drawCells(canvas);
 
@@ -162,7 +164,7 @@ public class MainView extends View {
     }
 
     public void drawNewGameButton(Canvas canvas) {
-        if ((game.won || game.lose) && !game.aGrid.isAnimationActive()) {
+        if ((game.won || game.lose)) {
             drawDrawable(canvas, lightUpRectangle, sXNewGame, sYIcons, sXNewGame + iconSize, sYIcons + iconSize);
         } else {
             drawDrawable(canvas, backgroundRectangle, sXNewGame, sYIcons, sXNewGame + iconSize, sYIcons + iconSize);
@@ -327,6 +329,7 @@ public class MainView extends View {
         background = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(background);
         drawHeader(canvas);
+        drawNewGameButton(canvas);
         drawBackground(canvas);
         drawBackgroundGrid(canvas);
         drawInstructions(canvas);
