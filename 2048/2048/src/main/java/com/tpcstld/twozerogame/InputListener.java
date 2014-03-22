@@ -46,7 +46,7 @@ public class InputListener implements View.OnTouchListener {
             case MotionEvent.ACTION_MOVE:
                 x = event.getX();
                 y = event.getY();
-                if (!mView.game.won && !mView.game.lose && startingY > 50) {
+                if (!mView.game.won && !mView.game.lose) {
                     float dx = x - previousX;
                     if (Math.abs(lastdx + dx) < Math.abs(lastdx) + Math.abs(dx) && Math.abs(dx) > RESET_STARTING
                             &&  Math.abs(x - startingX) > SWIPE_MIN_DISTANCE) {
