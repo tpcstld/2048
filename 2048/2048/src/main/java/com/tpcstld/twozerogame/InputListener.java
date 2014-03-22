@@ -6,7 +6,6 @@ import android.view.View;
 public class InputListener implements View.OnTouchListener {
 
     private static final int SWIPE_MIN_DISTANCE = 0;
-    private static final int SWIPE_MAX_OFF_PATH = 85;
     private static final int SWIPE_THRESHOLD_VELOCITY = 25;
     private static final int MOVE_THRESHOLD = 250;
     private static final int RESET_STARTING = 10;
@@ -114,12 +113,8 @@ public class InputListener implements View.OnTouchListener {
         return true;
     }
 
-    public boolean checkOnPath(float current, float starting) {
-        return (Math.abs(current - starting) <= SWIPE_MAX_OFF_PATH);
-    }
-
     public float pathMoved() {
-        return (float) ((x - startingX) * (x - startingX) + (y - startingY) * (y - startingY));
+        return (x - startingX) * (x - startingX) + (y - startingY) * (y - startingY);
     }
 
     public boolean inRange(float left, float check, float right) {

@@ -1,8 +1,5 @@
 package com.tpcstld.twozerogame;
 
-/**
- * Created by tpcstld on 3/12/14.
- */
 public class Cell {
     private int x;
     private int y;
