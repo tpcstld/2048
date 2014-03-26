@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -15,6 +16,7 @@ public class MainView extends View {
 
     Paint paint = new Paint();
     public MainGame game;
+    public boolean hasSaveState = false;
 
     boolean getScreenSize = true;
     int cellSize = 0;
@@ -26,6 +28,7 @@ public class MainView extends View {
     int boardMiddleY = 0;
     Drawable backgroundRectangle;
     Drawable[] cellRectangle = new Drawable[12];
+    BitmapDrawable[] bitmapCell= new BitmapDrawable[12];
     Drawable settingsIcon;
     Drawable lightUpRectangle;
     Drawable fadeRectangle;
@@ -104,6 +107,7 @@ public class MainView extends View {
         super.onSizeChanged(width, height, oldw, oldh);
         getLayout(width, height);
         createBackgroundBitmap(width, height);
+        createBitmapCells();
     }
 
     public void drawDrawable(Canvas canvas, Drawable draw, int startingX, int startingY, int endingX, int endingY) {
@@ -246,8 +250,8 @@ public class MainView extends View {
                             paint.setTextSize(textSize * textScaleSize);
 
                             float cellScaleSize = cellSize / 2 * (1 - textScaleSize);
-                            drawDrawable(canvas, cellRectangle[index], (int) (sX + cellScaleSize), (int) (sY + cellScaleSize), (int) (eX - cellScaleSize), (int) (eY - cellScaleSize));
-                            drawCellText(canvas, value, sX, sY);
+                            bitmapCell[index].setBounds((int) (sX + cellScaleSize), (int) (sY + cellScaleSize), (int) (eX - cellScaleSize), (int) (eY - cellScaleSize));
+                            bitmapCell[index].draw(canvas);
                         } else if (aCell.getAnimationType() == MainGame.MERGE_ANIMATION) { // Merging Animation
                             double percentDone = aCell.getPercentageDone();
                             float textScaleSize = (float) (1 + INITIAL_VELOCITY * percentDone
@@ -255,37 +259,30 @@ public class MainView extends View {
                             paint.setTextSize(textSize * textScaleSize);
 
                             float cellScaleSize = cellSize / 2 * (1 - textScaleSize);
-                            drawDrawable(canvas, cellRectangle[index], (int) (sX + cellScaleSize), (int) (sY + cellScaleSize), (int) (eX - cellScaleSize), (int) (eY - cellScaleSize));
-                            drawCellText(canvas, value, sX, sY);
+                            bitmapCell[index].setBounds( (int) (sX + cellScaleSize), (int) (sY + cellScaleSize), (int) (eX - cellScaleSize), (int) (eY - cellScaleSize));
+                            bitmapCell[index].draw(canvas);
                         } else if (aCell.getAnimationType() == MainGame.MOVE_ANIMATION) {  // Moving animation
                             double percentDone = aCell.getPercentageDone();
                             int tempIndex = index;
                             if (aArray.size() >= 2) {
                                 tempIndex = tempIndex - 1;
                             }
-                            paint.setTextSize(textSize);
                             int previousX = aCell.extras[0];
                             int previousY = aCell.extras[1];
                             int currentX = currentTile.getX();
                             int currentY = currentTile.getY();
                             int dX = (int) ((currentX - previousX) * (cellSize + gridWidth) * (percentDone - 1) * 1.0);
                             int dY = (int) ((currentY - previousY) * (cellSize + gridWidth) * (percentDone - 1) * 1.0);
-                            drawDrawable(canvas, cellRectangle[tempIndex], sX + dX, sY + dY, eX + dX, eY + dY);
-                            if (index != tempIndex) {
-                                drawCellText(canvas, value / 2, sX + dX, sY + dY);
-                            } else {
-                                drawCellText(canvas, value, sX + dX, sY + dY);
-                            }
+                            bitmapCell[tempIndex].setBounds(sX + dX, sY + dY, eX + dX, eY + dY);
+                            bitmapCell[tempIndex].draw(canvas);
                         }
                         animated = true;
                     }
 
                     //No active animations? Just draw the cell
                     if (!animated) {
-                        paint.setTextSize(textSize);
-
-                        drawDrawable(canvas, cellRectangle[index], sX, sY, eX, eY);
-                        drawCellText(canvas, value , sX, sY);
+                        bitmapCell[index].setBounds(sX, sY, eX, eY);
+                        bitmapCell[index].draw(canvas);
                     }
                 }
             }
@@ -336,6 +333,18 @@ public class MainView extends View {
 
     }
 
+    public void createBitmapCells() {
+        paint.setTextSize(textSize);
+        paint.setTextAlign(Paint.Align.CENTER);
+        Resources resources = getResources();
+        for (int xx = 0; xx < bitmapCell.length; xx++) {
+            Bitmap bitmap = Bitmap.createBitmap(cellSize, cellSize, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            drawDrawable(canvas, cellRectangle[xx], 0, 0, cellSize, cellSize);
+            drawCellText(canvas, (int) Math.pow(2, xx) , 0, 0);
+            bitmapCell[xx] = new BitmapDrawable(resources, bitmap);
+        }
+    }
 
     public void tick() {
         currentTime = System.nanoTime();

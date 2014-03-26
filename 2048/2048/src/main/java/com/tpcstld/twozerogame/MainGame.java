@@ -92,7 +92,6 @@ public class MainGame {
             for (Tile tile : array) {
                 if (grid.isCellOccupied(tile)) {
                     tile.setMergedFrom(null);
-                    tile.savePosition();
                 }
             }
         }
@@ -105,7 +104,7 @@ public class MainGame {
     }
 
     public void move (int direction) {
-        aGrid = new AnimationGrid(numSquaresX, numSquaresY);
+        aGrid.cancelAnimations();
         // 0: up, 1: right, 2: down, 3: left
         if (lose || won) {
             return;

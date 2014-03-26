@@ -2,7 +2,6 @@ package com.tpcstld.twozerogame;
 
 public class Tile extends Cell {
     private int value;
-    private Cell previousPosition = null;
     private Tile[] mergedFrom = null;
 
     public Tile(int x, int y, int value) {
@@ -15,10 +14,6 @@ public class Tile extends Cell {
         this.value = value;
     }
 
-    public void savePosition() {
-        previousPosition = new Cell(this.getX(), this.getY());
-    }
-
     public void updatePosition(Cell cell) {
         this.setX(cell.getX());
         this.setY(cell.getY());
@@ -28,19 +23,11 @@ public class Tile extends Cell {
         return this.value;
     }
 
-    public void setValue(int value) {
-        this.value = value;
-    }
-
     public Tile[] getMergedFrom() {
        return mergedFrom;
     }
 
     public void setMergedFrom(Tile[] tile) {
         mergedFrom = tile;
-    }
-
-    public Cell getPreviousPosition() {
-        return previousPosition;
     }
 }

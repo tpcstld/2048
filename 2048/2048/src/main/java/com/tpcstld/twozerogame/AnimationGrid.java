@@ -71,6 +71,15 @@ public class AnimationGrid {
         return field[x][y];
     }
 
+    public void cancelAnimations() {
+        for (ArrayList<AnimationCell>[] array : field) {
+            for (ArrayList<AnimationCell> list : array) {
+                list.clear();
+            }
+        }
+        activeAnimations = 0;
+    }
+
     public void cancelAnimation(AnimationCell animation) {
         if (animation.getX() == -1 && animation.getY() == -1) {
             globalAnimation.remove(animation);
