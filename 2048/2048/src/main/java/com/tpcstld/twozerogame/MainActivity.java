@@ -16,8 +16,11 @@ public class MainActivity extends ActionBarActivity {
     final String HEIGHT= "height";
     final String SCORE = "score";
     final String HIGH_SCORE = "high score";
+    final String UNDO_SCORE = "undo score";
     final String WON = "won";
     final String LOSE = "lose";
+    final String CAN_UNDO = "can undo";
+    final String UNDOGRID = "undo";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,23 +31,9 @@ public class MainActivity extends ActionBarActivity {
         view.hasSaveState = settings.getBoolean("save_state", false);
 
         if (savedInstanceState != null) {
-            int[][] saveState = new int[view.game.grid.field.length][view.game.grid.field[0].length];
-            for (int xx = 0; xx < saveState.length; xx++) {
-                saveState[xx] = savedInstanceState.getIntArray("" + xx);
+            if (savedInstanceState.getBoolean("hasState")) {
+                load();
             }
-            for (int xx = 0; xx < saveState.length; xx++) {
-                for (int yy = 0; yy < saveState[0].length; yy++) {
-                    if (saveState[xx][yy] != 0) {
-                        view.game.grid.field[xx][yy] = new Tile(xx, yy, saveState[xx][yy]);
-                    } else {
-                        view.game.grid.field[xx][yy] = null;
-                    }
-                }
-            }
-            view.game.score = savedInstanceState.getLong(SCORE);
-            view.game.highScore = savedInstanceState.getLong(HIGH_SCORE);
-            view.game.won = savedInstanceState.getBoolean(WON);
-            view.game.lose = savedInstanceState.getBoolean(LOSE);
         }
         setContentView(view);
     }
@@ -71,32 +60,20 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        Tile[][] field = view.game.grid.field;
-        int[][] saveState = new int[field.length][field[0].length];
-        for (int xx = 0; xx < field.length; xx++) {
-            for (int yy = 0; yy < field[0].length; yy++) {
-                if (field[xx][yy] != null) {
-                    saveState[xx][yy] = field[xx][yy].getValue();
-                } else {
-                    saveState[xx][yy] = 0;
-                }
-            }
-        }
-        for (int xx = 0; xx < saveState.length; xx++) {
-            savedInstanceState.putIntArray("" + xx, saveState[xx]);
-        }
-        savedInstanceState.putLong(SCORE, view.game.score);
-        savedInstanceState.putLong(HIGH_SCORE, view.game.highScore);
-        savedInstanceState.putBoolean(WON, view.game.won);
-        savedInstanceState.putBoolean(LOSE, view.game.lose);
+        savedInstanceState.putBoolean("hasState", true);
+        save();
     }
 
     protected void onPause() {
         super.onPause();
+        save();
+    }
 
+    private void save() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = settings.edit();
         Tile[][] field = view.game.grid.field;
+        Tile[][] undoField = view.game.grid.undoField;
         editor.putInt(WIDTH, field.length);
         editor.putInt(HEIGHT, field.length);
         for (int xx = 0; xx < field.length; xx++) {
@@ -106,18 +83,29 @@ public class MainActivity extends ActionBarActivity {
                 } else {
                     editor.putInt(xx + " " + yy, 0);
                 }
+
+                if (undoField[xx][yy] != null) {
+                    editor.putInt(UNDOGRID + xx + " " + yy, undoField[xx][yy].getValue());
+                } else {
+                    editor.putInt(UNDOGRID + xx + " " + yy, 0);
+                }
             }
         }
         editor.putLong(SCORE, view.game.score);
         editor.putLong(HIGH_SCORE, view.game.highScore);
+        editor.putLong(UNDO_SCORE, view.game.undoScore);
         editor.putBoolean(WON, view.game.won);
         editor.putBoolean(LOSE, view.game.lose);
+        editor.putBoolean(CAN_UNDO, view.game.grid.canUndo);
         editor.commit();
     }
 
     protected void onResume() {
         super.onResume();
+        load();
+    }
 
+    private void load() {
         //Stopping all animations
         view.game.aGrid.cancelAnimations();
 
@@ -130,12 +118,21 @@ public class MainActivity extends ActionBarActivity {
                 } else if (value == 0) {
                     view.game.grid.field[xx][yy] = null;
                 }
+
+                int undoValue = settings.getInt(UNDOGRID + xx + " " + yy, -1);
+                if (undoValue > 0) {
+                    view.game.grid.undoField[xx][yy] = new Tile(xx, yy, undoValue);
+                } else if (value == 0) {
+                    view.game.grid.undoField[xx][yy] = null;
+                }
             }
         }
 
         view.game.score = settings.getLong(SCORE, view.game.score);
         view.game.highScore = settings.getLong(HIGH_SCORE, view.game.highScore);
+        view.game.undoScore = settings.getLong(UNDO_SCORE, view.game.undoScore);
         view.game.won = settings.getBoolean(WON, view.game.won);
         view.game.lose = settings.getBoolean(LOSE, view.game.lose);
+        view.game.grid.canUndo = settings.getBoolean(CAN_UNDO, view.game.grid.canUndo);
     }
 }

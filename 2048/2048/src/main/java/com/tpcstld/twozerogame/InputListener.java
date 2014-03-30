@@ -1,5 +1,6 @@
 package com.tpcstld.twozerogame;
 
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -104,10 +105,10 @@ public class InputListener implements View.OnTouchListener {
                 y = event.getY();
                 previousDirection = 1;
                 veryLastDirection = 1;
-                if (pathMoved() <= MainView.iconSize
-                        && inRange(MainView.sXNewGame, x, MainView.sXNewGame + MainView.iconSize)
-                        && inRange(MainView.sYIcons, y, MainView.sYIcons + MainView.iconSize)) {
+                if (iconPressed(MainView.sXNewGame, MainView.sYIcons)) {
                     mView.game.newGame();
+                } else if (iconPressed(MainView.sXUndo, MainView.sYIcons)) {
+                    mView.game.revertUndoState();
                 }
         }
         return true;
@@ -115,6 +116,11 @@ public class InputListener implements View.OnTouchListener {
 
     public float pathMoved() {
         return (x - startingX) * (x - startingX) + (y - startingY) * (y - startingY);
+    }
+
+    public boolean iconPressed(int sx, int sy) {
+        return pathMoved() <= MainView.iconSize && inRange(sx, x, sx + MainView.iconSize)
+                && inRange(sy, y, sy + MainView.iconSize);
     }
 
     public boolean inRange(float left, float check, float right) {

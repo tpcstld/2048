@@ -77,6 +77,7 @@ public class AnimationGrid {
                 list.clear();
             }
         }
+        globalAnimation.clear();
         activeAnimations = 0;
     }
 

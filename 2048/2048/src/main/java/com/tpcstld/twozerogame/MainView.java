@@ -29,7 +29,8 @@ public class MainView extends View {
     Drawable backgroundRectangle;
     Drawable[] cellRectangle = new Drawable[12];
     BitmapDrawable[] bitmapCell= new BitmapDrawable[12];
-    Drawable settingsIcon;
+    Drawable newGameIcon;
+    Drawable undoIcon;
     Drawable lightUpRectangle;
     Drawable fadeRectangle;
     Bitmap background = null;
@@ -55,6 +56,7 @@ public class MainView extends View {
 
     static int sYIcons;
     static int sXNewGame;
+    static int sXUndo;
 
     static int iconSize;
     long lastFPSTime = System.nanoTime();
@@ -173,8 +175,14 @@ public class MainView extends View {
         } else {
             drawDrawable(canvas, backgroundRectangle, sXNewGame, sYIcons, sXNewGame + iconSize, sYIcons + iconSize);
         }
-        drawDrawable(canvas, settingsIcon, sXNewGame + iconPaddingSize, sYIcons + iconPaddingSize,
+        drawDrawable(canvas, newGameIcon, sXNewGame + iconPaddingSize, sYIcons + iconPaddingSize,
                 sXNewGame + iconSize - iconPaddingSize, sYIcons + iconSize - iconPaddingSize);
+    }
+
+    public void drawUndoButton(Canvas canvas) {
+        drawDrawable(canvas, backgroundRectangle, sXUndo, sYIcons, sXUndo + iconSize, sYIcons + iconSize);
+        drawDrawable(canvas, undoIcon, sXUndo+ iconPaddingSize, sYIcons + iconPaddingSize,
+                sXUndo + iconSize - iconPaddingSize, sYIcons + iconSize - iconPaddingSize);
     }
 
     public void drawHeader(Canvas canvas) {
@@ -327,6 +335,7 @@ public class MainView extends View {
         Canvas canvas = new Canvas(background);
         drawHeader(canvas);
         drawNewGameButton(canvas);
+        drawUndoButton(canvas);
         drawBackground(canvas);
         drawBackgroundGrid(canvas);
         drawInstructions(canvas);
@@ -406,6 +415,7 @@ public class MainView extends View {
 
         sYIcons = (startingY + eYAll) / 2 - iconSize / 2;
         sXNewGame = (endingX - iconSize);
+        sXUndo = sXNewGame - iconSize * 3 / 2 - iconPaddingSize;
         resyncTime();
         getScreenSize = false;
     }
@@ -433,7 +443,8 @@ public class MainView extends View {
             cellRectangle[9] =  resources.getDrawable(R.drawable.cell_rectangle_512);
             cellRectangle[10] = resources.getDrawable(R.drawable.cell_rectangle_1024);
             cellRectangle[11] = resources.getDrawable(R.drawable.cell_rectangle_2048);
-            settingsIcon = resources.getDrawable(R.drawable.ic_action_refresh);
+            newGameIcon = resources.getDrawable(R.drawable.ic_action_refresh);
+            undoIcon = resources.getDrawable(R.drawable.ic_action_undo);
             lightUpRectangle = resources.getDrawable(R.drawable.light_up_rectangle);
             fadeRectangle = resources.getDrawable(R.drawable.fade_rectangle);
             TEXT_WHITE = resources.getColor(R.color.text_white);

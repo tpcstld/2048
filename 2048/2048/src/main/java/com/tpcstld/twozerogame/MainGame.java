@@ -18,6 +18,7 @@ public class MainGame {
 
     long score = 0;
     long highScore = 0;
+    long undoScore = 0;
     boolean won = false;
     boolean lose = false;
 
@@ -69,10 +70,14 @@ public class MainGame {
         if (grid.isCellsAvailable()) {
             int value = Math.random() < 0.9 ? 2 : 4;
             Tile tile = new Tile(grid.randomAvailableCell(), value);
-            grid.insertTile(tile);
-            aGrid.startAnimation(tile.getX(), tile.getY(), SPAWN_ANIMATION,
-                    SPAWN_ANIMATION_TIME, MOVE_ANIMATION_TIME, null); //Direction: -1 = EXPANDING
+            spawnTile(tile);
         }
+    }
+
+    public void spawnTile(Tile tile) {
+        grid.insertTile(tile);
+        aGrid.startAnimation(tile.getX(), tile.getY(), SPAWN_ANIMATION,
+                SPAWN_ANIMATION_TIME, MOVE_ANIMATION_TIME, null); //Direction: -1 = EXPANDING
     }
 
     public void recordHighScore() {
@@ -88,6 +93,7 @@ public class MainGame {
     }
 
     public void prepareTiles() {
+        grid.saveTiles();
         for (Tile[] array : grid.field) {
             for (Tile tile : array) {
                 if (grid.isCellOccupied(tile)) {
@@ -103,7 +109,22 @@ public class MainGame {
         tile.updatePosition(cell);
     }
 
+    public void saveUndoState() {
+        grid.saveTiles();
+        undoScore = score;
+    }
+
+    public void revertUndoState() {
+        aGrid.cancelAnimations();
+        grid.revertTiles();
+        score = undoScore;
+        won = false;
+        lose = false;
+        mView.postInvalidate();
+    }
+
     public void move (int direction) {
+        saveUndoState();
         aGrid.cancelAnimations();
         // 0: up, 1: right, 2: down, 3: left
         if (lose || won) {
@@ -166,15 +187,19 @@ public class MainGame {
 
         if (moved) {
             addRandomTile();
-
-            if (!movesAvailable()) {
-                lose = true;
-                endGame();
-            }
-
+            checkLose();
         }
         mView.resyncTime();
         mView.postInvalidate();
+    }
+
+    public void checkLose() {
+        if (!movesAvailable()) {
+            lose = true;
+            endGame();
+        } else {
+            lose = false;
+        }
     }
 
     public void endGame() {
