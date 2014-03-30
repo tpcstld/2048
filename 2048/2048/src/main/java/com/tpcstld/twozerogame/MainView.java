@@ -442,6 +442,7 @@ public class MainView extends View {
             this.setBackgroundColor(resources.getColor(R.color.background));
             Typeface font = Typeface.createFromAsset(resources.getAssets(), "ClearSans-Bold.ttf");
             paint.setTypeface(font);
+            paint.setAntiAlias(true);
         } catch (Exception e) {
             System.out.println("Error getting assets?");
         }
