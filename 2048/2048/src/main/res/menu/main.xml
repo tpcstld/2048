@@ -2,7 +2,5 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.tpcstld.twozerogame.MainActivity" >
-    <item android:id="@+id/new_game"
-        android:title="@string/new_game"/>
 
 </menu>
