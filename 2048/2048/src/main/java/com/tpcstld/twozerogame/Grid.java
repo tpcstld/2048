@@ -1,16 +1,21 @@
 package com.tpcstld.twozerogame;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Grid {
 
     public Tile[][] field;
+    public Tile[][] undoField;
+    public boolean canUndo = false;
 
     public Grid(int sizeX, int sizeY) {
         field = new Tile[sizeX][sizeY];
+        undoField = new Tile[sizeX][sizeY];
         for (int xx = 0; xx < field.length; xx++) {
             for (int yy = 0; yy < field[0].length; yy++) {
                 field[xx][yy] = null;
+                undoField[xx][yy] = null;
             }
         }
     }
@@ -79,5 +84,33 @@ public class Grid {
 
     public void removeTile(Tile tile) {
         field[tile.getX()][tile.getY()] = null;
+    }
+
+    public void saveTiles() {
+        canUndo = true;
+        for (int xx = 0; xx < field.length; xx++) {
+            for (int yy = 0; yy < field[0].length; yy++) {
+                if (field[xx][yy] == null) {
+                    undoField[xx][yy] = null;
+                } else {
+                    undoField[xx][yy] = new Tile(xx, yy, field[xx][yy].getValue());
+                }
+            }
+        }
+    }
+
+    public void revertTiles() {
+        if (canUndo) {
+            canUndo = false;
+            for (int xx = 0; xx < undoField.length; xx++) {
+                for (int yy = 0; yy < undoField[0].length; yy++) {
+                    if (undoField[xx][yy] == null) {
+                        field[xx][yy] = null;
+                    } else {
+                        field[xx][yy] = new Tile(xx, yy, undoField[xx][yy].getValue());
+                    }
+                }
+            }
+        }
     }
 }

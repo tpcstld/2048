@@ -120,7 +120,8 @@ public class MainGame {
         score = undoScore;
         won = false;
         lose = false;
-        mView.postInvalidate();
+        mView.refreshLastTime = true;
+        mView.invalidate();
     }
 
     public void move (int direction) {
