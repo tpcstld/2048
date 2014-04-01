@@ -100,15 +100,13 @@ public class Grid {
     }
 
     public void revertTiles() {
-        if (canUndo) {
-            canUndo = false;
-            for (int xx = 0; xx < undoField.length; xx++) {
-                for (int yy = 0; yy < undoField[0].length; yy++) {
-                    if (undoField[xx][yy] == null) {
-                        field[xx][yy] = null;
-                    } else {
-                        field[xx][yy] = new Tile(xx, yy, undoField[xx][yy].getValue());
-                    }
+        canUndo = false;
+        for (int xx = 0; xx < undoField.length; xx++) {
+            for (int yy = 0; yy < undoField[0].length; yy++) {
+                if (undoField[xx][yy] == null) {
+                    field[xx][yy] = null;
+                } else {
+                    field[xx][yy] = new Tile(xx, yy, undoField[xx][yy].getValue());
                 }
             }
         }

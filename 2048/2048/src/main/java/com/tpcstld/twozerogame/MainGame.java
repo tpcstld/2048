@@ -52,12 +52,13 @@ public class MainGame {
             recordHighScore();
         }
         score = 0;
+        undoScore = 0;
         won = false;
         lose = false;
         addStartTiles();
         mView.refreshLastTime = true;
         mView.resyncTime();
-        mView.postInvalidate();
+        mView.invalidate();
     }
 
     public void addStartTiles() {
@@ -115,13 +116,15 @@ public class MainGame {
     }
 
     public void revertUndoState() {
-        aGrid.cancelAnimations();
-        grid.revertTiles();
-        score = undoScore;
-        won = false;
-        lose = false;
-        mView.refreshLastTime = true;
-        mView.invalidate();
+        if (grid.canUndo) {
+            aGrid.cancelAnimations();
+            grid.revertTiles();
+            score = undoScore;
+            won = false;
+            lose = false;
+            mView.refreshLastTime = true;
+            mView.invalidate();
+        }
     }
 
     public void move (int direction) {
@@ -191,7 +194,7 @@ public class MainGame {
             checkLose();
         }
         mView.resyncTime();
-        mView.postInvalidate();
+        mView.invalidate();
     }
 
     public void checkLose() {
