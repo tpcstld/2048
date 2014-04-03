@@ -10,7 +10,7 @@ import java.util.List;
 
 public class MainGame {
 
-    public Grid grid;
+    public Grid grid = null;
     public AnimationGrid aGrid;
     final int numSquaresX = 4;
     final int numSquaresY = 4;
@@ -21,6 +21,8 @@ public class MainGame {
     long undoScore = 0;
     boolean won = false;
     boolean lose = false;
+    boolean lastWon = false;
+    boolean lastLose = false;
 
     Context mContext;
 
@@ -44,7 +46,12 @@ public class MainGame {
     }
 
     public void newGame() {
-        grid = new Grid(numSquaresX, numSquaresY);
+        if (grid == null) {
+            grid = new Grid(numSquaresX, numSquaresY);
+        } else {
+            saveUndoState();
+            grid.clearGrid();
+        }
         aGrid = new AnimationGrid(numSquaresX, numSquaresY);
         highScore = getHighScore();
         if (score >= highScore) {
@@ -52,7 +59,6 @@ public class MainGame {
             recordHighScore();
         }
         score = 0;
-        undoScore = 0;
         won = false;
         lose = false;
         addStartTiles();
@@ -113,6 +119,8 @@ public class MainGame {
     public void saveUndoState() {
         grid.saveTiles();
         undoScore = score;
+        lastWon = won;
+        lastLose = lose;
     }
 
     public void revertUndoState() {
@@ -120,8 +128,8 @@ public class MainGame {
             aGrid.cancelAnimations();
             grid.revertTiles();
             score = undoScore;
-            won = false;
-            lose = false;
+            won = lastWon;
+            lose = lastLose;
             mView.refreshLastTime = true;
             mView.invalidate();
         }
@@ -198,7 +206,7 @@ public class MainGame {
     }
 
     public void checkLose() {
-        if (!movesAvailable()) {
+        if (!movesAvailable() && !won) {
             lose = true;
             endGame();
         } else {

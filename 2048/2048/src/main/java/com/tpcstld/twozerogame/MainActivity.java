@@ -20,7 +20,10 @@ public class MainActivity extends ActionBarActivity {
     final String WON = "won";
     final String LOSE = "lose";
     final String CAN_UNDO = "can undo";
-    final String UNDOGRID = "undo";
+    final String UNDO_GRID = "undo";
+    final String LAST_WON = "last won";
+    final String LAST_LOSE = "last lose";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,9 +88,9 @@ public class MainActivity extends ActionBarActivity {
                 }
 
                 if (undoField[xx][yy] != null) {
-                    editor.putInt(UNDOGRID + xx + " " + yy, undoField[xx][yy].getValue());
+                    editor.putInt(UNDO_GRID + xx + " " + yy, undoField[xx][yy].getValue());
                 } else {
-                    editor.putInt(UNDOGRID + xx + " " + yy, 0);
+                    editor.putInt(UNDO_GRID + xx + " " + yy, 0);
                 }
             }
         }
@@ -97,6 +100,8 @@ public class MainActivity extends ActionBarActivity {
         editor.putBoolean(WON, view.game.won);
         editor.putBoolean(LOSE, view.game.lose);
         editor.putBoolean(CAN_UNDO, view.game.grid.canUndo);
+        editor.putBoolean(LAST_WON, view.game.lastWon);
+        editor.putBoolean(LAST_LOSE, view.game.lastLose);
         editor.commit();
     }
 
@@ -119,7 +124,7 @@ public class MainActivity extends ActionBarActivity {
                     view.game.grid.field[xx][yy] = null;
                 }
 
-                int undoValue = settings.getInt(UNDOGRID + xx + " " + yy, -1);
+                int undoValue = settings.getInt(UNDO_GRID + xx + " " + yy, -1);
                 if (undoValue > 0) {
                     view.game.grid.undoField[xx][yy] = new Tile(xx, yy, undoValue);
                 } else if (value == 0) {
@@ -134,5 +139,7 @@ public class MainActivity extends ActionBarActivity {
         view.game.won = settings.getBoolean(WON, view.game.won);
         view.game.lose = settings.getBoolean(LOSE, view.game.lose);
         view.game.grid.canUndo = settings.getBoolean(CAN_UNDO, view.game.grid.canUndo);
+        view.game.lastWon = settings.getBoolean(LAST_WON, view.game.lastWon);
+        view.game.lastLose = settings.getBoolean(LAST_LOSE, view.game.lastLose);
     }
 }

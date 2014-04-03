@@ -12,12 +12,8 @@ public class Grid {
     public Grid(int sizeX, int sizeY) {
         field = new Tile[sizeX][sizeY];
         undoField = new Tile[sizeX][sizeY];
-        for (int xx = 0; xx < field.length; xx++) {
-            for (int yy = 0; yy < field[0].length; yy++) {
-                field[xx][yy] = null;
-                undoField[xx][yy] = null;
-            }
-        }
+        clearGrid();
+        clearUndoGrid();
     }
 
     public Cell randomAvailableCell() {
@@ -108,6 +104,22 @@ public class Grid {
                 } else {
                     field[xx][yy] = new Tile(xx, yy, undoField[xx][yy].getValue());
                 }
+            }
+        }
+    }
+
+    public void clearGrid() {
+        for (int xx = 0; xx < field.length; xx++) {
+            for (int yy = 0; yy < field[0].length; yy++) {
+                field[xx][yy] = null;
+            }
+        }
+    }
+
+    public void clearUndoGrid() {
+        for (int xx = 0; xx < field.length; xx++) {
+            for (int yy = 0; yy < field[0].length; yy++) {
+                undoField[xx][yy] = null;
             }
         }
     }
