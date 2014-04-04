@@ -21,6 +21,7 @@ public class InputListener implements View.OnTouchListener {
     private float startingY;
     private int previousDirection = 1;
     private int veryLastDirection = 1;
+    private boolean hasMoved = false;
 
     MainView mView;
 
@@ -41,6 +42,7 @@ public class InputListener implements View.OnTouchListener {
                 previousY = y;
                 lastdx = 0;
                 lastdy = 0;
+                hasMoved = false;
                 return true;
             case MotionEvent.ACTION_MOVE:
                 x = event.getX();
@@ -92,6 +94,7 @@ public class InputListener implements View.OnTouchListener {
                             mView.game.move(3);
                         }
                         if (moved) {
+                            hasMoved = true;
                             startingX = x;
                             startingY = y;
                         }
@@ -105,10 +108,13 @@ public class InputListener implements View.OnTouchListener {
                 y = event.getY();
                 previousDirection = 1;
                 veryLastDirection = 1;
-                if (iconPressed(MainView.sXNewGame, MainView.sYIcons)) {
-                    mView.game.newGame();
-                } else if (iconPressed(MainView.sXUndo, MainView.sYIcons)) {
-                    mView.game.revertUndoState();
+                //"Menu" inputs
+                if (!hasMoved) {
+                    if (iconPressed(mView.sXNewGame, mView.sYIcons)) {
+                        mView.game.newGame();
+                    } else if (iconPressed(mView.sXUndo, mView.sYIcons)) {
+                        mView.game.revertUndoState();
+                    }
                 }
         }
         return true;
@@ -119,8 +125,8 @@ public class InputListener implements View.OnTouchListener {
     }
 
     public boolean iconPressed(int sx, int sy) {
-        return pathMoved() <= MainView.iconSize && inRange(sx, x, sx + MainView.iconSize)
-                && inRange(sy, y, sy + MainView.iconSize);
+        return pathMoved() <= mView.iconSize && inRange(sx, x, sx + mView.iconSize)
+                && inRange(sy, y, sy + mView.iconSize);
     }
 
     public boolean inRange(float left, float check, float right) {
