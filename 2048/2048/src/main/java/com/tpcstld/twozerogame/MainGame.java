@@ -93,7 +93,7 @@ public class MainGame {
 
     private void addRandomTile() {
         if (grid.isCellsAvailable()) {
-            int value = Math.random() < 0.9 ? 2 : 2048;
+            int value = Math.random() < 0.9 ? 2 : 4;
             Tile tile = new Tile(grid.randomAvailableCell(), value);
             spawnTile(tile);
         }
