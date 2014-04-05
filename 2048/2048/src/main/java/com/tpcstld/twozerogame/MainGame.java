@@ -25,22 +25,34 @@ public class MainGame {
     public static final int startingMaxValue = 2048;
     public static final int endingMaxValue = 8192;
 
+    //Odd state = game is not active
+    //Even state = game is active
+    //Win state = active state + 1
+    public static final int GAME_WIN = 1;
+    public static final int GAME_LOST = -1;
+    public static final int GAME_NORMAL = 0;
+    public static final int GAME_NORMAL_WON = 1;
+    public static final int GAME_ENDLESS = 2;
+    public static final int GAME_ENDLESS_WON = 3;
+
 
     public Grid grid = null;
     public AnimationGrid aGrid;
     final int numSquaresX = 4;
     final int numSquaresY = 4;
     final int startTiles = 2;
-    public int maxValue = startingMaxValue;
 
+    public int gameState = 0;
+    public boolean canUndo;
 
     public long score = 0;
     public long highScore = 0;
-    public long undoScore = 0;
-    public boolean won = false;
-    public boolean lose = false;
-    public boolean lastWon = false;
-    public boolean lastLose = false;
+
+    public long lastScore = 0;
+    public int lastGameState = 0;
+
+    private long bufferScore = 0;
+    private int bufferGameState = 0;
 
     private Context mContext;
 
@@ -55,6 +67,7 @@ public class MainGame {
         if (grid == null) {
             grid = new Grid(numSquaresX, numSquaresY);
         } else {
+            prepareUndoState();
             saveUndoState();
             grid.clearGrid();
         }
@@ -65,49 +78,46 @@ public class MainGame {
             recordHighScore();
         }
         score = 0;
-        maxValue = startingMaxValue;
-        won = false;
-        lose = false;
+        gameState = GAME_NORMAL;
         addStartTiles();
         mView.refreshLastTime = true;
         mView.resyncTime();
         mView.invalidate();
     }
 
-    public void addStartTiles() {
+    private void addStartTiles() {
         for (int xx = 0; xx < startTiles; xx++) {
             this.addRandomTile();
         }
     }
 
-    public void addRandomTile() {
+    private void addRandomTile() {
         if (grid.isCellsAvailable()) {
-            int value = Math.random() < 0.9 ? 2 : 4;
+            int value = Math.random() < 0.9 ? 2 : 2048;
             Tile tile = new Tile(grid.randomAvailableCell(), value);
             spawnTile(tile);
         }
     }
 
-    public void spawnTile(Tile tile) {
+    private void spawnTile(Tile tile) {
         grid.insertTile(tile);
         aGrid.startAnimation(tile.getX(), tile.getY(), SPAWN_ANIMATION,
                 SPAWN_ANIMATION_TIME, MOVE_ANIMATION_TIME, null); //Direction: -1 = EXPANDING
     }
 
-    public void recordHighScore() {
+    private void recordHighScore() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mContext);
         SharedPreferences.Editor editor = settings.edit();
         editor.putLong(HIGH_SCORE, highScore);
         editor.commit();
     }
 
-    public long getHighScore() {
+    private long getHighScore() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mContext);
         return settings.getLong(HIGH_SCORE, -1);
     }
 
-    public void prepareTiles() {
-        grid.saveTiles();
+    private void prepareTiles() {
         for (Tile[] array : grid.field) {
             for (Tile tile : array) {
                 if (grid.isCellOccupied(tile)) {
@@ -117,38 +127,56 @@ public class MainGame {
         }
     }
 
-    public void moveTile(Tile tile, Cell cell) {
+    private void moveTile(Tile tile, Cell cell) {
         grid.field[tile.getX()][tile.getY()] = null;
         grid.field[cell.getX()][cell.getY()] = tile;
         tile.updatePosition(cell);
     }
 
-    public void saveUndoState() {
+    private void saveUndoState() {
         grid.saveTiles();
-        undoScore = score;
-        lastWon = won;
-        lastLose = lose;
+        canUndo = true;
+        lastScore =  bufferScore;
+        lastGameState = bufferGameState;
+    }
+
+    private void prepareUndoState() {
+        grid.prepareSaveTiles();
+        bufferScore = score;
+        bufferGameState = gameState;
     }
 
     public void revertUndoState() {
-        if (grid.canUndo) {
+        if (canUndo) {
+            canUndo = false;
             aGrid.cancelAnimations();
             grid.revertTiles();
-            score = undoScore;
-            won = lastWon;
-            lose = lastLose;
+            score = lastScore;
+            gameState = lastGameState;
             mView.refreshLastTime = true;
             mView.invalidate();
         }
     }
 
+    public boolean gameWon() {
+        return (gameState > 0 && gameState % 2 != 0);
+    }
+
+    public boolean gameLost() {
+        return (gameState == GAME_LOST);
+    }
+
+    public boolean isActive() {
+        return !(gameWon() || gameLost());
+    }
+
     public void move (int direction) {
-        saveUndoState();
         aGrid.cancelAnimations();
         // 0: up, 1: right, 2: down, 3: left
-        if (lose || won) {
+        if (!isActive()) {
             return;
         }
+        prepareUndoState();
         Cell vector = getVector(direction);
         List<Integer> traversalsX = buildTraversalsX(vector);
         List<Integer> traversalsY = buildTraversalsY(vector);
@@ -187,8 +215,8 @@ public class MainGame {
                         highScore = Math.max(score, highScore);
 
                         // The mighty 2048 tile
-                        if (merged.getValue() >= maxValue) {
-                            won = true;
+                        if (merged.getValue() >= winValue() && !gameWon()) {
+                            gameState = gameState + GAME_WIN; // Set win state
                             endGame();
                         }
                     } else {
@@ -205,6 +233,7 @@ public class MainGame {
         }
 
         if (moved) {
+            saveUndoState();
             addRandomTile();
             checkLose();
         }
@@ -212,16 +241,14 @@ public class MainGame {
         mView.invalidate();
     }
 
-    public void checkLose() {
-        if (!movesAvailable() && !won) {
-            lose = true;
+    private void checkLose() {
+        if (!movesAvailable() && !gameWon()) {
+            gameState = GAME_LOST;
             endGame();
-        } else {
-            lose = false;
         }
     }
 
-    public void endGame() {
+    private void endGame() {
         aGrid.startAnimation(-1, -1, FADE_GLOBAL_ANIMATION, NOTIFICATION_ANIMATION_TIME, NOTIFICATION_DELAY_TIME, null);
         if (score >= highScore) {
             highScore = score;
@@ -229,7 +256,7 @@ public class MainGame {
         }
     }
 
-    public Cell getVector(int direction) {
+    private Cell getVector(int direction) {
         Cell[] map = {
                 new Cell(0, -1), // up
                 new Cell(1, 0),  // right
@@ -239,7 +266,7 @@ public class MainGame {
         return map[direction];
     }
 
-    public List<Integer> buildTraversalsX(Cell vector) {
+    private List<Integer> buildTraversalsX(Cell vector) {
         List<Integer> traversals = new ArrayList<Integer>();
 
         for (int xx = 0; xx < numSquaresX; xx++) {
@@ -252,7 +279,7 @@ public class MainGame {
        return traversals;
     }
 
-    public List<Integer> buildTraversalsY(Cell vector) {
+    private List<Integer> buildTraversalsY(Cell vector) {
         List<Integer> traversals = new ArrayList<Integer>();
 
         for (int xx = 0; xx <numSquaresY; xx++) {
@@ -265,7 +292,7 @@ public class MainGame {
         return traversals;
     }
 
-    public Cell[] findFarthestPosition(Cell cell, Cell vector) {
+    private Cell[] findFarthestPosition(Cell cell, Cell vector) {
         Cell previous;
         Cell nextCell = new Cell(cell.getX(), cell.getY());
         do {
@@ -278,11 +305,11 @@ public class MainGame {
         return answer;
     }
 
-    public boolean movesAvailable() {
+    private boolean movesAvailable() {
         return grid.isCellsAvailable() || tileMatchesAvailable();
     }
 
-    public boolean tileMatchesAvailable() {
+    private boolean tileMatchesAvailable() {
         Tile tile;
 
         for (int xx = 0; xx < numSquaresX; xx++) {
@@ -307,18 +334,25 @@ public class MainGame {
         return false;
     }
 
-    public boolean positionsEqual(Cell first, Cell second) {
+    private boolean positionsEqual(Cell first, Cell second) {
         return first.getX() == second.getX() && first.getY() == second.getY();
     }
 
+    private int winValue() {
+        if (!canContinue()) {
+            return endingMaxValue;
+        } else {
+            return startingMaxValue;
+        }
+    }
+
     public void setEndlessMode() {
-        maxValue = endingMaxValue;
-        won = false;
+        gameState = GAME_ENDLESS;
         mView.invalidate();
         mView.refreshLastTime = true;
     }
 
     public boolean canContinue() {
-        return maxValue != endingMaxValue;
+        return !(gameState == GAME_ENDLESS || gameState == GAME_ENDLESS_WON);
     }
 }
