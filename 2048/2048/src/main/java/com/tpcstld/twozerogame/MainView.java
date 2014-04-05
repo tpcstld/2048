@@ -18,37 +18,35 @@ public class MainView extends View {
     Paint paint = new Paint();
     public MainGame game;
     public boolean hasSaveState = false;
-    private int maxValue = 2048;
+    private final int numCellTypes = 14;
+    public boolean continueButtonEnabled = false;
 
     //Layout variables
     private int cellSize = 0;
     private float textSize = 0;
     private int gridWidth = 0;
-    private int screenMiddleX = 0;
-    private int screenMiddleY = 0;
-    private int boardMiddleX = 0;
-    private int boardMiddleY = 0;
     private int TEXT_BLACK;
     private int TEXT_WHITE;
     private int TEXT_BROWN;
-    private int startingX;
-    private int startingY;
-    private int endingX;
-    private int endingY;
+    public int startingX;
+    public int startingY;
+    public int endingX;
+    public int endingY;
+    private int textPaddingSize;
+    private int iconPaddingSize;
 
     //Assets
     private Drawable backgroundRectangle;
-    private Drawable[] cellRectangle = new Drawable[12];
-    private BitmapDrawable[] bitmapCell= new BitmapDrawable[12];
+    private Drawable[] cellRectangle = new Drawable[numCellTypes];
+    private BitmapDrawable[] bitmapCell= new BitmapDrawable[numCellTypes];
     private Drawable newGameIcon;
     private Drawable undoIcon;
     private Drawable lightUpRectangle;
     private Drawable fadeRectangle;
     private Bitmap background = null;
-
-
-    private int halfNumSquaresX;
-    private int halfNumSquaresY;
+    private BitmapDrawable loseGameOverlay;
+    private BitmapDrawable winGameContinueOverlay;
+    private BitmapDrawable winGameFinalOverlay;
 
     //Text variables
     private int sYAll;
@@ -71,6 +69,9 @@ public class MainView extends View {
     private String instructionsText;
     private String winText;
     private String loseText;
+    private String continueText;
+    private String forNowText;
+    private String endlessModeText;
 
     long lastFPSTime = System.nanoTime();
     long currentTime = System.nanoTime();
@@ -84,8 +85,6 @@ public class MainView extends View {
     boolean refreshLastTime = true;
 
     static final int BASE_ANIMATION_TIME = 100000000;
-    static int textPaddingSize = 0;
-    static int iconPaddingSize = 0;
 
     static final float MERGING_ACCELERATION = (float) -0.5;
     static final float INITIAL_VELOCITY = (1 - MERGING_ACCELERATION) / 4;
@@ -106,6 +105,10 @@ public class MainView extends View {
 
         drawEndGameState(canvas);
 
+        if (!game.canContinue()) {
+            drawEndlessText(canvas);
+        }
+
         //Refresh the screen if there is still an animation running
         if (game.aGrid.isAnimationActive()) {
             invalidate(startingX, startingY, endingX, endingY);
@@ -123,6 +126,7 @@ public class MainView extends View {
         getLayout(width, height);
         createBackgroundBitmap(width, height);
         createBitmapCells();
+        createOverlays();
     }
 
     public void drawDrawable(Canvas canvas, Drawable draw, int startingX, int startingY, int endingX, int endingY) {
@@ -168,7 +172,7 @@ public class MainView extends View {
         canvas.drawText(highScoreTitle, sXHighScore + textMiddleHighScore, titleStartYAll, paint);
         paint.setTextSize(bodyTextSize);
         paint.setColor(TEXT_WHITE);
-        canvas.drawText("" + game.highScore, sXHighScore + textMiddleHighScore, bodyStartYAll, paint);
+        canvas.drawText(String.valueOf(game.highScore), sXHighScore + textMiddleHighScore, bodyStartYAll, paint);
 
 
         //Outputting scores box
@@ -179,7 +183,7 @@ public class MainView extends View {
         canvas.drawText(scoreTitle, sXScore + textMiddleScore, titleStartYAll, paint);
         paint.setTextSize(bodyTextSize);
         paint.setColor(TEXT_WHITE);
-        canvas.drawText("" + game.score, sXScore + textMiddleScore, bodyStartYAll, paint);
+        canvas.drawText(String.valueOf(game.score), sXScore + textMiddleScore, bodyStartYAll, paint);
     }
 
     public void drawNewGameButton(Canvas canvas, boolean lightUp) {
@@ -312,34 +316,64 @@ public class MainView extends View {
 
     public void drawEndGameState(Canvas canvas) {
         double alphaChange = 1;
-        //Animation: Dynamically change the alpha
+        continueButtonEnabled = false;
         for (AnimationCell animation : game.aGrid.globalAnimation) {
             if (animation.getAnimationType() == MainGame.FADE_GLOBAL_ANIMATION) {
                 alphaChange = animation.getPercentageDone();
             }
-
         }
-        // Displaying game over
+        BitmapDrawable displayOverlay = null;
         if (game.won) {
-            lightUpRectangle.setAlpha((int) (127 * alphaChange));
-            drawDrawable(canvas, lightUpRectangle ,startingX, startingY, endingX, endingY);
+            if (game.canContinue()) {
+                continueButtonEnabled = true;
+                displayOverlay = winGameContinueOverlay;
+            } else {
+                displayOverlay = winGameFinalOverlay;
+            }
+        } else if (game.lose) {
+            displayOverlay = loseGameOverlay;
+        }
+        if (displayOverlay != null) {
+            displayOverlay.setBounds(startingX, startingY, endingX, endingY);
+            displayOverlay.setAlpha((int) (255 * alphaChange));
+            displayOverlay.draw(canvas);
+        }
+    }
+
+    public void drawEndlessText(Canvas canvas) {
+        paint.setTextAlign(Paint.Align.LEFT);
+        paint.setTextSize(bodyTextSize);
+        paint.setColor(TEXT_BLACK);
+        canvas.drawText(endlessModeText, startingX, sYIcons - centerText() * 2, paint);
+    }
+
+    public void createEndGameStates (Canvas canvas, boolean win, boolean showButton) {
+        int width = endingX - startingX;
+        int length = endingY - startingY;
+        int middleX = width / 2;
+        int middleY = length / 2;
+        if (win) {
+            lightUpRectangle.setAlpha(127);
+            drawDrawable(canvas, lightUpRectangle , 0, 0, width, length);
             lightUpRectangle.setAlpha(255);
             paint.setColor(TEXT_WHITE);
-            paint.setAlpha((int) (255 * alphaChange));
+            paint.setAlpha(255);
             paint.setTextSize(gameOverTextSize);
             paint.setTextAlign(Paint.Align.CENTER);
-            canvas.drawText(winText, boardMiddleX, boardMiddleY - centerText(), paint);
-            paint.setAlpha(255);
-        } else if (game.lose) {
-            fadeRectangle.setAlpha((int) (127 * alphaChange));
-            drawDrawable(canvas, fadeRectangle, startingX, startingY, endingX, endingY);
+            int textBottom = middleY - centerText();
+            canvas.drawText(winText, middleX, textBottom, paint);
+            paint.setTextSize(bodyTextSize);
+            String text = showButton? continueText : forNowText;
+            canvas.drawText(text, middleX, textBottom + textPaddingSize * 2 - centerText() * 2, paint);
+        } else {
+            fadeRectangle.setAlpha(127);
+            drawDrawable(canvas, fadeRectangle, 0, 0, width, length);
             fadeRectangle.setAlpha(255);
             paint.setColor(TEXT_BLACK);
-            paint.setAlpha((int) (255 * alphaChange));
+            paint.setAlpha(255);
             paint.setTextSize(gameOverTextSize);
             paint.setTextAlign(Paint.Align.CENTER);
-            canvas.drawText(loseText, boardMiddleX, boardMiddleY - centerText(), paint);
-            paint.setAlpha(255);
+            canvas.drawText(loseText, middleX, middleY - centerText(), paint);
         }
     }
 
@@ -368,6 +402,23 @@ public class MainView extends View {
         }
     }
 
+    public void createOverlays() {
+        Resources resources = getResources();
+        //Initalize overlays
+        Bitmap bitmap = Bitmap.createBitmap(endingX - startingX, endingY - startingY, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        createEndGameStates(canvas, true, true);
+        winGameContinueOverlay = new BitmapDrawable(resources, bitmap);
+        bitmap = Bitmap.createBitmap(endingX - startingX, endingY - startingY, Bitmap.Config.ARGB_8888);
+        canvas = new Canvas(bitmap);
+        createEndGameStates(canvas, true, false);
+        winGameFinalOverlay = new BitmapDrawable(resources, bitmap);
+        bitmap = Bitmap.createBitmap(endingX - startingX, endingY - startingY, Bitmap.Config.ARGB_8888);
+        canvas = new Canvas(bitmap);
+        createEndGameStates(canvas, false, false);
+        loseGameOverlay = new BitmapDrawable(resources, bitmap);
+    }
+
     public void tick() {
         currentTime = System.nanoTime();
         game.aGrid.tickAll(currentTime - lastFPSTime);
@@ -386,10 +437,10 @@ public class MainView extends View {
     public void getLayout(int width, int height) {
         cellSize = Math.min(width / (game.numSquaresX + 1), height / (game.numSquaresY + 3));
         gridWidth = cellSize / 7;
-        screenMiddleX = width / 2;
-        screenMiddleY = height / 2;
-        boardMiddleX = screenMiddleX;
-        boardMiddleY = screenMiddleY  + cellSize / 2;
+        int screenMiddleX = width / 2;
+        int screenMiddleY = height / 2;
+        int boardMiddleX = screenMiddleX;
+        int boardMiddleY = screenMiddleY  + cellSize / 2;
         iconSize = cellSize / 2;
 
         paint.setTextAlign(Paint.Align.CENTER);
@@ -404,13 +455,13 @@ public class MainView extends View {
         iconPaddingSize = (int) (textSize / 5);
 
         //Grid Dimensions
-        halfNumSquaresX = game.numSquaresX / 2;
-        halfNumSquaresY = game.numSquaresY / 2;
+        double halfNumSquaresX = game.numSquaresX / 2d;
+        double halfNumSquaresY = game.numSquaresY / 2d;
 
-        startingX = boardMiddleX - (cellSize + gridWidth) * halfNumSquaresX - gridWidth / 2;
-        endingX = boardMiddleX + (cellSize + gridWidth) * halfNumSquaresX + gridWidth / 2;
-        startingY = boardMiddleY - (cellSize + gridWidth) * halfNumSquaresY - gridWidth / 2;
-        endingY = boardMiddleY + (cellSize + gridWidth) * halfNumSquaresY + gridWidth / 2;
+        startingX = (int) (boardMiddleX - (cellSize + gridWidth) * halfNumSquaresX - gridWidth / 2);
+        endingX = (int) (boardMiddleX + (cellSize + gridWidth) * halfNumSquaresX + gridWidth / 2);
+        startingY = (int) (boardMiddleY - (cellSize + gridWidth) * halfNumSquaresY - gridWidth / 2);
+        endingY = (int) (boardMiddleY + (cellSize + gridWidth) * halfNumSquaresY + gridWidth / 2);
 
         paint.setTextSize(titleTextSize);
 
@@ -449,7 +500,9 @@ public class MainView extends View {
             instructionsText = resources.getString(R.string.instructions);
             winText = resources.getString(R.string.you_win);
             loseText = resources.getString(R.string.game_over);
-
+            continueText = resources.getString(R.string.go_on);
+            forNowText = resources.getString(R.string.for_now);
+            endlessModeText = resources.getString(R.string.endless);
             //Getting assets
             backgroundRectangle =  resources.getDrawable(R.drawable.background_rectangle);
             cellRectangle[0] =  resources.getDrawable(R.drawable.cell_rectangle);
@@ -464,6 +517,8 @@ public class MainView extends View {
             cellRectangle[9] =  resources.getDrawable(R.drawable.cell_rectangle_512);
             cellRectangle[10] = resources.getDrawable(R.drawable.cell_rectangle_1024);
             cellRectangle[11] = resources.getDrawable(R.drawable.cell_rectangle_2048);
+            cellRectangle[12] = resources.getDrawable(R.drawable.cell_rectangle_4096);
+            cellRectangle[13] = resources.getDrawable(R.drawable.cell_rectangle_8192);
             newGameIcon = resources.getDrawable(R.drawable.ic_action_refresh);
             undoIcon = resources.getDrawable(R.drawable.ic_action_undo);
             lightUpRectangle = resources.getDrawable(R.drawable.light_up_rectangle);

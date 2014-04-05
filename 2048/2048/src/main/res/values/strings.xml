@@ -12,4 +12,7 @@
     <string name="instructions">Swipe to move. 2 + 2 = 4. Reach 2048.</string>
     <string name="you_win">You Win!</string>
     <string name="game_over">Game Over!</string>
+    <string name="go_on">Tap to Continue</string>
+    <string name="for_now">For now...</string>
+    <string name="endless">"Endless" Mode</string>
 </resources>
