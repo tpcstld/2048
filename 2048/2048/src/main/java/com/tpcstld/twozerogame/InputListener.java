@@ -69,24 +69,27 @@ public class InputListener implements View.OnTouchListener {
                     if (lastdy == 0) {
                         lastdy = dy;
                     }
-                    if (pathMoved() > SWIPE_MIN_DISTANCE * SWIPE_MIN_DISTANCE) {
+                    if (pathMoved() > SWIPE_MIN_DISTANCE * SWIPE_MIN_DISTANCE && !hasMoved) {
                         boolean moved = false;
-                        if (((dy >= SWIPE_THRESHOLD_VELOCITY && previousDirection == 1) || y - startingY >= MOVE_THRESHOLD) && previousDirection % 2 != 0) {
+                        //Vertical
+                        if (((dy >= SWIPE_THRESHOLD_VELOCITY && Math.abs(dy) >= Math.abs(dx)) || y - startingY >= MOVE_THRESHOLD) && previousDirection % 2 != 0) {
                             moved = true;
                             previousDirection = previousDirection * 2;
                             veryLastDirection = 2;
                             mView.game.move(2);
-                        } else if (((dy <= -SWIPE_THRESHOLD_VELOCITY && previousDirection == 1) || y - startingY <= -MOVE_THRESHOLD ) && previousDirection % 3 != 0) {
+                        } else if (((dy <= -SWIPE_THRESHOLD_VELOCITY && Math.abs(dy) >= Math.abs(dx)) || y - startingY <= -MOVE_THRESHOLD ) && previousDirection % 3 != 0) {
                             moved = true;
                             previousDirection = previousDirection * 3;
                             veryLastDirection = 3;
                             mView.game.move(0);
-                        } else if (((dx >= SWIPE_THRESHOLD_VELOCITY  && previousDirection == 1) || x - startingX >= MOVE_THRESHOLD) && previousDirection % 5 != 0) {
+                        }
+                        //Horizontal
+                        if (((dx >= SWIPE_THRESHOLD_VELOCITY && Math.abs(dx) >= Math.abs(dy)) || x - startingX >= MOVE_THRESHOLD) && previousDirection % 5 != 0) {
                             moved = true;
                             previousDirection = previousDirection * 5;
                             veryLastDirection = 5;
                             mView.game.move(1);
-                        } else if (((dx <= -SWIPE_THRESHOLD_VELOCITY  && previousDirection == 1) || x - startingX <= -MOVE_THRESHOLD) && previousDirection % 7 != 0) {
+                        } else if (((dx <= -SWIPE_THRESHOLD_VELOCITY  && Math.abs(dx) >= Math.abs(dy)) || x - startingX <= -MOVE_THRESHOLD) && previousDirection % 7 != 0) {
                             moved = true;
                             previousDirection = previousDirection * 7;
                             veryLastDirection = 7;
