@@ -399,7 +399,7 @@ public class MainView extends View {
         for (int xx = 0; xx < bitmapCell.length; xx++) {
             int value = (int) Math.pow(2, xx);
             paint.setTextSize(cellTextSize);
-            float tempTextSize = cellTextSize * cellTextSize / Math.max(cellTextSize, paint.measureText(String.valueOf(value)));
+            float tempTextSize = cellTextSize * cellSize * 0.9f / Math.max(cellSize * 0.9f, paint.measureText(String.valueOf(value)));
             paint.setTextSize(tempTextSize);
             Bitmap bitmap = Bitmap.createBitmap(cellSize, cellSize, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
@@ -453,7 +453,7 @@ public class MainView extends View {
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setTextSize(cellSize);
         textSize = cellSize * cellSize / Math.max(cellSize, paint.measureText("0000"));
-        cellTextSize = cellSize * 0.9f;
+        cellTextSize = textSize;
         titleTextSize = textSize / 3;
         bodyTextSize = (int) (textSize / 1.5);
         instructionsTextSize = (int) (textSize / 1.5);
