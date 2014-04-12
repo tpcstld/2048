@@ -18,7 +18,7 @@ public class MainView extends View {
     Paint paint = new Paint();
     public MainGame game;
     public boolean hasSaveState = false;
-    private final int numCellTypes = 14;
+    public final int numCellTypes = 18;
     public boolean continueButtonEnabled = false;
 
     //Layout variables
@@ -394,14 +394,17 @@ public class MainView extends View {
     }
 
     private void createBitmapCells() {
-        paint.setTextSize(cellTextSize);
         paint.setTextAlign(Paint.Align.CENTER);
         Resources resources = getResources();
         for (int xx = 0; xx < bitmapCell.length; xx++) {
+            int value = (int) Math.pow(2, xx);
+            paint.setTextSize(cellTextSize);
+            float tempTextSize = cellTextSize * cellTextSize / Math.max(cellTextSize, paint.measureText(String.valueOf(value)));
+            paint.setTextSize(tempTextSize);
             Bitmap bitmap = Bitmap.createBitmap(cellSize, cellSize, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
             drawDrawable(canvas, cellRectangle[xx], 0, 0, cellSize, cellSize);
-            drawCellText(canvas, (int) Math.pow(2, xx) , 0, 0);
+            drawCellText(canvas, value, 0, 0);
             bitmapCell[xx] = new BitmapDrawable(resources, bitmap);
         }
     }
@@ -450,7 +453,7 @@ public class MainView extends View {
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setTextSize(cellSize);
         textSize = cellSize * cellSize / Math.max(cellSize, paint.measureText("0000"));
-        cellTextSize = textSize * 0.9f;
+        cellTextSize = cellSize * 0.9f;
         titleTextSize = textSize / 3;
         bodyTextSize = (int) (textSize / 1.5);
         instructionsTextSize = (int) (textSize / 1.5);
@@ -522,8 +525,9 @@ public class MainView extends View {
             cellRectangle[9] =  resources.getDrawable(R.drawable.cell_rectangle_512);
             cellRectangle[10] = resources.getDrawable(R.drawable.cell_rectangle_1024);
             cellRectangle[11] = resources.getDrawable(R.drawable.cell_rectangle_2048);
-            cellRectangle[12] = resources.getDrawable(R.drawable.cell_rectangle_4096);
-            cellRectangle[13] = resources.getDrawable(R.drawable.cell_rectangle_8192);
+            for (int xx = 12; xx < cellRectangle.length; xx++) {
+                cellRectangle[xx] = resources.getDrawable(R.drawable.cell_rectangle_4096);
+            }
             newGameIcon = resources.getDrawable(R.drawable.ic_action_refresh);
             undoIcon = resources.getDrawable(R.drawable.ic_action_undo);
             lightUpRectangle = resources.getDrawable(R.drawable.light_up_rectangle);

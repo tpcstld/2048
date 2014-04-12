@@ -3,6 +3,7 @@ package com.tpcstld.twozerogame;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +24,7 @@ public class MainGame {
     private static final String HIGH_SCORE = "high score";
 
     public static final int startingMaxValue = 2048;
-    public static final int endingMaxValue = 8192;
+    public static int endingMaxValue;
 
     //Odd state = game is not active
     //Even state = game is active
@@ -34,7 +35,6 @@ public class MainGame {
     public static final int GAME_NORMAL_WON = 1;
     public static final int GAME_ENDLESS = 2;
     public static final int GAME_ENDLESS_WON = 3;
-
 
     public Grid grid = null;
     public AnimationGrid aGrid;
@@ -61,6 +61,7 @@ public class MainGame {
     public MainGame(Context context, MainView view) {
         mContext = context;
         mView = view;
+        endingMaxValue = (int) Math.pow(2, view.numCellTypes - 1);
     }
 
     public void newGame() {
@@ -170,7 +171,7 @@ public class MainGame {
         return !(gameWon() || gameLost());
     }
 
-    public void move (int direction) {
+    public void move(int direction) {
         aGrid.cancelAnimations();
         // 0: up, 1: right, 2: down, 3: left
         if (!isActive()) {
