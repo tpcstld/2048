@@ -7,8 +7,8 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
-            <option value="C:\Users\tpcstld\Documents\GitHub\2048\2048" />
-            <option value="C:\Users\tpcstld\Documents\GitHub\2048\2048\2048" />
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/2048" />
           </set>
         </option>
       </GradleProjectSettings>

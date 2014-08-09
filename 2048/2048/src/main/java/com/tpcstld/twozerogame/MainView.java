@@ -26,9 +26,6 @@ public class MainView extends View {
     private float textSize = 0;
     private float cellTextSize = 0;
     private int gridWidth = 0;
-    private int TEXT_BLACK;
-    private int TEXT_WHITE;
-    private int TEXT_BROWN;
     public int startingX;
     public int startingY;
     public int endingX;
@@ -130,9 +127,9 @@ public class MainView extends View {
     private void drawCellText(Canvas canvas, int value, int sX, int sY) {
         int textShiftY = centerText();
         if (value >= 8) {
-            paint.setColor(TEXT_WHITE);
+            paint.setColor(getResources().getColor(R.color.text_white));
         } else {
-            paint.setColor(TEXT_BLACK);
+            paint.setColor(getResources().getColor(R.color.text_black));
         }
         canvas.drawText("" + value, sX + cellSize / 2, sY + cellSize / 2 - textShiftY, paint);
     }
@@ -161,10 +158,10 @@ public class MainView extends View {
         backgroundRectangle.setBounds(sXHighScore, sYAll, eXHighScore, eYAll);
         backgroundRectangle.draw(canvas);
         paint.setTextSize(titleTextSize);
-        paint.setColor(TEXT_BROWN);
+        paint.setColor(getResources().getColor(R.color.text_brown));
         canvas.drawText(getResources().getString(R.string.high_score), sXHighScore + textMiddleHighScore, titleStartYAll, paint);
         paint.setTextSize(bodyTextSize);
-        paint.setColor(TEXT_WHITE);
+        paint.setColor(getResources().getColor(R.color.text_white));
         canvas.drawText(String.valueOf(game.highScore), sXHighScore + textMiddleHighScore, bodyStartYAll, paint);
 
 
@@ -172,10 +169,10 @@ public class MainView extends View {
         backgroundRectangle.setBounds(sXScore, sYAll, eXScore, eYAll);
         backgroundRectangle.draw(canvas);
         paint.setTextSize(titleTextSize);
-        paint.setColor(TEXT_BROWN);
+        paint.setColor(getResources().getColor(R.color.text_brown));
         canvas.drawText(getResources().getString(R.string.score), sXScore + textMiddleScore, titleStartYAll, paint);
         paint.setTextSize(bodyTextSize);
-        paint.setColor(TEXT_WHITE);
+        paint.setColor(getResources().getColor(R.color.text_white));
         canvas.drawText(String.valueOf(game.score), sXScore + textMiddleScore, bodyStartYAll, paint);
     }
 
@@ -229,7 +226,7 @@ public class MainView extends View {
 
         //Drawing the header
         paint.setTextSize(headerTextSize);
-        paint.setColor(TEXT_BLACK);
+        paint.setColor(getResources().getColor(R.color.text_black));
         paint.setTextAlign(Paint.Align.LEFT);
         int textShiftY = centerText() * 2;
         int headerStartY = sYAll - textShiftY;
@@ -373,7 +370,7 @@ public class MainView extends View {
 
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setTextSize(bodyTextSize);
-        paint.setColor(TEXT_BLACK);
+        paint.setColor(getResources().getColor(R.color.text_black));
         canvas.drawText(getResources().getString(R.string.endless), startingX, sYIcons - centerText() * 2, paint);
     }
 
@@ -386,7 +383,7 @@ public class MainView extends View {
             lightUpRectangle.setAlpha(127);
             drawDrawable(canvas, lightUpRectangle, 0, 0, width, length);
             lightUpRectangle.setAlpha(255);
-            paint.setColor(TEXT_WHITE);
+            paint.setColor(getResources().getColor(R.color.text_white));
             paint.setAlpha(255);
             paint.setTextSize(gameOverTextSize);
             paint.setTextAlign(Paint.Align.CENTER);
@@ -400,7 +397,7 @@ public class MainView extends View {
             fadeRectangle.setAlpha(127);
             drawDrawable(canvas, fadeRectangle, 0, 0, width, length);
             fadeRectangle.setAlpha(255);
-            paint.setColor(TEXT_BLACK);
+            paint.setColor(getResources().getColor(R.color.text_black));
             paint.setAlpha(255);
             paint.setTextSize(gameOverTextSize);
             paint.setTextAlign(Paint.Align.CENTER);
@@ -556,9 +553,6 @@ public class MainView extends View {
             backgroundRectangle = resources.getDrawable(R.drawable.background_rectangle);
             lightUpRectangle = resources.getDrawable(R.drawable.light_up_rectangle);
             fadeRectangle = resources.getDrawable(R.drawable.fade_rectangle);
-            TEXT_WHITE = resources.getColor(R.color.text_white);
-            TEXT_BLACK = resources.getColor(R.color.text_black);
-            TEXT_BROWN = resources.getColor(R.color.text_brown);
             this.setBackgroundColor(resources.getColor(R.color.background));
             Typeface font = Typeface.createFromAsset(resources.getAssets(), "ClearSans-Bold.ttf");
             paint.setTypeface(font);
