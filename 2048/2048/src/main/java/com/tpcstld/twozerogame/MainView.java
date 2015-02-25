@@ -18,7 +18,7 @@ public class MainView extends View {
     Paint paint = new Paint();
     public MainGame game;
     public boolean hasSaveState = false;
-    public final int numCellTypes = 18;
+    public final int numCellTypes = 21;
     public boolean continueButtonEnabled = false;
 
     //Layout variables
