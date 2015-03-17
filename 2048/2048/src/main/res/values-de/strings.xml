@@ -8,4 +8,10 @@
     <string name="go_on">Berühren um fortzufahren</string>
     <string name="for_now">Fürs erste…</string>
     <string name="endless">"Endlosmodus"</string>
+
+    <!-- Confirmation dialog-->
+    <string name="reset">Zurücksetzen</string>
+    <string name="continue_game">Fortfahren</string>
+    <string name="reset_dialog_title">Spiel zurücksetzen?</string>
+    <string name="reset_dialog_message">Sind Sie sicher, dass Sie das Spiel zurücksetzen möchten?</string>
 </resources>

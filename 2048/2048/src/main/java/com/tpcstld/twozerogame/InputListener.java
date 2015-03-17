@@ -1,5 +1,7 @@
 package com.tpcstld.twozerogame;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -111,7 +113,17 @@ class InputListener implements View.OnTouchListener {
                 //"Menu" inputs
                 if (!hasMoved) {
                     if (iconPressed(mView.sXNewGame, mView.sYIcons)) {
-                        mView.game.newGame();
+                        new AlertDialog.Builder(mView.getContext())
+                                .setPositiveButton(R.string.reset, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        mView.game.newGame();
+                                    }
+                                })
+                                .setNegativeButton(R.string.continue_game, null)
+                                .setTitle(R.string.reset_dialog_title)
+                                .setMessage(R.string.reset_dialog_message)
+                                .show();
                     } else if (iconPressed(mView.sXUndo, mView.sYIcons)) {
                         mView.game.revertUndoState();
                     } else if (isTap(2) && inRange(mView.startingX, x, mView.endingX)

@@ -8,4 +8,10 @@
     <string name="go_on">Tap to Continue</string>
     <string name="for_now">For now…</string>
     <string name="endless">"Endless" Mode</string>
+
+    <!-- Confirmation dialog-->
+    <string name="reset">Reset</string>
+    <string name="continue_game">Continue</string>
+    <string name="reset_dialog_title">Reset game?</string>
+    <string name="reset_dialog_message">Are you sure you want to reset the game?</string>
 </resources>
