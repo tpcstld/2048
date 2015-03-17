@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 
 public class AnimationGrid {
-    public final ArrayList<AnimationCell> globalAnimation = new ArrayList<AnimationCell>();
+    public final ArrayList<AnimationCell> globalAnimation = new ArrayList<>();
     private final ArrayList<AnimationCell>[][] field;
     private int activeAnimations = 0;
     private boolean oneMoreFrame = false;
@@ -14,7 +14,7 @@ public class AnimationGrid {
 
         for (int xx = 0; xx < x; xx++) {
             for (int yy = 0; yy < y; yy++) {
-                field[xx][yy] = new ArrayList<AnimationCell>();
+                field[xx][yy] = new ArrayList<>();
             }
         }
     }
@@ -30,7 +30,7 @@ public class AnimationGrid {
     }
 
     public void tickAll(long timeElapsed) {
-        ArrayList<AnimationCell> cancelledAnimations = new ArrayList<AnimationCell>();
+        ArrayList<AnimationCell> cancelledAnimations = new ArrayList<>();
         for (AnimationCell animation : globalAnimation) {
             animation.tick(timeElapsed);
             if (animation.animationDone()) {

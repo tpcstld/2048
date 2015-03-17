@@ -257,7 +257,7 @@ public class MainGame {
     }
 
     private List<Integer> buildTraversalsX(Cell vector) {
-        List<Integer> traversals = new ArrayList<Integer>();
+        List<Integer> traversals = new ArrayList<>();
 
         for (int xx = 0; xx < numSquaresX; xx++) {
             traversals.add(xx);
@@ -270,7 +270,7 @@ public class MainGame {
     }
 
     private List<Integer> buildTraversalsY(Cell vector) {
-        List<Integer> traversals = new ArrayList<Integer>();
+        List<Integer> traversals = new ArrayList<>();
 
         for (int xx = 0; xx < numSquaresY; xx++) {
             traversals.add(xx);

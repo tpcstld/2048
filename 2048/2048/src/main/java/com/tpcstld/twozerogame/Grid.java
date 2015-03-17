@@ -25,7 +25,7 @@ public class Grid {
     }
 
     private ArrayList<Cell> getAvailableCells() {
-        ArrayList<Cell> availableCells = new ArrayList<Cell>();
+        ArrayList<Cell> availableCells = new ArrayList<>();
         for (int xx = 0; xx < field.length; xx++) {
             for (int yy = 0; yy < field[0].length; yy++) {
                 if (field[xx][yy] == null) {
