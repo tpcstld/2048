@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 
 public class AnimationGrid {
-    public ArrayList<AnimationCell>[][] field;
+    private ArrayList<AnimationCell>[][] field;
     public ArrayList<AnimationCell> globalAnimation = new ArrayList<AnimationCell>();
-    int activeAnimations = 0;
-    boolean oneMoreFrame = false;
+    private int activeAnimations = 0;
+    private boolean oneMoreFrame = false;
 
     public AnimationGrid(int x, int y) {
         field = new ArrayList[x][y];
@@ -82,7 +82,7 @@ public class AnimationGrid {
         activeAnimations = 0;
     }
 
-    public void cancelAnimation(AnimationCell animation) {
+    private void cancelAnimation(AnimationCell animation) {
         if (animation.getX() == -1 && animation.getY() == -1) {
             globalAnimation.remove(animation);
         } else {

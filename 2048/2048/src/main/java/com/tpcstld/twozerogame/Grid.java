@@ -24,7 +24,7 @@ public class Grid {
         return null;
     }
 
-    public ArrayList<Cell> getAvailableCells() {
+    private ArrayList<Cell> getAvailableCells() {
         ArrayList<Cell> availableCells = new ArrayList<Cell>();
         for (int xx = 0; xx < field.length; xx++) {
             for (int yy = 0; yy < field[0].length; yy++) {
@@ -69,7 +69,7 @@ public class Grid {
                 && 0 <= cell.getY() && cell.getY() < field[0].length;
     }
 
-    public boolean isCellWithinBounds(int x, int y) {
+    private boolean isCellWithinBounds(int x, int y) {
         return 0 <= x && x < field.length
                 && 0 <= y && y < field[0].length;
     }
@@ -126,7 +126,7 @@ public class Grid {
         }
     }
 
-    public void clearUndoGrid() {
+    private void clearUndoGrid() {
         for (int xx = 0; xx < field.length; xx++) {
             for (int yy = 0; yy < field[0].length; yy++) {
                 undoField[xx][yy] = null;

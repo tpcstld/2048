@@ -16,25 +16,25 @@ public class MainGame {
 
     public static final int FADE_GLOBAL_ANIMATION = 0;
 
-    public static final long MOVE_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME;
-    public static final long SPAWN_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME;
-    public static final long NOTIFICATION_DELAY_TIME = MOVE_ANIMATION_TIME + SPAWN_ANIMATION_TIME;
-    public static final long NOTIFICATION_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME * 5;
-    public static final int startingMaxValue = 2048;
+    private static final long MOVE_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME;
+    private static final long SPAWN_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME;
+    private static final long NOTIFICATION_DELAY_TIME = MOVE_ANIMATION_TIME + SPAWN_ANIMATION_TIME;
+    private static final long NOTIFICATION_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME * 5;
+    private static final int startingMaxValue = 2048;
     //Odd state = game is not active
     //Even state = game is active
     //Win state = active state + 1
-    public static final int GAME_WIN = 1;
-    public static final int GAME_LOST = -1;
-    public static final int GAME_NORMAL = 0;
+    private static final int GAME_WIN = 1;
+    private static final int GAME_LOST = -1;
+    private static final int GAME_NORMAL = 0;
     public static final int GAME_NORMAL_WON = 1;
-    public static final int GAME_ENDLESS = 2;
-    public static final int GAME_ENDLESS_WON = 3;
+    private static final int GAME_ENDLESS = 2;
+    private static final int GAME_ENDLESS_WON = 3;
     private static final String HIGH_SCORE = "high score";
-    public static int endingMaxValue;
+    private static int endingMaxValue;
     final int numSquaresX = 4;
     final int numSquaresY = 4;
-    final int startTiles = 2;
+    private final int startTiles = 2;
     public Grid grid = null;
     public AnimationGrid aGrid;
     public int gameState = 0;

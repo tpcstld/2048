@@ -13,7 +13,7 @@ public class Cell {
         return this.x;
     }
 
-    public void setX(int x) {
+    private void setX(int x) {
         this.x = x;
     }
 
@@ -21,7 +21,7 @@ public class Cell {
         return this.y;
     }
 
-    public void setY(int y) {
+    private void setY(int y) {
         this.y = y;
     }
 }

@@ -16,8 +16,8 @@ public class MainView extends View {
 
     //Intenal Constants
     static final int BASE_ANIMATION_TIME = 100000000;
-    static final float MERGING_ACCELERATION = (float) -0.5;
-    static final float INITIAL_VELOCITY = (1 - MERGING_ACCELERATION) / 4;
+    private static final float MERGING_ACCELERATION = (float) -0.5;
+    private static final float INITIAL_VELOCITY = (1 - MERGING_ACCELERATION) / 4;
     public final int numCellTypes = 21;
     private BitmapDrawable[] bitmapCell = new BitmapDrawable[numCellTypes];
     public MainGame game;
@@ -33,16 +33,16 @@ public class MainView extends View {
     public int sXUndo;
     public int iconSize;
     //Internal variables
-    Paint paint = new Paint();
+    private Paint paint = new Paint();
     //Timing
-    long lastFPSTime = System.nanoTime();
-    long currentTime = System.nanoTime();
+    private long lastFPSTime = System.nanoTime();
+    private long currentTime = System.nanoTime();
     //Text
-    float titleTextSize;
-    float bodyTextSize;
-    float headerTextSize;
-    float instructionsTextSize;
-    float gameOverTextSize;
+    private float titleTextSize;
+    private float bodyTextSize;
+    private float headerTextSize;
+    private float instructionsTextSize;
+    private float gameOverTextSize;
     //Misc
     boolean refreshLastTime = true;
     //Layout variables
