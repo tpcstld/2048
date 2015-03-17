@@ -8,12 +8,15 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
 
 @SuppressWarnings("deprecation")
 public class MainView extends View {
+
+    private static final String TAG = MainView.class.getSimpleName();
 
     //Internal Constants
     static final int BASE_ANIMATION_TIME = 100000000;
@@ -75,7 +78,6 @@ public class MainView extends View {
         //Loading resources
         game = new MainGame(context, this);
         try {
-
             //Getting assets
             backgroundRectangle = resources.getDrawable(R.drawable.background_rectangle);
             lightUpRectangle = resources.getDrawable(R.drawable.light_up_rectangle);
@@ -85,7 +87,7 @@ public class MainView extends View {
             paint.setTypeface(font);
             paint.setAntiAlias(true);
         } catch (Exception e) {
-            System.out.println("Error getting assets?");
+            Log.e(TAG, "Error getting assets?", e);
         }
         setOnTouchListener(new InputListener(this));
         game.newGame();
