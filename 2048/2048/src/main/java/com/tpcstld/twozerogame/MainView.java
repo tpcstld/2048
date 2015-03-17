@@ -19,8 +19,8 @@ public class MainView extends View {
     private static final float MERGING_ACCELERATION = (float) -0.5;
     private static final float INITIAL_VELOCITY = (1 - MERGING_ACCELERATION) / 4;
     public final int numCellTypes = 21;
-    private BitmapDrawable[] bitmapCell = new BitmapDrawable[numCellTypes];
-    public MainGame game;
+    private final BitmapDrawable[] bitmapCell = new BitmapDrawable[numCellTypes];
+    public final MainGame game;
     public boolean hasSaveState = false;
     public boolean continueButtonEnabled = false;
     public int startingX;
@@ -33,7 +33,7 @@ public class MainView extends View {
     public int sXUndo;
     public int iconSize;
     //Internal variables
-    private Paint paint = new Paint();
+    private final Paint paint = new Paint();
     //Timing
     private long lastFPSTime = System.nanoTime();
     private long currentTime = System.nanoTime();

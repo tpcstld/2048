@@ -1,11 +1,11 @@
 package com.tpcstld.twozerogame;
 
 class AnimationCell extends Cell {
-    public int[] extras;
-    private int animationType;
+    public final int[] extras;
+    private final int animationType;
     private long timeElapsed;
-    private long animationTime;
-    private long delayTime;
+    private final long animationTime;
+    private final long delayTime;
 
     public AnimationCell(int x, int y, int animationType, long length, long delay, int[] extras) {
         super(x, y);

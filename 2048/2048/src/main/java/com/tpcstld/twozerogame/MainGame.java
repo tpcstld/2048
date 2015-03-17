@@ -49,9 +49,9 @@ public class MainGame {
     private long bufferScore = 0;
     private int bufferGameState = 0;
 
-    private Context mContext;
+    private final Context mContext;
 
-    private MainView mView;
+    private final MainView mView;
 
     public MainGame(Context context, MainView view) {
         mContext = context;

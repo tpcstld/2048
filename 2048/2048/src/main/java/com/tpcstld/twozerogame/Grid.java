@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 public class Grid {
 
-    public Tile[][] field;
-    public Tile[][] undoField;
-    private Tile[][] bufferField;
+    public final Tile[][] field;
+    public final Tile[][] undoField;
+    private final Tile[][] bufferField;
 
     public Grid(int sizeX, int sizeY) {
         field = new Tile[sizeX][sizeY];
