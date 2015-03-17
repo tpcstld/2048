@@ -297,8 +297,7 @@ public class MainGame {
                     previous.getY() + vector.getY());
         } while (grid.isCellWithinBounds(nextCell) && grid.isCellAvailable(nextCell));
 
-        Cell[] answer = {previous, nextCell};
-        return answer;
+        return new Cell[]{previous, nextCell};
     }
 
     private boolean movesAvailable() {
