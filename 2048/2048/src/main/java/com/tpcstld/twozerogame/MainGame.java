@@ -15,7 +15,6 @@ public class MainGame {
     public static final int MERGE_ANIMATION = 1;
 
     public static final int FADE_GLOBAL_ANIMATION = 0;
-    public static final int GAME_NORMAL_WON = 1;
     private static final long MOVE_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME;
     private static final long SPAWN_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME;
     private static final long NOTIFICATION_DELAY_TIME = MOVE_ANIMATION_TIME + SPAWN_ANIMATION_TIME;
