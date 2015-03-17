@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="app_name">2048</string>
-    <string name="header">2048</string>
-
     <string name="high_score">HIGH SCORE</string>
     <string name="score">SCORE</string>
     <string name="instructions">Swipe to move. 2 + 2 = 4. Reach 2048.</string>

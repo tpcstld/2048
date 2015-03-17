@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="high_score">HÖCHSTPUNKTZAHL</string>
+    <string name="score">PUNKTE</string>
+    <string name="instructions">Wischen um die Steine zu bewegne. 2 + 2 = 4. Erreichen Sie 2048.</string>
+    <string name="you_win">Sie haben gewonnen!</string>
+    <string name="game_over">Verloren!</string>
+    <string name="go_on">Berühren um fortzufahren</string>
+    <string name="for_now">Fürs erste…</string>
+    <string name="endless">"Endlosmodus"</string>
+</resources>
