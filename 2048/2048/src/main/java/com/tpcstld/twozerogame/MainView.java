@@ -12,9 +12,10 @@ import android.view.View;
 
 import java.util.ArrayList;
 
+@SuppressWarnings("deprecation")
 public class MainView extends View {
 
-    //Intenal Constants
+    //Internal Constants
     static final int BASE_ANIMATION_TIME = 100000000;
     private static final float MERGING_ACCELERATION = (float) -0.5;
     private static final float INITIAL_VELOCITY = (1 - MERGING_ACCELERATION) / 4;
@@ -129,8 +130,8 @@ public class MainView extends View {
     }
 
     @Override
-    protected void onSizeChanged(int width, int height, int oldw, int oldh) {
-        super.onSizeChanged(width, height, oldw, oldh);
+    protected void onSizeChanged(int width, int height, int oldW, int oldH) {
+        super.onSizeChanged(width, height, oldW, oldH);
         getLayout(width, height);
         createBitmapCells();
         createBackgroundBitmap(width, height);
@@ -475,7 +476,7 @@ public class MainView extends View {
 
     private void createOverlays() {
         Resources resources = getResources();
-        //Initalize overlays
+        //Initialize overlays
         Bitmap bitmap = Bitmap.createBitmap(endingX - startingX, endingY - startingY, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         createEndGameStates(canvas, true, true);

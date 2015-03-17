@@ -12,8 +12,8 @@ class InputListener implements View.OnTouchListener {
     private final MainView mView;
     private float x;
     private float y;
-    private float lastdx;
-    private float lastdy;
+    private float lastDx;
+    private float lastDy;
     private float previousX;
     private float previousY;
     private float startingX;
@@ -37,8 +37,8 @@ class InputListener implements View.OnTouchListener {
                 startingY = y;
                 previousX = x;
                 previousY = y;
-                lastdx = 0;
-                lastdy = 0;
+                lastDx = 0;
+                lastDy = 0;
                 hasMoved = false;
                 return true;
             case MotionEvent.ACTION_MOVE:
@@ -46,26 +46,26 @@ class InputListener implements View.OnTouchListener {
                 y = event.getY();
                 if (mView.game.isActive()) {
                     float dx = x - previousX;
-                    if (Math.abs(lastdx + dx) < Math.abs(lastdx) + Math.abs(dx) && Math.abs(dx) > RESET_STARTING
+                    if (Math.abs(lastDx + dx) < Math.abs(lastDx) + Math.abs(dx) && Math.abs(dx) > RESET_STARTING
                             && Math.abs(x - startingX) > SWIPE_MIN_DISTANCE) {
                         startingX = x;
                         startingY = y;
-                        lastdx = dx;
+                        lastDx = dx;
                         previousDirection = veryLastDirection;
                     }
-                    if (lastdx == 0) {
-                        lastdx = dx;
+                    if (lastDx == 0) {
+                        lastDx = dx;
                     }
                     float dy = y - previousY;
-                    if (Math.abs(lastdy + dy) < Math.abs(lastdy) + Math.abs(dy) && Math.abs(dy) > RESET_STARTING
+                    if (Math.abs(lastDy + dy) < Math.abs(lastDy) + Math.abs(dy) && Math.abs(dy) > RESET_STARTING
                             && Math.abs(y - startingY) > SWIPE_MIN_DISTANCE) {
                         startingX = x;
                         startingY = y;
-                        lastdy = dy;
+                        lastDy = dy;
                         previousDirection = veryLastDirection;
                     }
-                    if (lastdy == 0) {
-                        lastdy = dy;
+                    if (lastDy == 0) {
+                        lastDy = dy;
                     }
                     if (pathMoved() > SWIPE_MIN_DISTANCE * SWIPE_MIN_DISTANCE && !hasMoved) {
                         boolean moved = false;
