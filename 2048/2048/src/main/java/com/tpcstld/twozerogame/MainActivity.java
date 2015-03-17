@@ -22,8 +22,8 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
+        super.onCreate(savedInstanceState);
         view = new MainView(getBaseContext());
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
