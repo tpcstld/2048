@@ -18,13 +18,9 @@ public class MainGame {
 
     public static final long MOVE_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME;
     public static final long SPAWN_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME;
-    public static final long NOTIFICATION_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME * 5;
     public static final long NOTIFICATION_DELAY_TIME = MOVE_ANIMATION_TIME + SPAWN_ANIMATION_TIME;
-    private static final String HIGH_SCORE = "high score";
-
+    public static final long NOTIFICATION_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME * 5;
     public static final int startingMaxValue = 2048;
-    public static int endingMaxValue;
-
     //Odd state = game is not active
     //Even state = game is active
     //Win state = active state + 1
@@ -34,13 +30,13 @@ public class MainGame {
     public static final int GAME_NORMAL_WON = 1;
     public static final int GAME_ENDLESS = 2;
     public static final int GAME_ENDLESS_WON = 3;
-
-    public Grid grid = null;
-    public AnimationGrid aGrid;
+    private static final String HIGH_SCORE = "high score";
+    public static int endingMaxValue;
     final int numSquaresX = 4;
     final int numSquaresY = 4;
     final int startTiles = 2;
-
+    public Grid grid = null;
+    public AnimationGrid aGrid;
     public int gameState = 0;
     public boolean canUndo;
 
@@ -136,7 +132,7 @@ public class MainGame {
     private void saveUndoState() {
         grid.saveTiles();
         canUndo = true;
-        lastScore =  bufferScore;
+        lastScore = bufferScore;
         lastGameState = bufferGameState;
     }
 
@@ -184,8 +180,8 @@ public class MainGame {
 
         prepareTiles();
 
-        for (int xx: traversalsX) {
-            for (int yy: traversalsY) {
+        for (int xx : traversalsX) {
+            for (int yy : traversalsY) {
                 Cell cell = new Cell(xx, yy);
                 Tile tile = grid.getCellContent(cell);
 
@@ -276,13 +272,13 @@ public class MainGame {
             Collections.reverse(traversals);
         }
 
-       return traversals;
+        return traversals;
     }
 
     private List<Integer> buildTraversalsY(Cell vector) {
         List<Integer> traversals = new ArrayList<Integer>();
 
-        for (int xx = 0; xx <numSquaresY; xx++) {
+        for (int xx = 0; xx < numSquaresY; xx++) {
             traversals.add(xx);
         }
         if (vector.getY() == 1) {

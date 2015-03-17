@@ -14,36 +14,52 @@ import java.util.ArrayList;
 
 public class MainView extends View {
 
-    //Internal variables
-    Paint paint = new Paint();
+    //Intenal Constants
+    static final int BASE_ANIMATION_TIME = 100000000;
+    static final float MERGING_ACCELERATION = (float) -0.5;
+    static final float INITIAL_VELOCITY = (1 - MERGING_ACCELERATION) / 4;
+    public final int numCellTypes = 21;
+    private BitmapDrawable[] bitmapCell = new BitmapDrawable[numCellTypes];
     public MainGame game;
     public boolean hasSaveState = false;
-    public final int numCellTypes = 21;
     public boolean continueButtonEnabled = false;
-
+    public int startingX;
+    public int startingY;
+    public int endingX;
+    public int endingY;
+    //Icon variables
+    public int sYIcons;
+    public int sXNewGame;
+    public int sXUndo;
+    public int iconSize;
+    //Internal variables
+    Paint paint = new Paint();
+    //Timing
+    long lastFPSTime = System.nanoTime();
+    long currentTime = System.nanoTime();
+    //Text
+    float titleTextSize;
+    float bodyTextSize;
+    float headerTextSize;
+    float instructionsTextSize;
+    float gameOverTextSize;
+    //Misc
+    boolean refreshLastTime = true;
     //Layout variables
     private int cellSize = 0;
     private float textSize = 0;
     private float cellTextSize = 0;
     private int gridWidth = 0;
-    public int startingX;
-    public int startingY;
-    public int endingX;
-    public int endingY;
     private int textPaddingSize;
     private int iconPaddingSize;
-
     //Assets
     private Drawable backgroundRectangle;
-    private BitmapDrawable[] bitmapCell = new BitmapDrawable[numCellTypes];
-
     private Drawable lightUpRectangle;
     private Drawable fadeRectangle;
     private Bitmap background = null;
     private BitmapDrawable loseGameOverlay;
     private BitmapDrawable winGameContinueOverlay;
     private BitmapDrawable winGameFinalOverlay;
-
     //Text variables
     private int sYAll;
     private int titleStartYAll;
@@ -52,30 +68,33 @@ public class MainView extends View {
     private int titleWidthHighScore;
     private int titleWidthScore;
 
-    //Icon variables
-    public int sYIcons;
-    public int sXNewGame;
-    public int sXUndo;
-    public int iconSize;
+    public MainView(Context context) {
+        super(context);
 
-    //Timing
-    long lastFPSTime = System.nanoTime();
-    long currentTime = System.nanoTime();
+        Resources resources = context.getResources();
+        //Loading resources
+        game = new MainGame(context, this);
+        try {
 
-    //Text
-    float titleTextSize;
-    float bodyTextSize;
-    float headerTextSize;
-    float instructionsTextSize;
-    float gameOverTextSize;
+            //Getting assets
+            backgroundRectangle = resources.getDrawable(R.drawable.background_rectangle);
+            lightUpRectangle = resources.getDrawable(R.drawable.light_up_rectangle);
+            fadeRectangle = resources.getDrawable(R.drawable.fade_rectangle);
+            this.setBackgroundColor(resources.getColor(R.color.background));
+            Typeface font = Typeface.createFromAsset(resources.getAssets(), "ClearSans-Bold.ttf");
+            paint.setTypeface(font);
+            paint.setAntiAlias(true);
+        } catch (Exception e) {
+            System.out.println("Error getting assets?");
+        }
+        setOnTouchListener(new InputListener(this));
+        game.newGame();
+    }
 
-    //Misc
-    boolean refreshLastTime = true;
-
-    //Intenal Constants
-    static final int BASE_ANIMATION_TIME = 100000000;
-    static final float MERGING_ACCELERATION = (float) -0.5;
-    static final float INITIAL_VELOCITY = (1 - MERGING_ACCELERATION) / 4;
+    private static int log2(int n) {
+        if (n <= 0) throw new IllegalArgumentException();
+        return 31 - Integer.numberOfLeadingZeros(n);
+    }
 
     @Override
     public void onDraw(Canvas canvas) {
@@ -482,11 +501,6 @@ public class MainView extends View {
         lastFPSTime = System.nanoTime();
     }
 
-    private static int log2(int n) {
-        if (n <= 0) throw new IllegalArgumentException();
-        return 31 - Integer.numberOfLeadingZeros(n);
-    }
-
     private void getLayout(int width, int height) {
         cellSize = Math.min(width / (game.numSquaresX + 1), height / (game.numSquaresY + 3));
         gridWidth = cellSize / 7;
@@ -539,29 +553,6 @@ public class MainView extends View {
 
     private int centerText() {
         return (int) ((paint.descent() + paint.ascent()) / 2);
-    }
-
-    public MainView(Context context) {
-        super(context);
-
-        Resources resources = context.getResources();
-        //Loading resources
-        game = new MainGame(context, this);
-        try {
-
-            //Getting assets
-            backgroundRectangle = resources.getDrawable(R.drawable.background_rectangle);
-            lightUpRectangle = resources.getDrawable(R.drawable.light_up_rectangle);
-            fadeRectangle = resources.getDrawable(R.drawable.fade_rectangle);
-            this.setBackgroundColor(resources.getColor(R.color.background));
-            Typeface font = Typeface.createFromAsset(resources.getAssets(), "ClearSans-Bold.ttf");
-            paint.setTypeface(font);
-            paint.setAntiAlias(true);
-        } catch (Exception e) {
-            System.out.println("Error getting assets?");
-        }
-        setOnTouchListener(new InputListener(this));
-        game.newGame();
     }
 
 }

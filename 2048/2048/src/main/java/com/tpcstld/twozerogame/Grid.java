@@ -17,11 +17,11 @@ public class Grid {
     }
 
     public Cell randomAvailableCell() {
-       ArrayList<Cell> availableCells = getAvailableCells();
-       if (availableCells.size() >= 1) {
-           return availableCells.get((int) Math.floor(Math.random() * availableCells.size()));
-       }
-       return null;
+        ArrayList<Cell> availableCells = getAvailableCells();
+        if (availableCells.size() >= 1) {
+            return availableCells.get((int) Math.floor(Math.random() * availableCells.size()));
+        }
+        return null;
     }
 
     public ArrayList<Cell> getAvailableCells() {
@@ -66,7 +66,7 @@ public class Grid {
 
     public boolean isCellWithinBounds(Cell cell) {
         return 0 <= cell.getX() && cell.getX() < field.length
-            && 0 <= cell.getY() && cell.getY() < field[0].length;
+                && 0 <= cell.getY() && cell.getY() < field[0].length;
     }
 
     public boolean isCellWithinBounds(int x, int y) {

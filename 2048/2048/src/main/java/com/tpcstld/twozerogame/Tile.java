@@ -24,7 +24,7 @@ public class Tile extends Cell {
     }
 
     public Tile[] getMergedFrom() {
-       return mergedFrom;
+        return mergedFrom;
     }
 
     public void setMergedFrom(Tile[] tile) {

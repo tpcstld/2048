@@ -5,9 +5,10 @@ import java.util.ArrayList;
 
 public class AnimationGrid {
     public ArrayList<AnimationCell>[][] field;
+    public ArrayList<AnimationCell> globalAnimation = new ArrayList<AnimationCell>();
     int activeAnimations = 0;
     boolean oneMoreFrame = false;
-    public ArrayList<AnimationCell> globalAnimation = new ArrayList<AnimationCell>();
+
     public AnimationGrid(int x, int y) {
         field = new ArrayList[x][y];
 
