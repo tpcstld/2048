@@ -15,7 +15,7 @@ public class MainGame {
     public static final int MERGE_ANIMATION = 1;
 
     public static final int FADE_GLOBAL_ANIMATION = 0;
-
+    public static final int GAME_NORMAL_WON = 1;
     private static final long MOVE_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME;
     private static final long SPAWN_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME;
     private static final long NOTIFICATION_DELAY_TIME = MOVE_ANIMATION_TIME + SPAWN_ANIMATION_TIME;
@@ -27,31 +27,24 @@ public class MainGame {
     private static final int GAME_WIN = 1;
     private static final int GAME_LOST = -1;
     private static final int GAME_NORMAL = 0;
-    public static final int GAME_NORMAL_WON = 1;
     private static final int GAME_ENDLESS = 2;
     private static final int GAME_ENDLESS_WON = 3;
     private static final String HIGH_SCORE = "high score";
     private static int endingMaxValue;
     final int numSquaresX = 4;
     final int numSquaresY = 4;
-    private final int startTiles = 2;
+    private final Context mContext;
+    private final MainView mView;
     public Grid grid = null;
     public AnimationGrid aGrid;
     public int gameState = 0;
     public boolean canUndo;
-
     public long score = 0;
     public long highScore = 0;
-
     public long lastScore = 0;
     public int lastGameState = 0;
-
     private long bufferScore = 0;
     private int bufferGameState = 0;
-
-    private final Context mContext;
-
-    private final MainView mView;
 
     public MainGame(Context context, MainView view) {
         mContext = context;
@@ -82,6 +75,7 @@ public class MainGame {
     }
 
     private void addStartTiles() {
+        int startTiles = 2;
         for (int xx = 0; xx < startTiles; xx++) {
             this.addRandomTile();
         }

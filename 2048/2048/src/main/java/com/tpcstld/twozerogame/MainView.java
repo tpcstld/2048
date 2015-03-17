@@ -21,6 +21,8 @@ public class MainView extends View {
     public final int numCellTypes = 21;
     private final BitmapDrawable[] bitmapCell = new BitmapDrawable[numCellTypes];
     public final MainGame game;
+    //Internal variables
+    private final Paint paint = new Paint();
     public boolean hasSaveState = false;
     public boolean continueButtonEnabled = false;
     public int startingX;
@@ -32,19 +34,16 @@ public class MainView extends View {
     public int sXNewGame;
     public int sXUndo;
     public int iconSize;
-    //Internal variables
-    private final Paint paint = new Paint();
+    //Misc
+    boolean refreshLastTime = true;
     //Timing
     private long lastFPSTime = System.nanoTime();
-    private long currentTime = System.nanoTime();
     //Text
     private float titleTextSize;
     private float bodyTextSize;
     private float headerTextSize;
     private float instructionsTextSize;
     private float gameOverTextSize;
-    //Misc
-    boolean refreshLastTime = true;
     //Layout variables
     private int cellSize = 0;
     private float textSize = 0;
@@ -492,7 +491,7 @@ public class MainView extends View {
     }
 
     private void tick() {
-        currentTime = System.nanoTime();
+        long currentTime = System.nanoTime();
         game.aGrid.tickAll(currentTime - lastFPSTime);
         lastFPSTime = currentTime;
     }
@@ -506,7 +505,6 @@ public class MainView extends View {
         gridWidth = cellSize / 7;
         int screenMiddleX = width / 2;
         int screenMiddleY = height / 2;
-        int boardMiddleX = screenMiddleX;
         int boardMiddleY = screenMiddleY + cellSize / 2;
         iconSize = cellSize / 2;
 
@@ -526,8 +524,8 @@ public class MainView extends View {
         double halfNumSquaresX = game.numSquaresX / 2d;
         double halfNumSquaresY = game.numSquaresY / 2d;
 
-        startingX = (int) (boardMiddleX - (cellSize + gridWidth) * halfNumSquaresX - gridWidth / 2);
-        endingX = (int) (boardMiddleX + (cellSize + gridWidth) * halfNumSquaresX + gridWidth / 2);
+        startingX = (int) (screenMiddleX - (cellSize + gridWidth) * halfNumSquaresX - gridWidth / 2);
+        endingX = (int) (screenMiddleX + (cellSize + gridWidth) * halfNumSquaresX + gridWidth / 2);
         startingY = (int) (boardMiddleY - (cellSize + gridWidth) * halfNumSquaresY - gridWidth / 2);
         endingY = (int) (boardMiddleY + (cellSize + gridWidth) * halfNumSquaresY + gridWidth / 2);
 
