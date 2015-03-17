@@ -142,14 +142,14 @@ public class MainView extends View {
         draw.draw(canvas);
     }
 
-    private void drawCellText(Canvas canvas, int value) {
+    private void drawCellText(Canvas canvas, int value, int sX, int sY) {
         int textShiftY = centerText();
         if (value >= 8) {
             paint.setColor(getResources().getColor(R.color.text_white));
         } else {
             paint.setColor(getResources().getColor(R.color.text_black));
         }
-        canvas.drawText("" + value, 1, 1 - textShiftY, paint);
+        canvas.drawText("" + value, sX + cellSize / 2, sY + cellSize / 2 - textShiftY, paint);
     }
 
     private void drawScoreText(Canvas canvas) {
@@ -448,7 +448,7 @@ public class MainView extends View {
             Bitmap bitmap = Bitmap.createBitmap(cellSize, cellSize, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
             drawDrawable(canvas, resources.getDrawable(cellRectangleIds[xx]), 0, 0, cellSize, cellSize);
-            drawCellText(canvas, value);
+            drawCellText(canvas, value, 0, 0);
             bitmapCell[xx] = new BitmapDrawable(resources, bitmap);
         }
     }
