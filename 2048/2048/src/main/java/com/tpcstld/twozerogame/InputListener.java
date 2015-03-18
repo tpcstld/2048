@@ -2,7 +2,6 @@ package com.tpcstld.twozerogame;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 

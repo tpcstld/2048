@@ -26,6 +26,9 @@ public class MainGame {
     private static final int GAME_WIN = 1;
     private static final int GAME_LOST = -1;
     private static final int GAME_NORMAL = 0;
+    public int gameState = GAME_NORMAL;
+    public int lastGameState = GAME_NORMAL;
+    private int bufferGameState = GAME_NORMAL;
     private static final int GAME_ENDLESS = 2;
     private static final int GAME_ENDLESS_WON = 3;
     private static final String HIGH_SCORE = "high score";
@@ -36,14 +39,11 @@ public class MainGame {
     private final MainView mView;
     public Grid grid = null;
     public AnimationGrid aGrid;
-    public int gameState = GAME_NORMAL;
     public boolean canUndo;
     public long score = 0;
     public long highScore = 0;
     public long lastScore = 0;
-    public int lastGameState = GAME_NORMAL;
     private long bufferScore = 0;
-    private int bufferGameState = GAME_NORMAL;
 
     public MainGame(Context context, MainView view) {
         mContext = context;
