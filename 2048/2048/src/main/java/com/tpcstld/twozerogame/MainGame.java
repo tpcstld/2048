@@ -36,13 +36,13 @@ public class MainGame {
     private final MainView mView;
     public Grid grid = null;
     public AnimationGrid aGrid;
-    public int gameState = 0;
+    public int gameState = GAME_NORMAL;
     public boolean canUndo;
     public long score = 0;
     public long highScore = 0;
     public long lastScore = 0;
     public int lastGameState = GAME_NORMAL;
-    private long bufferScore = GAME_NORMAL;
+    private long bufferScore = 0;
     private int bufferGameState = GAME_NORMAL;
 
     public MainGame(Context context, MainView view) {
