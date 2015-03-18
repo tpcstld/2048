@@ -41,9 +41,9 @@ public class MainGame {
     public long score = 0;
     public long highScore = 0;
     public long lastScore = 0;
-    public int lastGameState = 0;
-    private long bufferScore = 0;
-    private int bufferGameState = 0;
+    public int lastGameState = GAME_NORMAL;
+    private long bufferScore = GAME_NORMAL;
+    private int bufferGameState = GAME_NORMAL;
 
     public MainGame(Context context, MainView view) {
         mContext = context;
