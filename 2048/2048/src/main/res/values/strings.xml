@@ -11,7 +11,7 @@
 
     <!-- Confirmation dialog-->
     <string name="reset">Reset</string>
-    <string name="continue_game">Continue</string>
+    <string name="continue_game">Cancel</string>
     <string name="reset_dialog_title">Reset game?</string>
     <string name="reset_dialog_message">Are you sure you want to reset the game?</string>
 </resources>
