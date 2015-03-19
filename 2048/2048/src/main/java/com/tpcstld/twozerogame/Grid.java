@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 public class Grid {
 
-    public Tile[][] field;
-    public Tile[][] undoField;
-    private Tile[][] bufferField;
+    public final Tile[][] field;
+    public final Tile[][] undoField;
+    private final Tile[][] bufferField;
 
     public Grid(int sizeX, int sizeY) {
         field = new Tile[sizeX][sizeY];
@@ -17,15 +17,15 @@ public class Grid {
     }
 
     public Cell randomAvailableCell() {
-       ArrayList<Cell> availableCells = getAvailableCells();
-       if (availableCells.size() >= 1) {
-           return availableCells.get((int) Math.floor(Math.random() * availableCells.size()));
-       }
-       return null;
+        ArrayList<Cell> availableCells = getAvailableCells();
+        if (availableCells.size() >= 1) {
+            return availableCells.get((int) Math.floor(Math.random() * availableCells.size()));
+        }
+        return null;
     }
 
-    public ArrayList<Cell> getAvailableCells() {
-        ArrayList<Cell> availableCells = new ArrayList<Cell>();
+    private ArrayList<Cell> getAvailableCells() {
+        ArrayList<Cell> availableCells = new ArrayList<>();
         for (int xx = 0; xx < field.length; xx++) {
             for (int yy = 0; yy < field[0].length; yy++) {
                 if (field[xx][yy] == null) {
@@ -66,10 +66,10 @@ public class Grid {
 
     public boolean isCellWithinBounds(Cell cell) {
         return 0 <= cell.getX() && cell.getX() < field.length
-            && 0 <= cell.getY() && cell.getY() < field[0].length;
+                && 0 <= cell.getY() && cell.getY() < field[0].length;
     }
 
-    public boolean isCellWithinBounds(int x, int y) {
+    private boolean isCellWithinBounds(int x, int y) {
         return 0 <= x && x < field.length
                 && 0 <= y && y < field[0].length;
     }
@@ -126,7 +126,7 @@ public class Grid {
         }
     }
 
-    public void clearUndoGrid() {
+    private void clearUndoGrid() {
         for (int xx = 0; xx < field.length; xx++) {
             for (int yy = 0; yy < field[0].length; yy++) {
                 undoField[xx][yy] = null;

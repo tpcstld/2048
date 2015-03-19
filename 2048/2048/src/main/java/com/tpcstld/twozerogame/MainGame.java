@@ -15,47 +15,35 @@ public class MainGame {
     public static final int MERGE_ANIMATION = 1;
 
     public static final int FADE_GLOBAL_ANIMATION = 0;
-
-    public static final long MOVE_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME;
-    public static final long SPAWN_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME;
-    public static final long NOTIFICATION_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME * 5;
-    public static final long NOTIFICATION_DELAY_TIME = MOVE_ANIMATION_TIME + SPAWN_ANIMATION_TIME;
-    private static final String HIGH_SCORE = "high score";
-
-    public static final int startingMaxValue = 2048;
-    public static int endingMaxValue;
-
+    private static final long MOVE_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME;
+    private static final long SPAWN_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME;
+    private static final long NOTIFICATION_DELAY_TIME = MOVE_ANIMATION_TIME + SPAWN_ANIMATION_TIME;
+    private static final long NOTIFICATION_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME * 5;
+    private static final int startingMaxValue = 2048;
     //Odd state = game is not active
     //Even state = game is active
     //Win state = active state + 1
-    public static final int GAME_WIN = 1;
-    public static final int GAME_LOST = -1;
-    public static final int GAME_NORMAL = 0;
-    public static final int GAME_NORMAL_WON = 1;
-    public static final int GAME_ENDLESS = 2;
-    public static final int GAME_ENDLESS_WON = 3;
-
-    public Grid grid = null;
-    public AnimationGrid aGrid;
+    private static final int GAME_WIN = 1;
+    private static final int GAME_LOST = -1;
+    private static final int GAME_NORMAL = 0;
+    public int gameState = GAME_NORMAL;
+    public int lastGameState = GAME_NORMAL;
+    private int bufferGameState = GAME_NORMAL;
+    private static final int GAME_ENDLESS = 2;
+    private static final int GAME_ENDLESS_WON = 3;
+    private static final String HIGH_SCORE = "high score";
+    private static int endingMaxValue;
     final int numSquaresX = 4;
     final int numSquaresY = 4;
-    final int startTiles = 2;
-
-    public int gameState = 0;
+    private final Context mContext;
+    private final MainView mView;
+    public Grid grid = null;
+    public AnimationGrid aGrid;
     public boolean canUndo;
-
     public long score = 0;
     public long highScore = 0;
-
     public long lastScore = 0;
-    public int lastGameState = 0;
-
     private long bufferScore = 0;
-    private int bufferGameState = 0;
-
-    private Context mContext;
-
-    private MainView mView;
 
     public MainGame(Context context, MainView view) {
         mContext = context;
@@ -86,6 +74,7 @@ public class MainGame {
     }
 
     private void addStartTiles() {
+        int startTiles = 2;
         for (int xx = 0; xx < startTiles; xx++) {
             this.addRandomTile();
         }
@@ -136,7 +125,7 @@ public class MainGame {
     private void saveUndoState() {
         grid.saveTiles();
         canUndo = true;
-        lastScore =  bufferScore;
+        lastScore = bufferScore;
         lastGameState = bufferGameState;
     }
 
@@ -184,8 +173,8 @@ public class MainGame {
 
         prepareTiles();
 
-        for (int xx: traversalsX) {
-            for (int yy: traversalsY) {
+        for (int xx : traversalsX) {
+            for (int yy : traversalsY) {
                 Cell cell = new Cell(xx, yy);
                 Tile tile = grid.getCellContent(cell);
 
@@ -267,7 +256,7 @@ public class MainGame {
     }
 
     private List<Integer> buildTraversalsX(Cell vector) {
-        List<Integer> traversals = new ArrayList<Integer>();
+        List<Integer> traversals = new ArrayList<>();
 
         for (int xx = 0; xx < numSquaresX; xx++) {
             traversals.add(xx);
@@ -276,13 +265,13 @@ public class MainGame {
             Collections.reverse(traversals);
         }
 
-       return traversals;
+        return traversals;
     }
 
     private List<Integer> buildTraversalsY(Cell vector) {
-        List<Integer> traversals = new ArrayList<Integer>();
+        List<Integer> traversals = new ArrayList<>();
 
-        for (int xx = 0; xx <numSquaresY; xx++) {
+        for (int xx = 0; xx < numSquaresY; xx++) {
             traversals.add(xx);
         }
         if (vector.getY() == 1) {
@@ -301,8 +290,7 @@ public class MainGame {
                     previous.getY() + vector.getY());
         } while (grid.isCellWithinBounds(nextCell) && grid.isCellAvailable(nextCell));
 
-        Cell[] answer = {previous, nextCell};
-        return answer;
+        return new Cell[]{previous, nextCell};
     }
 
     private boolean movesAvailable() {

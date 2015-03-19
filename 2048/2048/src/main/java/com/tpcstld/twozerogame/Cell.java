@@ -13,15 +13,15 @@ public class Cell {
         return this.x;
     }
 
+    void setX(int x) {
+        this.x = x;
+    }
+
     public int getY() {
         return this.y;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public void setY(int y) {
+    void setY(int y) {
         this.y = y;
     }
 }

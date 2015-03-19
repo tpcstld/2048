@@ -1,7 +1,7 @@
 package com.tpcstld.twozerogame;
 
 public class Tile extends Cell {
-    private int value;
+    private final int value;
     private Tile[] mergedFrom = null;
 
     public Tile(int x, int y, int value) {
@@ -24,7 +24,7 @@ public class Tile extends Cell {
     }
 
     public Tile[] getMergedFrom() {
-       return mergedFrom;
+        return mergedFrom;
     }
 
     public void setMergedFrom(Tile[] tile) {

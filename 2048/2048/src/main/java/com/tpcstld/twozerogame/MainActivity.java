@@ -1,30 +1,29 @@
 package com.tpcstld.twozerogame;
 
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Window;
 
 public class MainActivity extends ActionBarActivity {
 
-    MainView view;
-    public static final String WIDTH = "width";
-    public static final String HEIGHT = "height";
-    public static final String SCORE = "score";
-    public static final String HIGH_SCORE = "high score temp";
-    public static final String UNDO_SCORE = "undo score";
-    public static final String CAN_UNDO = "can undo";
-    public static final String UNDO_GRID = "undo";
-    public static final String GAME_STATE = "game state";
-    public static final String UNDO_GAME_STATE = "undo game state";
+    private static final String WIDTH = "width";
+    private static final String HEIGHT = "height";
+    private static final String SCORE = "score";
+    private static final String HIGH_SCORE = "high score temp";
+    private static final String UNDO_SCORE = "undo score";
+    private static final String CAN_UNDO = "can undo";
+    private static final String UNDO_GRID = "undo";
+    private static final String GAME_STATE = "game state";
+    private static final String UNDO_GAME_STATE = "undo game state";
+    private MainView view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        view = new MainView(getBaseContext());
+        view = new MainView(this);
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         view.hasSaveState = settings.getBoolean("save_state", false);
@@ -36,9 +35,10 @@ public class MainActivity extends ActionBarActivity {
         }
         setContentView(view);
     }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ( keyCode == KeyEvent.KEYCODE_MENU) {
+        if (keyCode == KeyEvent.KEYCODE_MENU) {
             //Do nothing
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {

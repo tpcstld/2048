@@ -1,19 +1,21 @@
 package com.tpcstld.twozerogame;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.view.MotionEvent;
 import android.view.View;
 
-public class InputListener implements View.OnTouchListener {
+class InputListener implements View.OnTouchListener {
 
     private static final int SWIPE_MIN_DISTANCE = 0;
     private static final int SWIPE_THRESHOLD_VELOCITY = 25;
     private static final int MOVE_THRESHOLD = 250;
     private static final int RESET_STARTING = 10;
-
+    private final MainView mView;
     private float x;
     private float y;
-    private float lastdx;
-    private float lastdy;
+    private float lastDx;
+    private float lastDy;
     private float previousX;
     private float previousY;
     private float startingX;
@@ -21,8 +23,6 @@ public class InputListener implements View.OnTouchListener {
     private int previousDirection = 1;
     private int veryLastDirection = 1;
     private boolean hasMoved = false;
-
-    MainView mView;
 
     public InputListener(MainView view) {
         super();
@@ -39,8 +39,8 @@ public class InputListener implements View.OnTouchListener {
                 startingY = y;
                 previousX = x;
                 previousY = y;
-                lastdx = 0;
-                lastdy = 0;
+                lastDx = 0;
+                lastDy = 0;
                 hasMoved = false;
                 return true;
             case MotionEvent.ACTION_MOVE:
@@ -48,26 +48,26 @@ public class InputListener implements View.OnTouchListener {
                 y = event.getY();
                 if (mView.game.isActive()) {
                     float dx = x - previousX;
-                    if (Math.abs(lastdx + dx) < Math.abs(lastdx) + Math.abs(dx) && Math.abs(dx) > RESET_STARTING
-                            &&  Math.abs(x - startingX) > SWIPE_MIN_DISTANCE) {
+                    if (Math.abs(lastDx + dx) < Math.abs(lastDx) + Math.abs(dx) && Math.abs(dx) > RESET_STARTING
+                            && Math.abs(x - startingX) > SWIPE_MIN_DISTANCE) {
                         startingX = x;
                         startingY = y;
-                        lastdx = dx;
+                        lastDx = dx;
                         previousDirection = veryLastDirection;
                     }
-                    if (lastdx == 0) {
-                        lastdx = dx;
+                    if (lastDx == 0) {
+                        lastDx = dx;
                     }
                     float dy = y - previousY;
-                    if (Math.abs(lastdy + dy) < Math.abs(lastdy) + Math.abs(dy) && Math.abs(dy) > RESET_STARTING
+                    if (Math.abs(lastDy + dy) < Math.abs(lastDy) + Math.abs(dy) && Math.abs(dy) > RESET_STARTING
                             && Math.abs(y - startingY) > SWIPE_MIN_DISTANCE) {
                         startingX = x;
                         startingY = y;
-                        lastdy = dy;
+                        lastDy = dy;
                         previousDirection = veryLastDirection;
                     }
-                    if (lastdy == 0) {
-                        lastdy = dy;
+                    if (lastDy == 0) {
+                        lastDy = dy;
                     }
                     if (pathMoved() > SWIPE_MIN_DISTANCE * SWIPE_MIN_DISTANCE && !hasMoved) {
                         boolean moved = false;
@@ -77,7 +77,7 @@ public class InputListener implements View.OnTouchListener {
                             previousDirection = previousDirection * 2;
                             veryLastDirection = 2;
                             mView.game.move(2);
-                        } else if (((dy <= -SWIPE_THRESHOLD_VELOCITY && Math.abs(dy) >= Math.abs(dx)) || y - startingY <= -MOVE_THRESHOLD ) && previousDirection % 3 != 0) {
+                        } else if (((dy <= -SWIPE_THRESHOLD_VELOCITY && Math.abs(dy) >= Math.abs(dx)) || y - startingY <= -MOVE_THRESHOLD) && previousDirection % 3 != 0) {
                             moved = true;
                             previousDirection = previousDirection * 3;
                             veryLastDirection = 3;
@@ -89,7 +89,7 @@ public class InputListener implements View.OnTouchListener {
                             previousDirection = previousDirection * 5;
                             veryLastDirection = 5;
                             mView.game.move(1);
-                        } else if (((dx <= -SWIPE_THRESHOLD_VELOCITY  && Math.abs(dx) >= Math.abs(dy)) || x - startingX <= -MOVE_THRESHOLD) && previousDirection % 7 != 0) {
+                        } else if (((dx <= -SWIPE_THRESHOLD_VELOCITY && Math.abs(dx) >= Math.abs(dy)) || x - startingX <= -MOVE_THRESHOLD) && previousDirection % 7 != 0) {
                             moved = true;
                             previousDirection = previousDirection * 7;
                             veryLastDirection = 7;
@@ -113,11 +113,26 @@ public class InputListener implements View.OnTouchListener {
                 //"Menu" inputs
                 if (!hasMoved) {
                     if (iconPressed(mView.sXNewGame, mView.sYIcons)) {
-                        mView.game.newGame();
+                        if (!mView.game.gameLost()) {
+                            new AlertDialog.Builder(mView.getContext())
+                                    .setPositiveButton(R.string.reset, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            mView.game.newGame();
+                                        }
+                                    })
+                                    .setNegativeButton(R.string.continue_game, null)
+                                    .setTitle(R.string.reset_dialog_title)
+                                    .setMessage(R.string.reset_dialog_message)
+                                    .show();
+                        } else {
+                            mView.game.newGame();
+                        }
+
                     } else if (iconPressed(mView.sXUndo, mView.sYIcons)) {
                         mView.game.revertUndoState();
                     } else if (isTap(2) && inRange(mView.startingX, x, mView.endingX)
-                        && inRange(mView.startingY, x, mView.endingY) && mView.continueButtonEnabled) {
+                            && inRange(mView.startingY, x, mView.endingY) && mView.continueButtonEnabled) {
                         mView.game.setEndlessMode();
                     }
                 }

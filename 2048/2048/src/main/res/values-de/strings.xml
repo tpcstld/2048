@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="high_score">HÖCHSTPUNKTZAHL</string>
+    <string name="score">PUNKTE</string>
+    <string name="instructions">Wische. 2 + 2 = 4. Erreiche 2048.</string>
+    <string name="you_win">Gewonnen!</string>
+    <string name="game_over">Verloren!</string>
+    <string name="go_on">Berühren um fortzufahren</string>
+    <string name="for_now">Fürs erste…</string>
+    <string name="endless">"Endlosmodus"</string>
+
+    <!-- Confirmation dialog-->
+    <string name="reset">Zurücksetzen</string>
+    <string name="continue_game">Abbrechen</string>
+    <string name="reset_dialog_title">Spiel zurücksetzen?</string>
+    <string name="reset_dialog_message">Sind Sie sicher, dass Sie das Spiel zurücksetzen möchten?</string>
+</resources>
