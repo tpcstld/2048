@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="high_score">REKORD</string>
+    <string name="score">PUNKTY</string>
+    <string name="instructions">Przesuwaj płytki. 2 + 2 = 4. Dojdź do 2048.</string>
+    <string name="you_win">Wygrana!</string>
+    <string name="game_over">Koniec gry!</string>
+    <string name="go_on">Stuknij, aby kontynuować</string>
+    <string name="for_now">Jak narazie…</string>
+    <string name="endless">Tryb nieskończony</string>
+
+    <!-- Confirmation dialog-->
+    <string name="reset">Wyzeruj</string>
+    <string name="continue_game">Anuluj</string>
+    <string name="reset_dialog_title">Wyzerować grę?</string>
+    <string name="reset_dialog_message">Czy na pewno chcesz wyzerować grę i zacząć od nowa?</string>
+</resources>

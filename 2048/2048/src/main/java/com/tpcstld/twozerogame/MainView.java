@@ -243,8 +243,6 @@ public class MainView extends View {
     }
 
     private void drawHeader(Canvas canvas) {
-
-        //Drawing the header
         paint.setTextSize(headerTextSize);
         paint.setColor(getResources().getColor(R.color.text_black));
         paint.setTextAlign(Paint.Align.LEFT);
@@ -254,8 +252,6 @@ public class MainView extends View {
     }
 
     private void drawInstructions(Canvas canvas) {
-
-        //Drawing the instructions
         paint.setTextSize(instructionsTextSize);
         paint.setTextAlign(Paint.Align.LEFT);
         int textShiftY = centerText() * 2;
@@ -387,7 +383,6 @@ public class MainView extends View {
     }
 
     private void drawEndlessText(Canvas canvas) {
-
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setTextSize(bodyTextSize);
         paint.setColor(getResources().getColor(R.color.text_black));
@@ -438,7 +433,6 @@ public class MainView extends View {
     }
 
     private void createBitmapCells() {
-
         Resources resources = getResources();
         int[] cellRectangleIds = getCellRectangleIds();
         paint.setTextAlign(Paint.Align.CENTER);
@@ -510,26 +504,35 @@ public class MainView extends View {
         int boardMiddleY = screenMiddleY + cellSize / 2;
         iconSize = cellSize / 2;
 
-        paint.setTextAlign(Paint.Align.CENTER);
-        paint.setTextSize(cellSize);
-        textSize = cellSize * cellSize / Math.max(cellSize, paint.measureText("0000"));
-        cellTextSize = textSize;
-        titleTextSize = textSize / 3;
-        bodyTextSize = (int) (textSize / 1.5);
-        instructionsTextSize = (int) (textSize / 1.5);
-        headerTextSize = textSize * 2;
-        gameOverTextSize = textSize * 2;
-        textPaddingSize = (int) (textSize / 3);
-        iconPaddingSize = (int) (textSize / 5);
-
         //Grid Dimensions
         double halfNumSquaresX = game.numSquaresX / 2d;
         double halfNumSquaresY = game.numSquaresY / 2d;
-
         startingX = (int) (screenMiddleX - (cellSize + gridWidth) * halfNumSquaresX - gridWidth / 2);
         endingX = (int) (screenMiddleX + (cellSize + gridWidth) * halfNumSquaresX + gridWidth / 2);
         startingY = (int) (boardMiddleY - (cellSize + gridWidth) * halfNumSquaresY - gridWidth / 2);
         endingY = (int) (boardMiddleY + (cellSize + gridWidth) * halfNumSquaresY + gridWidth / 2);
+
+        float widthWithPadding = endingX - startingX;
+
+        // Text Dimensions
+        paint.setTextSize(cellSize);
+        textSize = cellSize * cellSize / Math.max(cellSize, paint.measureText("0000"));
+
+        paint.setTextAlign(Paint.Align.CENTER);
+        paint.setTextSize(1000);
+        instructionsTextSize = Math.min(
+            1000f * (widthWithPadding / (paint.measureText(getResources().getString(R.string.instructions)))),
+            textSize / 1.5f
+        );
+
+        paint.setTextSize(cellSize);
+        cellTextSize = textSize;
+        titleTextSize = textSize / 3;
+        bodyTextSize = (int) (textSize / 1.5);
+        headerTextSize = textSize * 2;
+        gameOverTextSize = textSize * 2;
+        textPaddingSize = (int) (textSize / 3);
+        iconPaddingSize = (int) (textSize / 5);
 
         paint.setTextSize(titleTextSize);
 
