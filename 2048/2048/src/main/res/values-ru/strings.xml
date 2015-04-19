@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="high_score">РЕКОРД</string>
+    <string name="score">СЧЁТ</string>
+    <string name="instructions">Свайп для передвижения плиток. 2 + 2 = 4. Соберите 2048.</string>
+    <string name="you_win">Вы победили!</string>
+    <string name="game_over">Игра окончена!</string>
+    <string name="go_on">Коснитесь для продолжения</string>
+    <string name="for_now">А пока…</string>
+    <string name="endless">"Бесконечный" режим</string>
+
+    <!-- Confirmation dialog-->
+    <string name="reset">Сброс</string>
+    <string name="continue_game">Отмена</string>
+    <string name="reset_dialog_title">Сбросить игру?</string>
+    <string name="reset_dialog_message">Вы уверены, что хотите начать сначала?</string>
+</resources>
