@@ -524,13 +524,19 @@ public class MainView extends View {
             1000f * (widthWithPadding / (paint.measureText(getResources().getString(R.string.instructions)))),
             textSize / 1.5f
         );
+        gameOverTextSize = Math.min(
+            Math.min(
+                1000f * ((widthWithPadding - gridWidth * 2) / (paint.measureText(getResources().getString(R.string.game_over)))),
+                textSize * 2
+            ),
+            1000f * ((widthWithPadding - gridWidth * 2) / (paint.measureText(getResources().getString(R.string.you_win))))
+        );
 
         paint.setTextSize(cellSize);
         cellTextSize = textSize;
         titleTextSize = textSize / 3;
         bodyTextSize = (int) (textSize / 1.5);
         headerTextSize = textSize * 2;
-        gameOverTextSize = textSize * 2;
         textPaddingSize = (int) (textSize / 3);
         iconPaddingSize = (int) (textSize / 5);
 
