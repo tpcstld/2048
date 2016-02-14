@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="high_score">YÜKSEK SKOR</string>
+    <string name="score">SKOR</string>
+    <string name="instructions">Hamle yapmak için kaydırın. 2 + 2 = 4. 2048\'e ulaşın.</string>
+    <string name="you_win">Kazandın!</string>
+    <string name="game_over">Oyun Bitti!</string>
+    <string name="go_on">Devam etmek için dokunun</string>
+    <string name="for_now">Şimdilik…</string>
+    <string name="endless">"Sonsuz" Mode</string>
+
+    <!-- Confirmation dialog-->
+    <string name="reset">Sıfırla</string>
+    <string name="continue_game">İptal</string>
+    <string name="reset_dialog_title">Oyun sıfırlansın mı?</string>
+    <string name="reset_dialog_message">Sıfırlamak istediğinize emin misiniz?</string>
+</resources>

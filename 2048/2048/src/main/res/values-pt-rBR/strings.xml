@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="high_score">RECORDE</string>
+    <string name="score">PONTUAÇÃO</string>
+    <string name="instructions">Deslize para mover. 2 + 2 = 4. Alcance 2048.</string>
+    <string name="you_win">Você ganhou!</string>
+    <string name="game_over">Você perdeu!</string>
+    <string name="go_on">Toque para continuar</string>
+    <string name="for_now">Por enquanto...</string>
+    <string name="endless">Modo Interminável</string>
+3
+    <!-- Confirmation dialog-->
+    <string name="reset">Resetar</string>
+    <string name="continue_game">Cancelar</string>
+    <string name="reset_dialog_title">Resetar jogo?</string>
+    <string name="reset_dialog_message">Tem certeza de que deseja resetar o jogo?</string>
+</resources>
