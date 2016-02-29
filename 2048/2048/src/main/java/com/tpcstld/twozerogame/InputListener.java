@@ -22,7 +22,11 @@ class InputListener implements View.OnTouchListener {
     private float startingY;
     private int previousDirection = 1;
     private int veryLastDirection = 1;
+    // Whether or not we have made a move, i.e. the blocks shifted or tried to shift.
     private boolean hasMoved = false;
+    // Whether or not we began the press on an icon. This is to disable swipes if the user began
+    // the press on an icon.
+    private boolean beganOnIcon = false;
 
     public InputListener(MainView view) {
         super();
@@ -42,11 +46,13 @@ class InputListener implements View.OnTouchListener {
                 lastDx = 0;
                 lastDy = 0;
                 hasMoved = false;
+                beganOnIcon = iconPressed(mView.sXNewGame, mView.sYIcons)
+                              || iconPressed(mView.sXUndo, mView.sYIcons);
                 return true;
             case MotionEvent.ACTION_MOVE:
                 x = event.getX();
                 y = event.getY();
-                if (mView.game.isActive()) {
+                if (mView.game.isActive() && !beganOnIcon) {
                     float dx = x - previousX;
                     if (Math.abs(lastDx + dx) < Math.abs(lastDx) + Math.abs(dx) && Math.abs(dx) > RESET_STARTING
                             && Math.abs(x - startingX) > SWIPE_MIN_DISTANCE) {
@@ -154,6 +160,6 @@ class InputListener implements View.OnTouchListener {
     }
 
     private boolean isTap(int factor) {
-        return pathMoved() <= mView.iconSize * factor;
+        return pathMoved() <= mView.iconSize * mView.iconSize * factor;
     }
 }
