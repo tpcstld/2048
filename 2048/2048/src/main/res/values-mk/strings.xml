@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="high_score">НАЈДОБАР РЕЗУЛТАТ</string>
+    <string name="score">РЕЗУЛТАТ</string>
+    <string name="instructions">Лизгај за да мрдаш. 2 + 2 = 4. Состави да добиеш 2048.</string>
+    <string name="you_win">Победа!</string>
+    <string name="game_over">Изгуби!</string>
+    <string name="go_on">Допри за да продолжиш</string>
+    <string name="for_now">За сега…</string>
+    <string name="endless">Режим на "Бесконечност"</string>
+
+    <!-- Confirmation dialog-->
+    <string name="reset">Ресетирај</string>
+    <string name="continue_game">Откажи</string>
+    <string name="reset_dialog_title">Ресетирај ја играта?</string>
+    <string name="reset_dialog_message">Дали сте сигурни дека сакате да ја ресетирате играта?</string>
+</resources>
