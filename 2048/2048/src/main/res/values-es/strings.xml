@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="high_score">PUNTUACIÓN ALTA</string>
+    <string name="continue_game">Cancelar</string>
+    <string name="endless">Modo \"Infinito\"</string>
+    <string name="for_now">Por ahora</string>
+    <string name="game_over">¡Juego Terminado!</string>
+    <string name="go_on">Pulsa Para Continuar</string>
+    <string name="app_name"></string>
+    <string name="reset">Reajustar</string>
+    <string name="reset_dialog_message">¿Seguro que quieres a reajustar el juego?</string>
+    <string name="reset_dialog_title">¿Reajutar el juego?</string>
+    <string name="score">PUNTAJE</string>
+    <string name="you_win">¡Te Ganas!</string>
+    <string name="instructions">Deslice para mover. 2 + 2 = 4. Alcanza 2048.</string>
+</resources>
