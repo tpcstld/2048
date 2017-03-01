@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="high_score">РЕКОРД</string>
+    <string name="score">РАХУНОК</string>
+    <string name="instructions">Зробіть свайп для переміщення плиток. 2 + 2 = 4. Зберіть 2048.</string>
+    <string name="you_win">Ви перемогли!</string>
+    <string name="game_over">Гра закінчена!</string>
+    <string name="go_on">Торкніться для продовження</string>
+    <string name="for_now">А поки…</string>
+    <string name="endless">"Нескінченний" режим</string>
+
+    <!-- Confirmation dialog-->
+    <string name="reset">Скидання</string>
+    <string name="continue_game">Відміна</string>
+    <string name="reset_dialog_title">Скинути гру?</string>
+    <string name="reset_dialog_message">Ви впевнені, що хочете почати спочатку?</string>
+</resources>
