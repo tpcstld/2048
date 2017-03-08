@@ -2,7 +2,7 @@
 
 These are the people who have contributed to this repository. Thank you everyone for your generous time and effort!
 
-* schwartzadev
+* [schwartzadev](https://github.com/schwartzadev)
 * Mr-Goldlog
 * leplastic
 * lazycoder-ru
