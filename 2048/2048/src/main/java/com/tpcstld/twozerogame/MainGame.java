@@ -45,6 +45,7 @@ public class MainGame {
     public long highScore = 0;
     public long lastScore = 0;
     private long bufferScore = 0;
+    private Tile[] bufferTiles = new Tile[4];
 
     public MainGame(Context context, MainView view) {
         mContext = context;
@@ -78,19 +79,30 @@ public class MainGame {
     private void addStartTiles() {
         int startTiles = 2;
         for (int xx = 0; xx < startTiles; xx++) {
-            this.addRandomTile();
+            spawnTile(getRandomTile());
         }
     }
 
-    private void addRandomTile() {
+    private Tile getRandomTile() {
         if (grid.isCellsAvailable()) {
             int value = Math.random() < 0.9 ? 2 : 4;
             Tile tile = new Tile(grid.randomAvailableCell(), value);
-            spawnTile(tile);
+            return tile;
         }
+        return null;
+    }
+
+    private Tile getBufferedRandomTile(int direction) {
+        if (bufferTiles[direction] == null) {
+            bufferTiles[direction] = getRandomTile();
+        }
+        return bufferTiles[direction];
     }
 
     private void spawnTile(Tile tile) {
+        if (tile == null) {
+            return;
+        }
         grid.insertTile(tile);
         aGrid.startAnimation(tile.getX(), tile.getY(), SPAWN_ANIMATION,
                 SPAWN_ANIMATION_TIME, MOVE_ANIMATION_TIME, null); //Direction: -1 = EXPANDING
@@ -137,6 +149,9 @@ public class MainGame {
 
     private void saveUndoState() {
         grid.saveTiles();
+        if (canUndo) {
+            clearTileBuffer();
+        }
         canUndo = true;
         lastScore = bufferScore;
         lastGameState = bufferGameState;
@@ -157,6 +172,12 @@ public class MainGame {
             gameState = lastGameState;
             mView.refreshLastTime = true;
             mView.invalidate();
+        }
+    }
+
+    private void clearTileBuffer() {
+        for (int i = 0; i < bufferTiles.length; i++) {
+            bufferTiles[i] = null;
         }
     }
 
@@ -236,7 +257,7 @@ public class MainGame {
 
         if (moved) {
             saveUndoState();
-            addRandomTile();
+            spawnTile(getBufferedRandomTile(direction));
             checkLose();
         }
         mView.resyncTime();
