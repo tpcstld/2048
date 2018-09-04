@@ -39,6 +39,7 @@ public class MainView extends View {
     public int iconSize;
     //Misc
     boolean refreshLastTime = true;
+    boolean showHelp;
     //Timing
     private long lastFPSTime = System.nanoTime();
     //Text
@@ -428,7 +429,7 @@ public class MainView extends View {
         drawUndoButton(canvas);
         drawBackground(canvas);
         drawBackgroundGrid(canvas);
-        drawInstructions(canvas);
+        if (showHelp) drawInstructions(canvas);
 
     }
 
