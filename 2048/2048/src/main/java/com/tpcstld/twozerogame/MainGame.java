@@ -32,6 +32,7 @@ public class MainGame {
     private static final int GAME_ENDLESS = 2;
     private static final int GAME_ENDLESS_WON = 3;
     private static final String HIGH_SCORE = "high score";
+    private static final String FIRST_RUN = "first run";
     private static int endingMaxValue;
     final int numSquaresX = 4;
     final int numSquaresY = 4;
@@ -68,6 +69,7 @@ public class MainGame {
         score = 0;
         gameState = GAME_NORMAL;
         addStartTiles();
+        mView.showHelp = firstRun();
         mView.refreshLastTime = true;
         mView.resyncTime();
         mView.invalidate();
@@ -104,6 +106,17 @@ public class MainGame {
     private long getHighScore() {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mContext);
         return settings.getLong(HIGH_SCORE, -1);
+    }
+
+    private boolean firstRun() {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mContext);
+        if (settings.getBoolean(FIRST_RUN, true)) {
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putBoolean(FIRST_RUN, false);
+            editor.commit();
+            return true;
+        }
+        return false;
     }
 
     private void prepareTiles() {
