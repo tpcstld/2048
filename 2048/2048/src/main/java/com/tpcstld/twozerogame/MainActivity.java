@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         editor.putBoolean(CAN_UNDO, view.game.canUndo);
         editor.putInt(GAME_STATE, view.game.gameState);
         editor.putInt(UNDO_GAME_STATE, view.game.lastGameState);
-        editor.commit();
+        editor.apply();
     }
 
     protected void onResume() {

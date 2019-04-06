@@ -46,7 +46,7 @@ public class MainGame {
     public long lastScore = 0;
     private long bufferScore = 0;
 
-    public MainGame(Context context, MainView view) {
+    MainGame(Context context, MainView view) {
         mContext = context;
         mView = view;
         endingMaxValue = (int) Math.pow(2, view.numCellTypes - 1);
@@ -100,7 +100,7 @@ public class MainGame {
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mContext);
         SharedPreferences.Editor editor = settings.edit();
         editor.putLong(HIGH_SCORE, highScore);
-        editor.commit();
+        editor.apply();
     }
 
     private long getHighScore() {
@@ -113,7 +113,7 @@ public class MainGame {
         if (settings.getBoolean(FIRST_RUN, true)) {
             SharedPreferences.Editor editor = settings.edit();
             editor.putBoolean(FIRST_RUN, false);
-            editor.commit();
+            editor.apply();
             return true;
         }
         return false;
