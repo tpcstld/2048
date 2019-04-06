@@ -1,8 +1,9 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.feature'
 
 android {
-    compileSdkVersion 27
+    baseFeature true
     buildToolsVersion '27.0.3'
+    compileSdkVersion 27
 
     defaultConfig {
         minSdkVersion 14

@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.tpcstld.twozerogame.base.R;
+
 class InputListener implements View.OnTouchListener {
 
     private static final int SWIPE_MIN_DISTANCE = 0;
