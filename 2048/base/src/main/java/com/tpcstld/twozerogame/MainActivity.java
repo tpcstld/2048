@@ -1,10 +1,24 @@
 package com.tpcstld.twozerogame;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
+
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.drive.Drive;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.tpcstld.twozerogame.snapshot.SnapshotData;
+import com.tpcstld.twozerogame.snapshot.SnapshotManager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,6 +31,11 @@ public class MainActivity extends AppCompatActivity {
     private static final String UNDO_GRID = "undo";
     private static final String GAME_STATE = "game state";
     private static final String UNDO_GAME_STATE = "undo game state";
+
+    private static final int RC_SIGN_IN = 9001;
+
+    private boolean firstLoginAttempt = false;
+
     private MainView view;
 
     @Override
@@ -102,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         load();
+        signInToGoogle();
     }
 
     private void load() {
@@ -133,5 +153,56 @@ public class MainActivity extends AppCompatActivity {
         view.game.canUndo = settings.getBoolean(CAN_UNDO, view.game.canUndo);
         view.game.gameState = settings.getInt(GAME_STATE, view.game.gameState);
         view.game.lastGameState = settings.getInt(UNDO_GAME_STATE, view.game.lastGameState);
+    }
+
+    /**
+     * Signs into Google. Used for cloud saves.
+     */
+    private void signInToGoogle() {
+        GoogleSignInOptions signInOptions =
+                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
+                        .requestScopes(Drive.SCOPE_APPFOLDER)
+                        .build();
+        final GoogleSignInClient signInClient = GoogleSignIn.getClient(this, signInOptions);
+        signInClient.silentSignIn().addOnCompleteListener(this, new OnCompleteListener<GoogleSignInAccount>() {
+            @Override
+            public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
+                if (!task.isSuccessful()) {
+                    if (!firstLoginAttempt) {
+                        firstLoginAttempt = true;
+                        startActivityForResult(signInClient.getSignInIntent(), RC_SIGN_IN);
+                    }
+                } else {
+                    System.out.println("Successfully logged into Google.");
+
+                    SnapshotManager.loadSnapshot(MainActivity.this, new SnapshotManager.Callback() {
+                        @Override
+                        public void run(@NonNull SnapshotData data) {
+                            view.game.handleSnapshot(data);
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode != RC_SIGN_IN) {
+            return;
+        }
+
+        GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+        if (!result.isSuccess()) {
+            System.out.println(result.getStatus());
+        } else {
+            SnapshotManager.loadSnapshot(MainActivity.this, new SnapshotManager.Callback() {
+                @Override
+                public void run(@NonNull SnapshotData data) {
+                    view.game.handleSnapshot(data);
+                }
+            });
+        }
     }
 }

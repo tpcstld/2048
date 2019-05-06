@@ -3,6 +3,10 @@ package com.tpcstld.twozerogame;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+
+import com.tpcstld.twozerogame.snapshot.SnapshotData;
+import com.tpcstld.twozerogame.snapshot.SnapshotManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,11 +14,11 @@ import java.util.List;
 
 public class MainGame {
 
-    public static final int SPAWN_ANIMATION = -1;
-    public static final int MOVE_ANIMATION = 0;
-    public static final int MERGE_ANIMATION = 1;
+    static final int SPAWN_ANIMATION = -1;
+    static final int MOVE_ANIMATION = 0;
+    static final int MERGE_ANIMATION = 1;
 
-    public static final int FADE_GLOBAL_ANIMATION = 0;
+    static final int FADE_GLOBAL_ANIMATION = 0;
     private static final long MOVE_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME;
     private static final long SPAWN_ANIMATION_TIME = MainView.BASE_ANIMATION_TIME;
     private static final long NOTIFICATION_DELAY_TIME = MOVE_ANIMATION_TIME + SPAWN_ANIMATION_TIME;
@@ -26,8 +30,8 @@ public class MainGame {
     private static final int GAME_WIN = 1;
     private static final int GAME_LOST = -1;
     private static final int GAME_NORMAL = 0;
-    public int gameState = GAME_NORMAL;
-    public int lastGameState = GAME_NORMAL;
+    int gameState = GAME_NORMAL;
+    int lastGameState = GAME_NORMAL;
     private int bufferGameState = GAME_NORMAL;
     private static final int GAME_ENDLESS = 2;
     private static final int GAME_ENDLESS_WON = 3;
@@ -38,12 +42,12 @@ public class MainGame {
     final int numSquaresY = 4;
     private final Context mContext;
     private final MainView mView;
-    public Grid grid = null;
-    public AnimationGrid aGrid;
-    public boolean canUndo;
+    Grid grid = null;
+    AnimationGrid aGrid;
+    boolean canUndo;
     public long score = 0;
-    public long highScore = 0;
-    public long lastScore = 0;
+    long highScore = 0;
+    long lastScore = 0;
     private long bufferScore = 0;
 
     MainGame(Context context, MainView view) {
@@ -52,7 +56,7 @@ public class MainGame {
         endingMaxValue = (int) Math.pow(2, view.numCellTypes - 1);
     }
 
-    public void newGame() {
+    void newGame() {
         if (grid == null) {
             grid = new Grid(numSquaresX, numSquaresY);
         } else {
@@ -101,6 +105,21 @@ public class MainGame {
         SharedPreferences.Editor editor = settings.edit();
         editor.putLong(HIGH_SCORE, highScore);
         editor.apply();
+
+        SnapshotData data = new SnapshotData(highScore);
+        SnapshotManager.saveSnapshot(mContext, data);
+    }
+
+    void handleSnapshot(SnapshotData data) {
+        highScore = Math.max(data.getHighScore(), highScore);
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mContext);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putLong(HIGH_SCORE, highScore);
+        editor.apply();
+
+        mView.invalidate();
+
+        System.out.println("Successfully loaded snapshot from Cloud Save: " + highScore);
     }
 
     private long getHighScore() {
@@ -148,7 +167,7 @@ public class MainGame {
         bufferGameState = gameState;
     }
 
-    public void revertUndoState() {
+    void revertUndoState() {
         if (canUndo) {
             canUndo = false;
             aGrid.cancelAnimations();
@@ -160,19 +179,19 @@ public class MainGame {
         }
     }
 
-    public boolean gameWon() {
+    boolean gameWon() {
         return (gameState > 0 && gameState % 2 != 0);
     }
 
-    public boolean gameLost() {
+    boolean gameLost() {
         return (gameState == GAME_LOST);
     }
 
-    public boolean isActive() {
+    boolean isActive() {
         return !(gameWon() || gameLost());
     }
 
-    public void move(int direction) {
+    void move(int direction) {
         aGrid.cancelAnimations();
         // 0: up, 1: right, 2: down, 3: left
         if (!isActive()) {
@@ -215,6 +234,10 @@ public class MainGame {
                         // Update the score
                         score = score + merged.getValue();
                         highScore = Math.max(score, highScore);
+                        if (score >= highScore) {
+                            highScore = score;
+                            recordHighScore();
+                        }
 
                         // The mighty 2048 tile
                         if (merged.getValue() >= winValue() && !gameWon()) {
@@ -347,13 +370,13 @@ public class MainGame {
         }
     }
 
-    public void setEndlessMode() {
+    void setEndlessMode() {
         gameState = GAME_ENDLESS;
         mView.invalidate();
         mView.refreshLastTime = true;
     }
 
-    public boolean canContinue() {
+    boolean canContinue() {
         return !(gameState == GAME_ENDLESS || gameState == GAME_ENDLESS_WON);
     }
 }

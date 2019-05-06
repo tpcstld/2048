@@ -43,6 +43,9 @@
                 android:name="default-url"
                 android:value="http://tpcstld.me/2048" />
         </activity>
+
+        <meta-data android:name="com.google.android.gms.games.APP_ID"
+            android:value="@string/app_id"/>
     </application>
 
 </manifest>
