@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
 
+import com.google.android.gms.games.Games;
 import com.tpcstld.twozerogame.base.R;
 
 import java.util.ArrayList;

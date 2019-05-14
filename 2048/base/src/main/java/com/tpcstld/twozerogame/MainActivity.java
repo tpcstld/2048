@@ -15,6 +15,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.drive.Drive;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.GamesClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.tpcstld.twozerogame.snapshot.SnapshotData;
@@ -175,6 +177,11 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     System.out.println("Successfully logged into Google.");
 
+                    if (task.getResult() != null) {
+                        GamesClient client = Games.getGamesClient(MainActivity.this, task.getResult());
+                        client.setViewForPopups(view);
+                    }
+
                     SnapshotManager.loadSnapshot(MainActivity.this, new SnapshotManager.Callback() {
                         @Override
                         public void run(@NonNull SnapshotData data) {
@@ -197,6 +204,10 @@ public class MainActivity extends AppCompatActivity {
         if (!result.isSuccess()) {
             System.out.println(result.getStatus());
         } else {
+            if (result.getSignInAccount() != null) {
+                GamesClient client = Games.getGamesClient(MainActivity.this, result.getSignInAccount());
+                client.setViewForPopups(view);
+            }
             SnapshotManager.loadSnapshot(MainActivity.this, new SnapshotManager.Callback() {
                 @Override
                 public void run(@NonNull SnapshotData data) {
