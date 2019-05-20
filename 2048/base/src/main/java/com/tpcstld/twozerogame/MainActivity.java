@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String GAME_STATE = "game state";
     private static final String UNDO_GAME_STATE = "undo game state";
 
+    private static final String NO_LOGIN_PROMPT = "no_login_prompt";
+
     private static final int RC_SIGN_IN = 9001;
 
     private boolean firstLoginAttempt = false;
@@ -161,6 +163,8 @@ public class MainActivity extends AppCompatActivity {
      * Signs into Google. Used for cloud saves.
      */
     private void signInToGoogle() {
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        final boolean noLoginPrompt = settings.getBoolean(NO_LOGIN_PROMPT, false);
         GoogleSignInOptions signInOptions =
                 new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
                         .requestScopes(Drive.SCOPE_APPFOLDER)
@@ -170,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
                 if (!task.isSuccessful()) {
-                    if (!firstLoginAttempt) {
+                    if (!firstLoginAttempt && !noLoginPrompt) {
                         firstLoginAttempt = true;
                         startActivityForResult(signInClient.getSignInIntent(), RC_SIGN_IN);
                     }
@@ -206,6 +210,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (!result.isSuccess()) {
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putBoolean(NO_LOGIN_PROMPT, true);
+            editor.apply();
             System.out.println(result.getStatus());
         } else {
             if (result.getSignInAccount() != null) {
