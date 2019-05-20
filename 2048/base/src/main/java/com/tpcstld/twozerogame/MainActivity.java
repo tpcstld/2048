@@ -201,6 +201,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+        if (result == null) {
+            return;
+        }
+
         if (!result.isSuccess()) {
             System.out.println(result.getStatus());
         } else {
