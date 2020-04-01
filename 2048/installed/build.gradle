@@ -6,10 +6,10 @@ android {
     defaultConfig {
         applicationId "com.tpcstld.twozerogame"
         // 14 for installed, 21 for instant.
-        minSdkVersion 21
+        minSdkVersion 14
         targetSdkVersion 28
-        versionCode 5
-        versionName "1.3.2"
+        versionCode 1007
+        versionName "1.3.3"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
