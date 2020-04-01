@@ -2,6 +2,7 @@ package com.tpcstld.twozerogame;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Debug;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
@@ -70,7 +71,7 @@ public class MainGame {
             highScore = score;
             recordHighScore();
         }
-        score = 0;
+        score = DebugTools.getStartingScore();
         gameState = GAME_NORMAL;
         addStartTiles();
         mView.showHelp = firstRun();
@@ -80,6 +81,14 @@ public class MainGame {
     }
 
     private void addStartTiles() {
+        List<Tile> debugTiles = DebugTools.generatePremadeMap();
+        if (debugTiles != null) {
+            for (Tile tile : debugTiles) {
+                this.spawnTile(tile);
+            }
+            return;
+        }
+
         int startTiles = 2;
         for (int xx = 0; xx < startTiles; xx++) {
             this.addRandomTile();
