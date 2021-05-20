@@ -1,7 +1,6 @@
 package com.tpcstld.twozerogame.snapshot;
 
-import android.os.Build;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.games.snapshot.Snapshot;
 
