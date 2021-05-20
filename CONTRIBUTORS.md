@@ -7,5 +7,6 @@ These are the people who have contributed to this repository. Thank you everyone
 * leplastic
 * lazycoder-ru
 * Paul Woitaschek
+* VasilisKos
 
 If you are making a pull request, feel free to add your name (real or otherwise) here!
