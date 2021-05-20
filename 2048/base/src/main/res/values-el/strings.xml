@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="high_score">ΤΟΠ ΣΚΟΡ</string>
+    <string name="score">ΣΚΟΡ</string>
+    <string name="instructions">Σύρετε τα πλακίδια. 2+2=4. Φτάσετε το 2048!</string>
+    <string name="you_win">Κερδίσατε!</string>
+    <string name="game_over">Τέλος παιχνιδιού!</string>
+    <string name="go_on">Αγγίξτε για συνέχεια</string>
+    <string name="for_now">Για τώρα…</string>
+    <string name="endless">"Αέναη" λειτουργία</string>
+
+    <!-- Confirmation dialog-->
+    <string name="reset">Επαναφορά</string>
+    <string name="continue_game">Ακύρωση</string>
+    <string name="reset_dialog_title">Επαναφορά παιχνιδιού;</string>
+    <string name="reset_dialog_message">Είστε σίγουροι ότι θέλετε να επαναφέρετε το παιχνίδι;</string>
+</resources>
