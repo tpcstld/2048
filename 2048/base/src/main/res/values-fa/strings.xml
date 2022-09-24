@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="high_score">بالاترین امتیاز</string>
+    <string name="score">امتیاز</string>
+    <string name="instructions">جرکت بده. 2 + 2 = 4 تا برسی به 2048.</string>
+    <string name="you_win">شما برنده شدید!</string>
+    <string name="game_over">پابان بازی!</string>
+    <string name="go_on">برای ادامه کلیک کنید</string>
+    <string name="for_now">برای الان ...</string>
+    <string name="endless">مدل بازی "بی نهایت"</string>
+
+    <!-- Confirmation dialog-->
+    <string name="reset">شروع مجدد</string>
+    <string name="continue_game">انصراف</string>
+    <string name="reset_dialog_title">شروع مجدد بازی؟</string>
+    <string name="reset_dialog_message">آیا از شروع مجدد بازی مطمتن هستید؟</string>
+</resources>
