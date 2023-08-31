@@ -12,7 +12,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.google.android.gms.games.Games;
-import com.tpcstld.twozerogame.base.R;
+import com.tpcstld.twozerogame.R;
 
 import java.util.ArrayList;
 

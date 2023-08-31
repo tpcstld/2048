@@ -5,7 +5,7 @@ import android.content.DialogInterface;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.tpcstld.twozerogame.base.R;
+import com.tpcstld.twozerogame.R;
 
 class InputListener implements View.OnTouchListener {
 

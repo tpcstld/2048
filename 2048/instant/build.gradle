@@ -1,5 +1,29 @@
 apply plugin: 'com.android.instantapp'
 
+
+android {
+    compileSdkVersion 33
+    namespace "com.tpcstld.twozerogame"
+
+    defaultConfig {
+        applicationId "com.tpcstld.twozerogame"
+        // 14 for installed, 21 for instant.
+        minSdkVersion 21
+        targetSdkVersion 33
+        versionCode 5
+        versionName "1.4.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
 dependencies {
     implementation project(":base")
 }
