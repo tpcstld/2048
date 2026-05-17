@@ -1,0 +1,330 @@
+--- a/2048/base/src/main/java/com/tpcstld/twozerogame/Grid.java	2026-05-17 09:43:20.711960391 +0000
++++ b/2048/base/src/main/java/com/tpcstld/twozerogame/Grid.java	2026-05-17 09:43:55.666887918 +0000
+@@ -1,19 +1,19 @@
+ package com.tpcstld.twozerogame;
+ 
+ import java.util.ArrayList;
++import java.util.ArrayDeque;
++import java.util.Deque;
+ 
+ public class Grid {
+ 
+     public final Tile[][] field;
+-    public final Tile[][] undoField;
+     private final Tile[][] bufferField;
++    private final Deque<Tile[][]> undoStack = new ArrayDeque<>();
+ 
+     public Grid(int sizeX, int sizeY) {
+         field = new Tile[sizeX][sizeY];
+-        undoField = new Tile[sizeX][sizeY];
+         bufferField = new Tile[sizeX][sizeY];
+         clearGrid();
+-        clearUndoGrid();
+     }
+ 
+     public Cell randomAvailableCell() {
+@@ -83,15 +83,17 @@
+     }
+ 
+     public void saveTiles() {
++        Tile[][] snapshot = new Tile[bufferField.length][bufferField[0].length];
+         for (int xx = 0; xx < bufferField.length; xx++) {
+             for (int yy = 0; yy < bufferField[0].length; yy++) {
+                 if (bufferField[xx][yy] == null) {
+-                    undoField[xx][yy] = null;
++                    snapshot[xx][yy] = null;
+                 } else {
+-                    undoField[xx][yy] = new Tile(xx, yy, bufferField[xx][yy].getValue());
++                    snapshot[xx][yy] = new Tile(xx, yy, bufferField[xx][yy].getValue());
+                 }
+             }
+         }
++        undoStack.push(snapshot);
+     }
+ 
+     public void prepareSaveTiles() {
+@@ -107,29 +109,49 @@
+     }
+ 
+     public void revertTiles() {
+-        for (int xx = 0; xx < undoField.length; xx++) {
+-            for (int yy = 0; yy < undoField[0].length; yy++) {
+-                if (undoField[xx][yy] == null) {
+-                    field[xx][yy] = null;
+-                } else {
+-                    field[xx][yy] = new Tile(xx, yy, undoField[xx][yy].getValue());
++        if (!undoStack.isEmpty()) {
++            Tile[][] snapshot = undoStack.pop();
++            for (int xx = 0; xx < snapshot.length; xx++) {
++                for (int yy = 0; yy < snapshot[0].length; yy++) {
++                    if (snapshot[xx][yy] == null) {
++                        field[xx][yy] = null;
++                    } else {
++                        field[xx][yy] = new Tile(xx, yy, snapshot[xx][yy].getValue());
++                    }
+                 }
+             }
+         }
+     }
+ 
+-    public void clearGrid() {
+-        for (int xx = 0; xx < field.length; xx++) {
+-            for (int yy = 0; yy < field[0].length; yy++) {
+-                field[xx][yy] = null;
+-            }
++    public boolean hasUndo() {
++        return !undoStack.isEmpty();
++    }
++
++    public int undoDepth() {
++        return undoStack.size();
++    }
++
++    public Tile[][][] getUndoSnapshots() {
++        Tile[][][] snapshots = new Tile[undoStack.size()][][];
++        int i = 0;
++        for (Tile[][] snapshot : undoStack) {
++            snapshots[i++] = snapshot;
+         }
++        return snapshots;
++    }
++
++    public void pushUndoSnapshot(Tile[][] snapshot) {
++        undoStack.push(snapshot);
+     }
+ 
+-    private void clearUndoGrid() {
++    public void clearUndoStack() {
++        undoStack.clear();
++    }
++
++    public void clearGrid() {
+         for (int xx = 0; xx < field.length; xx++) {
+             for (int yy = 0; yy < field[0].length; yy++) {
+-                undoField[xx][yy] = null;
++                field[xx][yy] = null;
+             }
+         }
+     }
+--- a/2048/base/src/main/java/com/tpcstld/twozerogame/MainGame.java	2026-05-17 09:43:20.712271254 +0000
++++ b/2048/base/src/main/java/com/tpcstld/twozerogame/MainGame.java	2026-05-17 09:44:44.178886808 +0000
+@@ -9,7 +9,9 @@
+ import com.tpcstld.twozerogame.snapshot.SnapshotManager;
+ 
+ import java.util.ArrayList;
++import java.util.ArrayDeque;
+ import java.util.Collections;
++import java.util.Deque;
+ import java.util.List;
+ 
+ public class MainGame {
+@@ -31,7 +33,6 @@
+     private static final int GAME_LOST = -1;
+     private static final int GAME_NORMAL = 0;
+     int gameState = GAME_NORMAL;
+-    int lastGameState = GAME_NORMAL;
+     private int bufferGameState = GAME_NORMAL;
+     private static final int GAME_ENDLESS = 2;
+     private static final int GAME_ENDLESS_WON = 3;
+@@ -44,12 +45,14 @@
+     private final MainView mView;
+     Grid grid = null;
+     AnimationGrid aGrid;
+-    boolean canUndo;
+     public long score = 0;
+     long highScore = 0;
+-    long lastScore = 0;
+     private long bufferScore = 0;
+ 
++    // Unlimited undo stacks (index 0 = most recent, i.e. top of stack)
++    final Deque<Long>    scoreStack     = new ArrayDeque<>();
++    final Deque<Integer> gameStateStack = new ArrayDeque<>();
++
+     MainGame(Context context, MainView view) {
+         mContext = context;
+         mView = view;
+@@ -164,9 +167,8 @@
+ 
+     private void saveUndoState() {
+         grid.saveTiles();
+-        canUndo = true;
+-        lastScore = bufferScore;
+-        lastGameState = bufferGameState;
++        scoreStack.push(bufferScore);
++        gameStateStack.push(bufferGameState);
+     }
+ 
+     private void prepareUndoState() {
+@@ -175,13 +177,16 @@
+         bufferGameState = gameState;
+     }
+ 
++    boolean canUndo() {
++        return grid.hasUndo();
++    }
++
+     void revertUndoState() {
+-        if (canUndo) {
+-            canUndo = false;
++        if (canUndo()) {
+             aGrid.cancelAnimations();
+             grid.revertTiles();
+-            score = lastScore;
+-            gameState = lastGameState;
++            score     = scoreStack.pop();
++            gameState = gameStateStack.pop();
+             mView.refreshLastTime = true;
+             mView.invalidate();
+         }
+--- a/2048/base/src/main/java/com/tpcstld/twozerogame/MainActivity.java	2026-05-17 09:43:20.712245692 +0000
++++ b/2048/base/src/main/java/com/tpcstld/twozerogame/MainActivity.java	2026-05-17 09:45:12.864887679 +0000
+@@ -15,15 +15,13 @@
+ 
+ public class MainActivity extends AppCompatActivity {
+ 
+-    private static final String WIDTH = "width";
+-    private static final String HEIGHT = "height";
+-    private static final String SCORE = "score";
+-    private static final String HIGH_SCORE = "high score temp";
+-    private static final String UNDO_SCORE = "undo score";
+-    private static final String CAN_UNDO = "can undo";
+-    private static final String UNDO_GRID = "undo";
+-    private static final String GAME_STATE = "game state";
+-    private static final String UNDO_GAME_STATE = "undo game state";
++    private static final String WIDTH          = "width";
++    private static final String HEIGHT         = "height";
++    private static final String SCORE          = "score";
++    private static final String HIGH_SCORE     = "high score temp";
++    private static final String GAME_STATE     = "game state";
++    private static final String UNDO_DEPTH     = "undo_depth";
++    // Per-level keys: "undo_score_N", "undo_game_state_N", "undo_grid_N_xx_yy"
+ 
+     private static final String NO_LOGIN_PROMPT = "no_login_prompt";
+ 
+@@ -88,31 +86,44 @@
+     private void save() {
+         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+         SharedPreferences.Editor editor = settings.edit();
++
++        // --- Save live grid ---
+         Tile[][] field = view.game.grid.field;
+-        Tile[][] undoField = view.game.grid.undoField;
+         editor.putInt(WIDTH, field.length);
+         editor.putInt(HEIGHT, field.length);
+         for (int xx = 0; xx < field.length; xx++) {
+             for (int yy = 0; yy < field[0].length; yy++) {
+-                if (field[xx][yy] != null) {
+-                    editor.putInt(xx + " " + yy, field[xx][yy].getValue());
+-                } else {
+-                    editor.putInt(xx + " " + yy, 0);
+-                }
+-
+-                if (undoField[xx][yy] != null) {
+-                    editor.putInt(UNDO_GRID + xx + " " + yy, undoField[xx][yy].getValue());
+-                } else {
+-                    editor.putInt(UNDO_GRID + xx + " " + yy, 0);
+-                }
++                editor.putInt(xx + " " + yy,
++                        field[xx][yy] != null ? field[xx][yy].getValue() : 0);
+             }
+         }
++
++        // --- Save score and game state ---
+         editor.putLong(SCORE, view.game.score);
+         editor.putLong(HIGH_SCORE, view.game.highScore);
+-        editor.putLong(UNDO_SCORE, view.game.lastScore);
+-        editor.putBoolean(CAN_UNDO, view.game.canUndo);
+         editor.putInt(GAME_STATE, view.game.gameState);
+-        editor.putInt(UNDO_GAME_STATE, view.game.lastGameState);
++
++        // --- Serialize undo stack ---
++        // getUndoSnapshots() returns snapshots with index 0 = top (most recent).
++        Tile[][][] snapshots = view.game.grid.getUndoSnapshots();
++        int depth = snapshots.length;
++        editor.putInt(UNDO_DEPTH, depth);
++
++        Long[]    scores     = view.game.scoreStack.toArray(new Long[0]);
++        Integer[] gameStates = view.game.gameStateStack.toArray(new Integer[0]);
++
++        for (int i = 0; i < depth; i++) {
++            editor.putLong("undo_score_" + i,      scores[i]);
++            editor.putInt("undo_game_state_" + i,  gameStates[i]);
++            Tile[][] snap = snapshots[i];
++            for (int xx = 0; xx < snap.length; xx++) {
++                for (int yy = 0; yy < snap[0].length; yy++) {
++                    editor.putInt("undo_grid_" + i + "_" + xx + "_" + yy,
++                            snap[xx][yy] != null ? snap[xx][yy].getValue() : 0);
++                }
++            }
++        }
++
+         editor.apply();
+     }
+ 
+@@ -122,34 +133,51 @@
+     }
+ 
+     private void load() {
+-        //Stopping all animations
++        // Stopping all animations
+         view.game.aGrid.cancelAnimations();
+ 
+         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+-        for (int xx = 0; xx < view.game.grid.field.length; xx++) {
+-            for (int yy = 0; yy < view.game.grid.field[0].length; yy++) {
++        int w = view.game.grid.field.length;
++        int h = view.game.grid.field[0].length;
++
++        // --- Load live grid ---
++        for (int xx = 0; xx < w; xx++) {
++            for (int yy = 0; yy < h; yy++) {
+                 int value = settings.getInt(xx + " " + yy, -1);
+                 if (value > 0) {
+                     view.game.grid.field[xx][yy] = new Tile(xx, yy, value);
+                 } else if (value == 0) {
+                     view.game.grid.field[xx][yy] = null;
+                 }
+-
+-                int undoValue = settings.getInt(UNDO_GRID + xx + " " + yy, -1);
+-                if (undoValue > 0) {
+-                    view.game.grid.undoField[xx][yy] = new Tile(xx, yy, undoValue);
+-                } else if (value == 0) {
+-                    view.game.grid.undoField[xx][yy] = null;
+-                }
+             }
+         }
+ 
+-        view.game.score = settings.getLong(SCORE, view.game.score);
++        // --- Load score and game state ---
++        view.game.score     = settings.getLong(SCORE,      view.game.score);
+         view.game.highScore = settings.getLong(HIGH_SCORE, view.game.highScore);
+-        view.game.lastScore = settings.getLong(UNDO_SCORE, view.game.lastScore);
+-        view.game.canUndo = settings.getBoolean(CAN_UNDO, view.game.canUndo);
+-        view.game.gameState = settings.getInt(GAME_STATE, view.game.gameState);
+-        view.game.lastGameState = settings.getInt(UNDO_GAME_STATE, view.game.lastGameState);
++        view.game.gameState = settings.getInt(GAME_STATE,  view.game.gameState);
++
++        // --- Rebuild undo stack ---
++        // Stacks must be cleared before rebuilding to avoid stale data on resume.
++        view.game.grid.clearUndoStack();
++        view.game.scoreStack.clear();
++        view.game.gameStateStack.clear();
++
++        int depth = settings.getInt(UNDO_DEPTH, 0);
++        // Push oldest first so that index 0 ends up on top (most recent).
++        for (int i = depth - 1; i >= 0; i--) {
++            // Rebuild tile snapshot for level i
++            Tile[][] snap = new Tile[w][h];
++            for (int xx = 0; xx < w; xx++) {
++                for (int yy = 0; yy < h; yy++) {
++                    int v = settings.getInt("undo_grid_" + i + "_" + xx + "_" + yy, -1);
++                    snap[xx][yy] = (v > 0) ? new Tile(xx, yy, v) : null;
++                }
++            }
++            view.game.grid.pushUndoSnapshot(snap);
++            view.game.scoreStack.push(settings.getLong("undo_score_" + i, 0));
++            view.game.gameStateStack.push(settings.getInt("undo_game_state_" + i, 0));
++        }
+     }
+ 
+     private void setStatusBarColor(Window window, int color) {

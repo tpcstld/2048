@@ -1,19 +1,19 @@
 package com.tpcstld.twozerogame;
 
 import java.util.ArrayList;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public class Grid {
 
     public final Tile[][] field;
-    public final Tile[][] undoField;
     private final Tile[][] bufferField;
+    private final Deque<Tile[][]> undoStack = new ArrayDeque<>();
 
     public Grid(int sizeX, int sizeY) {
         field = new Tile[sizeX][sizeY];
-        undoField = new Tile[sizeX][sizeY];
         bufferField = new Tile[sizeX][sizeY];
         clearGrid();
-        clearUndoGrid();
     }
 
     public Cell randomAvailableCell() {
@@ -83,15 +83,17 @@ public class Grid {
     }
 
     public void saveTiles() {
+        Tile[][] snapshot = new Tile[bufferField.length][bufferField[0].length];
         for (int xx = 0; xx < bufferField.length; xx++) {
             for (int yy = 0; yy < bufferField[0].length; yy++) {
                 if (bufferField[xx][yy] == null) {
-                    undoField[xx][yy] = null;
+                    snapshot[xx][yy] = null;
                 } else {
-                    undoField[xx][yy] = new Tile(xx, yy, bufferField[xx][yy].getValue());
+                    snapshot[xx][yy] = new Tile(xx, yy, bufferField[xx][yy].getValue());
                 }
             }
         }
+        undoStack.push(snapshot);
     }
 
     public void prepareSaveTiles() {
@@ -107,29 +109,49 @@ public class Grid {
     }
 
     public void revertTiles() {
-        for (int xx = 0; xx < undoField.length; xx++) {
-            for (int yy = 0; yy < undoField[0].length; yy++) {
-                if (undoField[xx][yy] == null) {
-                    field[xx][yy] = null;
-                } else {
-                    field[xx][yy] = new Tile(xx, yy, undoField[xx][yy].getValue());
+        if (!undoStack.isEmpty()) {
+            Tile[][] snapshot = undoStack.pop();
+            for (int xx = 0; xx < snapshot.length; xx++) {
+                for (int yy = 0; yy < snapshot[0].length; yy++) {
+                    if (snapshot[xx][yy] == null) {
+                        field[xx][yy] = null;
+                    } else {
+                        field[xx][yy] = new Tile(xx, yy, snapshot[xx][yy].getValue());
+                    }
                 }
             }
         }
+    }
+
+    public boolean hasUndo() {
+        return !undoStack.isEmpty();
+    }
+
+    public int undoDepth() {
+        return undoStack.size();
+    }
+
+    public Tile[][][] getUndoSnapshots() {
+        Tile[][][] snapshots = new Tile[undoStack.size()][][];
+        int i = 0;
+        for (Tile[][] snapshot : undoStack) {
+            snapshots[i++] = snapshot;
+        }
+        return snapshots;
+    }
+
+    public void pushUndoSnapshot(Tile[][] snapshot) {
+        undoStack.push(snapshot);
+    }
+
+    public void clearUndoStack() {
+        undoStack.clear();
     }
 
     public void clearGrid() {
         for (int xx = 0; xx < field.length; xx++) {
             for (int yy = 0; yy < field[0].length; yy++) {
                 field[xx][yy] = null;
-            }
-        }
-    }
-
-    private void clearUndoGrid() {
-        for (int xx = 0; xx < field.length; xx++) {
-            for (int yy = 0; yy < field[0].length; yy++) {
-                undoField[xx][yy] = null;
             }
         }
     }

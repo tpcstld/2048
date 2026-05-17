@@ -9,7 +9,9 @@ import com.tpcstld.twozerogame.snapshot.SnapshotData;
 import com.tpcstld.twozerogame.snapshot.SnapshotManager;
 
 import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.List;
 
 public class MainGame {
@@ -31,7 +33,6 @@ public class MainGame {
     private static final int GAME_LOST = -1;
     private static final int GAME_NORMAL = 0;
     int gameState = GAME_NORMAL;
-    int lastGameState = GAME_NORMAL;
     private int bufferGameState = GAME_NORMAL;
     private static final int GAME_ENDLESS = 2;
     private static final int GAME_ENDLESS_WON = 3;
@@ -44,11 +45,13 @@ public class MainGame {
     private final MainView mView;
     Grid grid = null;
     AnimationGrid aGrid;
-    boolean canUndo;
     public long score = 0;
     long highScore = 0;
-    long lastScore = 0;
     private long bufferScore = 0;
+
+    // Unlimited undo stacks (index 0 = most recent, i.e. top of stack)
+    final Deque<Long>    scoreStack     = new ArrayDeque<>();
+    final Deque<Integer> gameStateStack = new ArrayDeque<>();
 
     MainGame(Context context, MainView view) {
         mContext = context;
@@ -164,9 +167,8 @@ public class MainGame {
 
     private void saveUndoState() {
         grid.saveTiles();
-        canUndo = true;
-        lastScore = bufferScore;
-        lastGameState = bufferGameState;
+        scoreStack.push(bufferScore);
+        gameStateStack.push(bufferGameState);
     }
 
     private void prepareUndoState() {
@@ -175,13 +177,16 @@ public class MainGame {
         bufferGameState = gameState;
     }
 
+    boolean canUndo() {
+        return grid.hasUndo();
+    }
+
     void revertUndoState() {
-        if (canUndo) {
-            canUndo = false;
+        if (canUndo()) {
             aGrid.cancelAnimations();
             grid.revertTiles();
-            score = lastScore;
-            gameState = lastGameState;
+            score     = scoreStack.pop();
+            gameState = gameStateStack.pop();
             mView.refreshLastTime = true;
             mView.invalidate();
         }
